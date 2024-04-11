@@ -8,23 +8,10 @@
 <body>
     <div class="container">
         <h1>Day Journal Recorder</h1>
-        <div class="checkbox-list">
-            <label class="custom-checkbox">
-              <input type="checkbox" name="option1">
-              <span class="checkmark"></span>
-              Mizuki
-            </label>
-            <label class="custom-checkbox">
-              <input type="checkbox" name="option2">
-              <span class="checkmark"></span>
-              Eiji
-            </label>
-            <label class="custom-checkbox">
-              <input type="checkbox" name="option3">
-              <span class="checkmark"></span>
-              Koki
-            </label>
-          </div>
+        <div id="checkbox-list" class="checkbox-list">
+            <!-- Checkboxes will be added here by JavaScript -->
+        </div>
+    </div>    
           
         <div class="recorder">
             <button id="recordButton">Record</button>
@@ -90,6 +77,29 @@
             }
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    fetch('/contacts')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('checkbox-list');
+            container.innerHTML = ''; // Clear existing content if any
+            data.forEach((name, index) => {
+                const label = document.createElement('label');
+                label.className = 'custom-checkbox';
+                label.innerHTML = `
+                    <input type="checkbox" name="option${index + 1}">
+                    <span class="checkmark"></span>
+                    ${name}
+                `;
+                container.appendChild(label);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching contacts:', error);
+        });
+});
+
     </script>
     
 </html>

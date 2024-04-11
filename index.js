@@ -3,15 +3,12 @@ const multer = require('multer');
 const app = express();
 require('dotenv').config();
 const fs = require('fs')
+const path = require('path');
 
 const port = 3000;
 
 const { Configuration, OpenAI } = require("openai");
-
-// const configuration = new Configuration({
-//   apiKey: process.env.OPENAI_API_KEY,
-// });
-const openai = new OpenAI();
+const contactsDir = path.join(process.cwd(), 'vault', 'contacts');
 
 
 // Multer setup (ensure you've configured Multer here)
@@ -42,6 +39,20 @@ function convertAudio(inputPath, outputPath, callback) {
 
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
+
+app.get('/contacts', (req, res) => {
+    fs.readdir(contactsDir, (err, files) => {
+        if (err) {
+            console.error("Error reading directory", err);
+            res.status(500).send("Error reading directory");
+            return;
+        }
+        // Remove the .md extension and send the names
+        const contactNames = files.map(file => file.replace('.md', ''));
+        res.json(contactNames);
+    });
+});
+
 
 app.post('/upload', upload.single('audioFile'), async (req, res) => {
     if (req.file) {

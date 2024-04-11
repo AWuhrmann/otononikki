@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Day Journal Recorder</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Day Journal Recorder</h1>
+        <div class="checkbox-list">
+            <label class="custom-checkbox">
+              <input type="checkbox" name="option1">
+              <span class="checkmark"></span>
+              Mizuki
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" name="option2">
+              <span class="checkmark"></span>
+              Eiji
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" name="option3">
+              <span class="checkmark"></span>
+              Koki
+            </label>
+          </div>
+          
+        <div class="recorder">
+            <button id="recordButton">Record</button>
+        </div>
+        <div class="transcript">
+            <textarea id="transcriptBox" rows="10" cols="50" placeholder="Transcription will appear here..."></textarea>
+        </div>
+    </div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const recordButton = document.getElementById('recordButton');
+        const transcriptBox = document.getElementById('transcriptBox');
+        let mediaRecorder;
+        let audioChunks = [];
+    
+        // Check if the browser supports the MediaRecorder API
+        if (typeof MediaRecorder === "undefined") {
+            alert("Your browser does not support the MediaRecorder API. Try updating or switching your browser.");
+            return;
+        }
+    
+        async function startRecording() {
+            audioChunks = [];
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+    
+            mediaRecorder.ondataavailable = function(event) {
+                audioChunks.push(event.data);
+            };
+    
+            mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, {type: 'audio/mpeg-3'}); // Ensure the MIME type matches your file format
+            const formData = new FormData();
+            formData.append('audioFile', audioBlob, 'audio.mp3'); // 'audioFile' matches the name expected by Multer in your backend
+
+                try {
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData, // Send the FormData object containing the audio file
+                    });
+                    const text = await response.text(); // Assuming the response is just text
+                    transcriptBox.value = text; // Display the transcription result in your transcript box
+                } catch (error) {
+                    console.error('Upload failed:', error);
+                    transcriptBox.value = "Failed to upload and transcribe audio.";
+                }
+            };
+        
+            mediaRecorder.start();
+        }
+    
+        let isRecording = false;
+        recordButton.addEventListener('click', function() {
+            if (!isRecording) {
+                startRecording();
+                recordButton.textContent = 'Stop Recording';
+                isRecording = true;
+            } else {
+                mediaRecorder.stop();
+                recordButton.textContent = 'Record';
+                isRecording = false;
+            }
+        });
+    });
+    </script>
+    
+</html>

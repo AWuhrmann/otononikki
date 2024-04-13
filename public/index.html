@@ -8,11 +8,15 @@
 <body>
     <div class="container">
         <h1>Day Journal Recorder</h1>
+        <input type="text" id="search-box" placeholder="Search contacts..." onkeyup="filterContacts()">
         <div id="checkbox-list" class="checkbox-list">
             <!-- Checkboxes will be added here by JavaScript -->
         </div>
     </div>    
-          
+    <div class="add-contact-form">
+        <input type="text" id="new-contact-name" placeholder="Enter new contact name" />
+        <button onclick="addContact()">Add Person</button>
+    </div>
         <div class="recorder">
             <button id="recordButton">Record</button>
         </div>
@@ -79,25 +83,76 @@
     });
 
     document.addEventListener('DOMContentLoaded', function() {
-    fetch('/contacts')
+        const searchBox = document.getElementById('search-box');
+    let allContacts = []; // Store all contacts
+
+    function fetchContacts() {
+        fetch('/contacts')
+            .then(response => response.json())
+            .then(data => {
+                allContacts = data; // Store the fetched data
+                displayContacts(data); // Display all contacts initially
+            })
+            .catch(error => {
+                console.error('Error fetching contacts:', error);
+            });
+    }
+
+    function displayContacts(contacts) {
+        const container = document.getElementById('checkbox-list');
+        container.innerHTML = ''; // Clear existing content
+        contacts.forEach((name, index) => {
+            const label = document.createElement('label');
+            label.className = 'custom-checkbox';
+            label.innerHTML = `
+                <input type="checkbox" name="option${index + 1}">
+                <span class="checkmark"></span>
+                ${name}
+            `;
+            container.appendChild(label);
+        });
+    }
+
+    function filterContacts() {
+        const searchText = searchBox.value.toLowerCase();
+        const filteredContacts = allContacts.filter(name => name.toLowerCase().includes(searchText));
+        displayContacts(filteredContacts);
+    }
+
+    window.filterContacts = filterContacts; // Make the function globally available for the HTML input's event
+    
+    window.addContact = function() {
+        transcriptBox.value = "hmm";
+        console.log("ahhh");
+        const name = document.getElementById('new-contact-name').value;
+        if (!name) {
+            alert('Please enter a name.');
+            return;
+        }
+        fetch('/add-contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name })
+        })
         .then(response => response.json())
         .then(data => {
-            const container = document.getElementById('checkbox-list');
-            container.innerHTML = ''; // Clear existing content if any
-            data.forEach((name, index) => {
-                const label = document.createElement('label');
-                label.className = 'custom-checkbox';
-                label.innerHTML = `
-                    <input type="checkbox" name="option${index + 1}">
-                    <span class="checkmark"></span>
-                    ${name}
-                `;
-                container.appendChild(label);
-            });
+            if (data.success) {
+                alert('Contact added successfully!');
+                fetchContacts(); // Refresh the contact list
+            } else {
+                alert('Failed to add contact.');
+            }
         })
         .catch(error => {
-            console.error('Error fetching contacts:', error);
+            console.error('Error adding contact:', error);
+            alert('Failed to add contact.');
         });
+    };
+
+    
+    fetchContacts();
 });
 
     </script>

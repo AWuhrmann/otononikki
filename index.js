@@ -1,6 +1,9 @@
 const express = require('express');
 const multer = require('multer');
+
 const app = express();
+app.use(express.json());
+
 require('dotenv').config();
 const fs = require('fs')
 const path = require('path');
@@ -50,6 +53,21 @@ app.get('/contacts', (req, res) => {
         // Remove the .md extension and send the names
         const contactNames = files.map(file => file.replace('.md', ''));
         res.json(contactNames);
+    });
+});
+
+app.post('/add-contact', (req, res) => {
+    const { name } = req.body;
+    const filePath = path.join(contactsDir, `${name}.md`);
+    const content = `# ${name}\n\nContact details here...`;
+
+    fs.writeFile(filePath, content, (err) => {
+        if (err) {
+            console.error("Error writing new contact file", err);
+            res.json({ success: false });
+            return;
+        }
+        res.json({ success: true });
     });
 });
 

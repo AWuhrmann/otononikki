@@ -89,7 +89,7 @@ app.post('/upload', upload.single('audioFile'), async (req, res) => {
 
             try {
                 // Example placeholder: Replace with actual OpenAI transcription code
-                const translation = await openai.audio.transcriptions.create({
+                const translation = await OpenAI.audio.transcriptions.create({
                     file: fs.createReadStream(outputPath),
                     model: "whisper-1",
                 });

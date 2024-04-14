@@ -11,6 +11,7 @@ const path = require('path');
 const port = 3000;
 
 const { Configuration, OpenAI } = require("openai");
+const openai = new OpenAI();
 const contactsDir = path.join(process.cwd(), 'vault', 'contacts');
 
 
@@ -89,7 +90,7 @@ app.post('/upload', upload.single('audioFile'), async (req, res) => {
 
             try {
                 // Example placeholder: Replace with actual OpenAI transcription code
-                const translation = await OpenAI.audio.transcriptions.create({
+                const translation = await openai.audio.transcriptions.create({
                     file: fs.createReadStream(outputPath),
                     model: "whisper-1",
                 });

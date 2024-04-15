@@ -48,6 +48,7 @@
             };
     
             mediaRecorder.onstop = async () => {
+                console.log("Recorded voice !");
             const audioBlob = new Blob(audioChunks, {type: 'audio/mpeg-3'}); // Ensure the MIME type matches your file format
             const formData = new FormData();
             formData.append('audioFile', audioBlob, 'audio.mp3'); // 'audioFile' matches the name expected by Multer in your backend

@@ -53,7 +53,7 @@
             const audioBlob = new Blob(audioChunks, {type: 'audio/mpeg-3'}); // Ensure the MIME type matches your file format
             const formData = new FormData();
             formData.append('audioFile', audioBlob, 'audio.mp3'); // 'audioFile' matches the name expected by Multer in your backend
-
+            
                 try {
                     const response = await fetch('/upload', {
                         method: 'POST',
@@ -89,7 +89,7 @@
     let allContacts = []; // Store all contacts
 
     function fetchContacts() {
-        fetch('/contacts')
+        fetch('/vault/contacts')
             .then(response => response.json())
             .then(data => {
                 allContacts = data; // Store the fetched data

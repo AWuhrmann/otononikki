@@ -89,11 +89,14 @@
     let allContacts = []; // Store all contacts
 
     function fetchContacts() {
+        console.log("before fetching")
         fetch('/vault/contacts')
             .then(response => response.json())
             .then(data => {
                 allContacts = data; // Store the fetched data
+                console.log("in between fecthing")
                 displayContacts(data); // Display all contacts initially
+                console.log("after fecthing")
             })
             .catch(error => {
                 console.error('Error fetching contacts:', error);

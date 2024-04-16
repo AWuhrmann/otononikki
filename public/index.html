@@ -90,7 +90,7 @@
 
     function fetchContacts() {
         console.log("before fetching")
-        fetch('/contacts')
+        fetch('https://34.168.3.52/contacts')
             .then(response => response.json())
             .then(data => {
                 allContacts = data; // Store the fetched data

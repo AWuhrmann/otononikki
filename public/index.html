@@ -90,7 +90,7 @@
 
     function fetchContacts() {
         console.log("before fetching")
-        fetch('/vault/contacts')
+        fetch('/contacts')
             .then(response => response.json())
             .then(data => {
                 allContacts = data; // Store the fetched data

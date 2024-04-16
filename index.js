@@ -45,6 +45,7 @@ function convertAudio(inputPath, outputPath, callback) {
 app.use(express.static('public'));
 
 app.get('/contacts', (req, res) => {
+    console.log("wasusp")
     fs.readdir(contactsDir, (err, files) => {
         if (err) {
             console.error("Error reading directory", err);

@@ -25,4 +25,7 @@ def upload_file(file_name, file_path, mime_type):
 
 # Call the function to upload files
 upload_file('example.md', 'example.md', 'text/plain')
+<<<<<<< HEAD
 
+=======
+>>>>>>> c436995464ecb191c209ed423be1767b420e1609

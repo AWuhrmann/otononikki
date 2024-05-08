@@ -7,12 +7,23 @@ app.use(express.json());
 require('dotenv').config();
 const fs = require('fs')
 const path = require('path');
+const { promisify } = require('util');
+const writeFile = promisify(fs.writeFile);
+const appendFile = promisify(fs.appendFile);
+const exists = promisify(fs.exists);
+const { exec } = require('child_process');
+
+
 
 const port = 3000;
 
 const { Configuration, OpenAI } = require("openai");
 const openai = new OpenAI();
 const contactsDir = path.join(process.cwd(), 'vault', 'contacts');
+const notesDirectory = path.join(process.cwd(), 'vault', 'notes');
+
+
+
 
 
 // Multer setup (ensure you've configured Multer here)
@@ -27,7 +38,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const { exec } = require('child_process');
 
 function convertAudio(inputPath, outputPath, callback) {
     exec(`ffmpeg -i ${inputPath} -codec:a libmp3lame ${outputPath}`, (error, stdout, stderr) => {
@@ -78,6 +88,10 @@ app.post('/upload', upload.single('audioFile'), async (req, res) => {
     if (req.file) {
         const inputPath = req.file.path;
         const outputPath = inputPath + '.mp3'; // Define the output path
+        const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+        const notePath = path.join(notesDirectory, `${today}.md`);
+        
+        const contacts = req.body.contacts;
 
         // Convert the audio file to MP3
         convertAudio(inputPath, outputPath, async (error, convertedFilePath) => {
@@ -85,18 +99,30 @@ app.post('/upload', upload.single('audioFile'), async (req, res) => {
                 res.status(500).send("Failed to convert audio file.");
                 return;
             }
-
+            
             // At this point, the file is converted and available at `convertedFilePath`
             // Now, you can proceed to send this converted file to OpenAI for transcription
-
+            
             try {
                 // Example placeholder: Replace with actual OpenAI transcription code
                 const translation = await openai.audio.transcriptions.create({
                     file: fs.createReadStream(outputPath),
                     model: "whisper-1",
                 });
-            
-                console.log(`Translation text : ${translation.text}`);
+                
+                const timeNow = new Date().toLocaleTimeString(); // HH:MM:SS format
+                const content = `\n\n## Entry at ${timeNow}\n*Contacts seen today: ${contacts}*\n${translation.text}`;
+
+                // Check if the daily note already exists
+                if (await exists(notePath)) {
+                    // If exists, append the new content
+                    await appendFile(notePath, content);
+                    console.log('Appended to daily note successfully.');
+                } else {
+                    // If not, create a new file with a header
+                    await writeFile(notePath, `# Daily note of ${today}\n` + content);
+                    console.log('Daily note created successfully.');
+                }
                 
                 console.log('Transcription successful');
                 res.send(translation.text);
@@ -104,6 +130,7 @@ app.post('/upload', upload.single('audioFile'), async (req, res) => {
                 console.error('Transcription error:', transcriptionError);
                 res.status(500).send('Error transcribing file');
             }
+            await uploadFileOnDrive(notePath);
         });
 
         
@@ -111,7 +138,22 @@ app.post('/upload', upload.single('audioFile'), async (req, res) => {
     } else {
         res.status(400).send('No file uploaded.');
     }
-  });
+});
+
+
+function uploadFileOnDrive(filepath) {
+    exec(`python3 scripts/main.py '${filepath.split("/").pop()}' '${filepath}' `, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error: ${error}`);
+            return;
+        }
+        if (stderr) {
+            console.error(`Stderr: ${stderr}`);
+            return;
+        }
+        console.log(`Python drive upload script output: \n${stdout}`);
+    });
+}
 
 // Start the server
 app.listen(port, () => {

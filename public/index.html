@@ -49,11 +49,14 @@
             };
     
             mediaRecorder.onstop = async () => {
+
+                const selectedContacts = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                                  .map(input => `[[${input.value}]]`).join(', ');
                 console.log("Recorded voice !");
-            const audioBlob = new Blob(audioChunks, {type: 'audio/mpeg-3'}); // Ensure the MIME type matches your file format
-            const formData = new FormData();
-            formData.append('audioFile', audioBlob, 'audio.mp3'); // 'audioFile' matches the name expected by Multer in your backend
-            
+                const audioBlob = new Blob(audioChunks, {type: 'audio/mpeg-3'}); // Ensure the MIME type matches your file format
+                const formData = new FormData();
+                formData.append('audioFile', audioBlob, 'audio.mp3'); // 'audioFile' matches the name expected by Multer in your backend
+                formData.append('contacts', selectedContacts);
                 try {
                     const response = await fetch('/upload', {
                         method: 'POST',
@@ -107,7 +110,7 @@
             const label = document.createElement('label');
             label.className = 'custom-checkbox';
             label.innerHTML = `
-                <input type="checkbox" name="option${index + 1}">
+                <input type="checkbox" name="option${index + 1}" value="${name}" id="contact-${name}">
                 <span class="checkmark"></span>
                 ${name}
             `;

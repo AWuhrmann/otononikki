@@ -1,9 +1,16 @@
+import sys
+
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-# Path to your service account key file
-SERVICE_ACCOUNT_FILE = 'account.json'
+import os
+
+# Get the directory of the current script
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+# Join the directory path with the name of your service account file
+SERVICE_ACCOUNT_FILE = os.path.join(dir_path, 'account.json')
 
 # Define the scopes
 SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -23,9 +30,15 @@ def upload_file(file_name, file_path, mime_type):
                                   fields='id').execute()
     print('File ID: %s' % file['id'])
 
-# Call the function to upload files
-upload_file('example.md', 'example.md', 'text/plain')
-<<<<<<< HEAD
+if __name__ == "__main__":
 
-=======
->>>>>>> c436995464ecb191c209ed423be1767b420e1609
+    print("execution")
+
+    if len(sys.argv) < 2:
+        print("Usage: python main.py <file_name> <file_path>")
+        sys.exit(1)
+
+    file_name = sys.argv[1]
+    file_path = sys.argv[2]
+
+    upload_file(file_name, file_path, 'text/plain')

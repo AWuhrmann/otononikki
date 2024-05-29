@@ -20,9 +20,10 @@ const port = 3000;
 const { Configuration, OpenAI } = require("openai");
 const openai = new OpenAI();
 const contactsDir = path.join(process.cwd(), 'vault', 'contacts');
+const picturesDir = path.join(contactsDir, 'pictures');
 const notesDirectory = path.join(process.cwd(), 'vault', 'notes');
 
-
+app.use('/contacts/pictures', express.static(picturesDir));
 
 
 
@@ -54,17 +55,46 @@ function convertAudio(inputPath, outputPath, callback) {
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
 
+
 app.get('/contacts', (req, res) => {
-    console.log("wasusp")
     fs.readdir(contactsDir, (err, files) => {
         if (err) {
             console.error("Error reading directory", err);
             res.status(500).send("Error reading directory");
             return;
         }
-        // Remove the .md extension and send the names
-        const contactNames = files.map(file => file.replace('.md', ''));
-        res.json(contactNames);
+
+        const contactNames = files.filter(file => file.endsWith('.md')).map(file => file.replace('.md', ''));
+
+        // Create an array of promises to check for the existence of each profile picture
+        const contactsWithPictures = contactNames.map(name => {
+            const picturePathPng = path.join(picturesDir, `${name}.png`);
+            const picturePathJpg = path.join(picturesDir, `${name}.jpg`);
+            return new Promise((resolve) => {
+                fs.access(picturePathPng, fs.constants.F_OK, (err) => {
+                    if (!err) {
+                        resolve({
+                            name,
+                            picture: `/contacts/pictures/${name}.png`
+                        });
+                    } else {
+                        fs.access(picturePathJpg, fs.constants.F_OK, (err) => {
+                            resolve({
+                                name,
+                                picture: err ? null : `/contacts/pictures/${name}.jpg`
+                            });
+                        });
+                    }
+                });
+            });
+        });
+
+        Promise.all(contactsWithPictures).then(results => {
+            res.json(results);
+        }).catch(error => {
+            console.error("Error processing contacts", error);
+            res.status(500).send("Error processing contacts");
+        });
     });
 });
 

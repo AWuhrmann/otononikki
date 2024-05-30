@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Day Journal Recorder</title>
@@ -7,22 +8,32 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Inter:400,500,600,700&amp;display=swap'>
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
+
+    <!--- Fast select includes, for having tag input style in the search bar-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
+    <link rel="stylesheet" href="css/fastselect.css">
+
 </head>
+
 <body>
     <div class="container">
         <header class="main-header">
-          <h1>ボイス日記 - <span id="current-date"></span></h1>
+            <h1>ボイス日記 - <span id="current-date"></span></h1>
         </header>
         <div class="content">
-          <div class="left-panel">
-            <textarea class="textarea" id="transcriptBox" rows="10" cols="50" placeholder="Transcription will appear here..."></textarea>            <!-- Add more text or content here as needed -->
-          </div>
-          <div class="right-panel">
-            <div class="grid" id="search-box-div">
-                <input type="text" id="search-box" class="search-box" placeholder="Search contacts..." onkeyup="filterContacts()">
+            <div class="left-panel">
+                <textarea class="textarea" id="transcriptBox" rows="10" cols="50" placeholder="Transcription will appear here..."></textarea>
+                <!-- Add more text or content here as needed -->
             </div>
-            <div class="grid" id="checkbox-list">
-              <label class="card">
+            <div class="right-panel">
+                <div class="grid" id="search-box-div">
+                    <ul id="tag-list">
+                        <input type="text" id="search-box" data-user-option-allowed="true" class="search-box" placeholder="Search contacts..." onkeyup="filterContacts()">
+                    </ul>
+                </div>
+                <div class="grid" id="checkbox-list">
+                    <label class="card">
                 <input class="card__input" type="checkbox"/>
                 <div class="card__body">
                   <header class="card__body-header">
@@ -35,40 +46,40 @@
                     </svg></span></div>
                   </div>
                 </label>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-      
-      <nav class="menu">
+    </div>
+
+    <nav class="menu">
         <input type="checkbox" href="#" class="menu-open" name="menu-open" id="menu-open" />
         <label class="menu-open-button" for="menu-open">
          <span class="lines line-1"></span>
          <span class="lines line-2"></span>
          <span class="lines line-3"></span>
         </label>
-      
-        <button class="menu-item blue" id="recordButton""> <i class="fa fa-circle-o"></i> </button>
-        <button class="menu-item red" onclick="myFunction2()"> <i class="fa fa-arrow-circle-o-up"></i> </button>
-        <button class="menu-item green" onclick="addContact()"> <i class="fa fa-user-plus"></i> </button>
+
+        <button class="menu-item blue" id="recordButton" "> <i class="fa fa-circle-o "></i> </button>
+        <button class="menu-item red " onclick="myFunction2() "> <i class="fa fa-arrow-circle-o-up "></i> </button>
+        <button class="menu-item green " onclick="addContact() "> <i class="fa fa-user-plus "></i> </button>
       
       </nav>
-       <script  src="js/script.js"></script>
-    <!--- <div class="container">
+       <script  src="js/script.js "></script>
+    <!--- <div class="container ">
         <h1>Day Journal Recorder</h1>
-        <input type="text" id="search-box" placeholder="Search contacts..." onkeyup="filterContacts()">
-        <div id="checkbox-list" class="checkbox-list">
+        <input type="text " id="search-box " placeholder="Search contacts... " onkeyup="filterContacts() ">
+        <div id="checkbox-list " class="checkbox-list ">
         </div>
     </div>    
-    <div class="add-contact-form">
-        <input type="text" id="new-contact-name" placeholder="Enter new contact name" />
-        <button onclick="addContact()">Add Person</button>
+    <div class="add-contact-form ">
+        <input type="text " id="new-contact-name " placeholder="Enter new contact name " />
+        <button onclick="addContact() ">Add Person</button>
     </div>
-        <div class="recorder">
-            <button id="recordButton">Record</button>
+        <div class="recorder ">
+            <button id="recordButton ">Record</button>
         </div>
-        <div class="transcript">
-            <textarea id="transcriptBox" rows="10" cols="50" placeholder="Transcription will appear here..."></textarea>
+        <div class="transcript ">
+            <textarea id="transcriptBox " rows="10 " cols="50 " placeholder="Transcription will appear here... "></textarea>
         </div>
     </div> --> 
 </body>

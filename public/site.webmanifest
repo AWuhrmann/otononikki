@@ -1,3 +1,8 @@
 {
-    "display": "standalone"
-}
+    "name": "Your App Name",
+    "short_name": "ShortName",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#000000"
+  }

@@ -24,24 +24,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
         mediaRecorder.onstop = async() => {
 
-            const selectedContacts = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+            const selectedContactsStr = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
                 .map(input => `[[${input.value}]]`).join(', ');
             console.log("Recorded voice !");
             const audioBlob = new Blob(audioChunks, { type: 'audio/mpeg-3' }); // Ensure the MIME type matches your file format
             const formData = new FormData();
             formData.append('audioFile', audioBlob, 'audio.mp3'); // 'audioFile' matches the name expected by Multer in your backend
-            formData.append('contacts', selectedContacts);
-            try {
-                const response = await fetch('/upload', {
+            formData.append('contacts', selectedContactsStr);
+            fetch('/transcribe', {
                     method: 'POST',
-                    body: formData, // Send the FormData object containing the audio file
-                });
-                const text = await response.text(); // Assuming the response is just text
-                transcriptBox.value = text; // Display the transcription result in your transcript box
-            } catch (error) {
-                console.error('Upload failed:', error);
-                transcriptBox.value = "Failed to upload and transcribe audio.";
-            }
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const { transcription } = data;
+                    transcriptBox.value = transcription;
+                    // Use the transcription and content as needed
+                })
+                .catch(error => console.error('Error:', error));
+
         };
 
         mediaRecorder.start();
@@ -118,8 +119,6 @@ document.addEventListener('DOMContentLoaded', function() {
             container.appendChild(label);
         });
     }
-
-
     // Returns the first contact of the list of contacts, taking into account the search (if M is written, its the first element starting with M...)
     function getFirstContactInList() {
         const container = document.getElementById('checkbox-list');
@@ -137,9 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener for keyup events in the input field
     input_tag.addEventListener("keyup", (e) => {
         if (e.key === 'Enter') {
-            //addTagToSearch(getFirstContactInList().querySelector('input'));
-            const results = fuse.search(searchBox.value.toLowerCase()); // fuse allows for fuzzy search, more soft :)
-            console.log(results);
+            addTagToSearch(getFirstContactInList().querySelector('input'));
         } else if (e.key === 'Backspace') {
             handleBackspace();
         } else {
@@ -238,13 +235,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-
-
     window.filterContacts = filterContacts; // Make the function globally available for the HTML input's event
 
     window.addContact = function() {
-        transcriptBox.value = "hmm";
-        console.log("ahhh");
+
+        const regex = /\[\[(.*?)\]\]/;
+        const match = transcriptBox.value.match(regex);
+        return;
         const name = document.getElementById('new-contact-name').value;
         if (!name) {
             alert('Please enter a name.');
@@ -281,7 +278,36 @@ document.addEventListener('DOMContentLoaded', function() {
         keys: ['name']
     };
     let fuse;
+
+    // Transcript box and menu actions
+
+    window.onClickUploadButton = function() {
+        console.log(transcriptBox.value);
+
+        const selectedContactsStr = Object.keys(selectedContacts)
+            .map(contact => `[[${contact}]]`)
+            .join(', ');
+        console.log(selectedContactsStr);
+
+        const transcriptionData = {
+            translation: transcriptBox.value, // content received from the transcription endpoint
+            contacts: selectedContactsStr,
+            date: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
+        };
+
+        fetch('/uploadTranscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(transcriptionData)
+            })
+            .then(response => response.text())
+            .then(data => console.log('Upload response:', data))
+            .catch(error => console.error('Error:', error));
+    }
 });
+
 
 
 // Function to update the date in the header

@@ -114,62 +114,72 @@ app.post('/add-contact', (req, res) => {
 });
 
 
-app.post('/upload', upload.single('audioFile'), async (req, res) => {
+// Only transcribe the audio file, and does not put the transcription neither in the file nor on the drive
+app.post('/transcribe', upload.single('audioFile'), async(req, res) => {
     if (req.file) {
         const inputPath = req.file.path;
         const outputPath = inputPath + '.mp3'; // Define the output path
-        const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-        const notePath = path.join(notesDirectory, `${today}.md`);
-        
-        const contacts = req.body.contacts;
 
         // Convert the audio file to MP3
-        convertAudio(inputPath, outputPath, async (error, convertedFilePath) => {
+        convertAudio(inputPath, outputPath, async(error, convertedFilePath) => {
             if (error) {
                 res.status(500).send("Failed to convert audio file.");
                 return;
             }
-            
-            // At this point, the file is converted and available at `convertedFilePath`
-            // Now, you can proceed to send this converted file to OpenAI for transcription
-            
+
             try {
-                // Example placeholder: Replace with actual OpenAI transcription code
+                const contacts = req.body.contacts;
                 const translation = await openai.audio.transcriptions.create({
                     file: fs.createReadStream(outputPath),
                     model: "whisper-1",
                 });
-                
-                const timeNow = new Date().toLocaleTimeString(); // HH:MM:SS format
-                const content = `\n\n## Entry at ${timeNow}\n*Contacts seen today: ${contacts}*\n${translation.text}`;
 
-                // Check if the daily note already exists
-                if (await exists(notePath)) {
-                    // If exists, append the new content
-                    await appendFile(notePath, content);
-                    console.log('Appended to daily note successfully.');
-                } else {
-                    // If not, create a new file with a header
-                    await writeFile(notePath, `# Daily note of ${today}\n` + content);
-                    console.log('Daily note created successfully.');
-                }
-                
-                console.log('Transcription successful');
-                res.send(translation.text);
+                res.send({ transcription: translation.text });
             } catch (transcriptionError) {
                 console.error('Transcription error:', transcriptionError);
                 res.status(500).send('Error transcribing file');
             }
-            await uploadFileOnDrive(notePath);
         });
-
-        
-        
     } else {
         res.status(400).send('No file uploaded.');
     }
 });
 
+
+// Only upload the text given on the file, and in the drive.
+app.post('/uploadTranscription', async(req, res) => {
+    const { translation, contacts, date } = req.body;
+
+    if (!translation || !date) {
+        res.status(400).send('Content and date are required.');
+        return;
+    }
+
+    const notePath = path.join(notesDirectory, `${date}.md`);
+
+    const timeNow = new Date().toLocaleTimeString(); // HH:MM:SS format
+    const content = `\n\n## Entry at ${timeNow}\n*Contacts seen today: ${contacts}*\n${translation}`;
+
+
+    try {
+        // Check if the daily note already exists
+        if (await exists(notePath)) {
+            // If exists, append the new content
+            await appendFile(notePath, content);
+            console.log('Appended to daily note successfully.');
+        } else {
+            // If not, create a new file with a header
+            await writeFile(notePath, `# Daily note of ${date}\n` + content);
+            console.log('Daily note created successfully.');
+        }
+
+        await uploadFileOnDrive(notePath);
+        res.send('File uploaded successfully.');
+    } catch (fileError) {
+        console.error('File creation/upload error:', fileError);
+        res.status(500).send('Error creating or uploading file');
+    }
+});
 
 function uploadFileOnDrive(filepath) {
     exec(`python3 scripts/main.py '${filepath.split("/").pop()}' '${filepath}' `, (error, stdout, stderr) => {

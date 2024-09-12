@@ -4,7 +4,7 @@ body {
     font-family: "Inter", Arial;
     justify-content: center;
     align-items: center;
-    background: #fafafa;
+    background: #ffffff;
 }
 
 .main-header {
@@ -13,7 +13,7 @@ body {
     color: #333;
     padding: 20px 0;
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
 }
 
 .main-header h1 {
@@ -27,33 +27,35 @@ body {
     display: flex;
     width: 100%;
     height: calc(100vh - 120px);
+    flex-direction: column;
+    overflow: hidden; 
     /* Adjust height to account for the header */
 }
 
 .container {
     width: 100%;
-    height: 100vh;
 }
 
 .left-panel {
-    flex: 0 0 50%;
+    flex: 0 0 30%;
     /* Adjust width as needed */
-    max-width: 600px;
-    background: #f0f0f0;
-    padding: 30px;
+    background: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
+    border-radius: 32px;
+    border: 2px solid rgba(148, 148, 148, 0.2);
+
     /* Ensure content in left panel can scroll if it overflows */
     font-size: 24px;
     /* Adjust the font size as needed */
     font-weight: bold;
-    overflow: hidden;
+    padding: 30px;
+    margin: 20px;
 }
 
 .textarea {
+    padding: px;
     background: transparent;
     border: none;
     resize: none;
@@ -66,8 +68,8 @@ body {
 .right-panel {
     flex: 1;
     background: #ffffff;
-    overflow-y: auto;
     padding: 10px;
+    overflow-y: auto; 
 }
 
 body .grid {
@@ -77,14 +79,21 @@ body .grid {
     /* Center the grid container on the page */
     display: flex;
     flex-direction: column;
+    grid-template-columns: repeat(2, 1fr); /* Creates two equal columns */
+
     /* Stack the children vertically */
     gap: 1rem;
     /* Space between each card */
-    overflow-y: auto;
+    /* overflow-y: auto; */
     /* Enable vertical scrolling */
-    padding: 20px;
+    /* padding: 20px; */
     /* Padding around the cards */
 }
+
+body .grid-list {
+    display: flex;
+    flex-wrap: wrap; /* Allows items to wrap to the next line */
+    gap: 20px; /* Adjust the gap between grid items as needed */}
 
 .grid ul {
     display: flex;
@@ -129,7 +138,11 @@ body .grid {
     border: none;
     outline: none;
     padding: 12px;
-    font-size: 16px;
+    font-size: 24px;
+}
+
+.search-box li {
+    font-size: 32px;
 }
 
 .selected-tag {
@@ -147,7 +160,7 @@ body .grid {
     --text-headline: #000;
     --card-shadow: #0082ff;
     --card-height: 15%;
-    --card-max-height: 400px;
+    /* --card-max-height: 400px; */
     --card-width: 100%;
     --card-radius: 12px;
     --header-height: 47px;
@@ -161,6 +174,9 @@ body .grid {
     flex-direction: column;
     align-items: center;
     /* Center content inside the card */
+    flex: 1 1 calc(50% - 20px); /* 50% width minus the gap */
+    box-sizing: border-box; /* Ensure padding and border are included in the width calculation */
+    height: 100%;
 }
 
 .card:nth-child(odd) .card__body-cover-image {
@@ -252,7 +268,7 @@ body .grid {
 .card__body-cover {
     --c-border: var(--card-radius) var(--card-radius) 0 0;
     --c-width: 100%;
-    --c-height: 300px;
+    --c-height: 150px;
     flex: 0 0 1000px;
     /* Set a fixed width for the image container */
     position: relative;
@@ -275,7 +291,7 @@ body .grid {
 
 .card__body-cover-image {
     width: var(--c-width);
-    max-height: var(--c-height);
+    height: var(--c-height);
     -o-object-fit: cover;
     object-fit: cover;
     border-radius: var(--c-border);
@@ -369,9 +385,9 @@ a {
 .menu-open-button {
     background: #EEEEEE;
     border-radius: 100%;
-    width: 200px;
-    height: 200px;
-    margin-left: -100%;
+    width: 150px;
+    height: 150px;
+    margin-left: -40px;
     position: absolute;
     color: #FFFFFF;
     display: flex;

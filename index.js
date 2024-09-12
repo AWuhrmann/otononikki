@@ -13,8 +13,6 @@ const appendFile = promisify(fs.appendFile);
 const exists = promisify(fs.exists);
 const { exec } = require('child_process');
 
-
-
 const port = 3000;
 
 const { Configuration, OpenAI } = require("openai");
@@ -25,6 +23,22 @@ const notesDirectory = path.join(process.cwd(), 'vault', 'notes');
 
 app.use('/contacts/pictures', express.static(picturesDir));
 
+const jwt = require('jsonwebtoken');
+const expressJwt = require('express-jwt');
+
+app.post('/login', (req, res) => { // When user tries to localhost:3000/login, goes first here
+    console.log('Login asked');
+    // Check if the password matches
+    if (req.body.password === process.env.USER_PASSWORD) {
+      const accessToken = jwt.sign({ username: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' }); // creates new jwt token for 1h (change to 7d or something)
+      return res.json({ accessToken });
+    } else {
+      res.status(401).send('Unauthorized');
+    }
+});
+
+const protectedRoutes = require('./routes/protected');
+app.use('/api', protectedRoutes); // /api/protected goes there
 
 
 // Multer setup (ensure you've configured Multer here)
@@ -39,7 +53,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-
 function convertAudio(inputPath, outputPath, callback) {
     exec(`ffmpeg -i ${inputPath} -codec:a libmp3lame ${outputPath}`, (error, stdout, stderr) => {
         if (error) {
@@ -51,6 +64,19 @@ function convertAudio(inputPath, outputPath, callback) {
         callback(null);
     });
 }
+
+app.post('/verifyToken', (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+  
+    if (token == null) return res.sendStatus(401);
+  
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) return res.sendStatus(403);
+      res.sendStatus(200);
+    });
+  });
+  
 
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
@@ -132,7 +158,7 @@ app.post('/transcribe', upload.single('audioFile'), async(req, res) => {
                 const translation = await openai.audio.transcriptions.create({
                     file: fs.createReadStream(outputPath),
                     model: "whisper-1",
-                });
+                    prompt: `vault/contacts/Adrien 👓.md vault/contacts/Alex 🧠.md vault/contacts/Alyssa.md vault/contacts/Amy 🐶.md vault/contacts/Ardit 🫱🏽‍🫲🏿.md vault/contacts/Berta 💃.md vault/contacts/Carine 💅🏻.md vault/contacts/Caspar 🧗🏻.md vault/contacts/Chiara 📐.md vault/contacts/Christine 🍶.md vault/contacts/Daniel ☕.md vault/contacts/Dheesh 😎.md vault/contacts/Eiji 🏂.md vault/contacts/Elissa 👸🏻.md vault/contacts/Emile 🎮.md vault/contacts/Emilie.md vault/contacts/Emma 🤸🏻‍♀️.md vault/contacts/Felix 🖼️.md vault/contacts/Holly.md vault/contacts/Hugo 🔪.md vault/contacts/Jil 🌍.md vault/contacts/Josh 🎬.md vault/contacts/Julie 🎤.md vault/contacts/Julie 🐸.md vault/contacts/Karin 👸.md vault/contacts/Kevin 🌱.md vault/contacts/Koki 🇯🇵.md vault/contacts/Léna 🎻.md vault/contacts/Léo 💪🏻.md vault/contacts/Lochlan 𝛗.md vault/contacts/Lou 👀.md vault/contacts/Louis 🖱️.md vault/contacts/Louna 🇯🇵.md vault/contacts/Lucas 🎮.md vault/contacts/Lucas 𝛗.md vault/contacts/Luis 𝛗.md vault/contacts/Maé 🖋️.md vault/contacts/Maman.md vault/contacts/Mathis 🧠.md vault/contacts/Matilda 💃.md vault/contacts/Matthew 🇯🇵.md vault/contacts/Max 🐉.md vault/contacts/Mehdi 💻.md vault/contacts/Mia 🌱.md vault/contacts/Mizuki 🛍️.md vault/contacts/Moeka.md vault/contacts/Moritz 🪵.md vault/contacts/Nadège 👩🏻‍🍳.md vault/contacts/Noah ⚠️.md vault/contacts/Nora 🎻.md vault/contacts/Norah 🏳️‍🌈.md vault/contacts/Olga 🤝🏻.md vault/contacts/Papa.md vault/contacts/Paul 🎲.md vault/contacts/Pierce 𝛗.md vault/contacts/Roy 💅🏻.md vault/contacts/Sacha 🩺.md vault/contacts/Scarlet 🧗‍♀️.md vault/contacts/Sebastian 🧗🏻.md vault/contacts/Sebastiano 🧪.md vault/contacts/Sébastien 💻.md vault/contacts/Selina 🐶.md vault/contacts/Tamiris 💃.md vault/contacts/Tanishka 🥴.md vault/contacts/Thierry 🪂.md vault/contacts/Vincent 🧗🏻.md vault/contacts/Zac 🧠.md`});
 
                 res.send({ transcription: translation.text });
             } catch (transcriptionError) {
@@ -173,8 +199,6 @@ app.post('/uploadTranscription', async(req, res) => {
             console.log('Daily note created successfully.');
         }
 
-        await uploadFileOnDrive(notePath);
-        res.send('File uploaded successfully.');
     } catch (fileError) {
         console.error('File creation/upload error:', fileError);
         res.status(500).send('Error creating or uploading file');

@@ -17,10 +17,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Your App Name">
+    <meta name="viewport" content="width=device-width, initial-scale=0.6, maximum-scale=0.6">
 
 </head>
 
 <body>
+    
     <div class="container">
         <header class="main-header">
             <h1>ボイス日記 - <span id="current-date"></span></h1>
@@ -30,13 +32,13 @@
                 <textarea class="textarea" id="transcriptBox" rows="10" cols="50" placeholder="Transcription will appear here..."></textarea>
                 <!-- Add more text or content here as needed -->
             </div>
-            <div class="right-panel">
                 <div class="grid" id="search-box-div">
                     <ul id="tag-list">
                         <input type="text" id="search-box" data-user-option-allowed="true" class="search-box" placeholder="Search contacts..." onkeyup="filterContacts()">
                     </ul>
                 </div>
-                <div class="grid" id="checkbox-list">
+            <div class="right-panel">
+                <div class="grid-list" id="checkbox-list">
                     <label class="card">
                 <input class="card__input" type="checkbox"/>
                 <div class="card__body">

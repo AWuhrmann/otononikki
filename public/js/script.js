@@ -269,7 +269,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     };
 
-
     fetchContacts();
 
     // Fuzzy search init
@@ -308,7 +307,90 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// This could be in a login form submit handler
+async function handleLogin(username, password) {
+    const response = await fetch('https://your-api.com/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await response.json();
+    if (data.token) {
+      // Store the token securely
+      localStorage.setItem('authToken', data.token);
+    }
+  }
 
+// This function can be used for all your API requests
+async function apiRequest(url, method = 'GET', body = null) {
+    const token = localStorage.getItem('authToken');
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+}
+
+function checkAuth() {
+    const token = localStorage.getItem('jwtToken');
+    
+    if (!token) {
+      window.location.href = 'login.html'; // Redirect to login if no token
+    } else {
+      fetch('/verifyToken', { // Optional: Verify token with server
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Token verification failed');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        localStorage.removeItem('jwtToken'); // Remove invalid token
+        window.location.href = 'login.html'; // Redirect to login
+      });
+    }
+  }
+  
+// Call checkAuth on page load
+document.addEventListener('DOMContentLoaded', checkAuth);
+  
+
+function fetchProtectedData() {
+    const token = localStorage.getItem('jwtToken');
+  
+    if (!token) {
+      alert('No token found, please login first');
+      return;
+    }
+  
+    fetch('/protected', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+    .then(response => {
+      if (response.status === 200) {
+        return response.text();
+      } else {
+        throw new Error('Access denied');
+      }
+    })
+    .then(data => {
+      console.log('Protected data:', data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Access denied');
+    });
+  }
 
 // Function to update the date in the header
 function updateDate() {

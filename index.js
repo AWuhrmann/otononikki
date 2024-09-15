@@ -90,7 +90,7 @@ app.get('/contacts', (req, res) => {
             return;
         }
 
-        const contactNames = files.filter(file => file.endsWith('.md')).map(file => file.replace('.md', ''));
+        const contactNames = files.filter(file => file.endsWith('')).map(file => file.replace('', ''));
 
         // Create an array of promises to check for the existence of each profile picture
         const contactsWithPictures = contactNames.map(name => {
@@ -126,7 +126,7 @@ app.get('/contacts', (req, res) => {
 
 app.post('/add-contact', (req, res) => {
     const { name } = req.body;
-    const filePath = path.join(contactsDir, `${name}.md`);
+    const filePath = path.join(contactsDir, `${name}`);
     const content = `# ${name}\n\nContact details here...`;
 
     fs.writeFile(filePath, content, (err) => {
@@ -158,7 +158,7 @@ app.post('/transcribe', upload.single('audioFile'), async(req, res) => {
                 const translation = await openai.audio.transcriptions.create({
                     file: fs.createReadStream(outputPath),
                     model: "whisper-1",
-                    prompt: `vault/contacts/Adrien 👓.md vault/contacts/Alex 🧠.md vault/contacts/Alyssa.md vault/contacts/Amy 🐶.md vault/contacts/Ardit 🫱🏽‍🫲🏿.md vault/contacts/Berta 💃.md vault/contacts/Carine 💅🏻.md vault/contacts/Caspar 🧗🏻.md vault/contacts/Chiara 📐.md vault/contacts/Christine 🍶.md vault/contacts/Daniel ☕.md vault/contacts/Dheesh 😎.md vault/contacts/Eiji 🏂.md vault/contacts/Elissa 👸🏻.md vault/contacts/Emile 🎮.md vault/contacts/Emilie.md vault/contacts/Emma 🤸🏻‍♀️.md vault/contacts/Felix 🖼️.md vault/contacts/Holly.md vault/contacts/Hugo 🔪.md vault/contacts/Jil 🌍.md vault/contacts/Josh 🎬.md vault/contacts/Julie 🎤.md vault/contacts/Julie 🐸.md vault/contacts/Karin 👸.md vault/contacts/Kevin 🌱.md vault/contacts/Koki 🇯🇵.md vault/contacts/Léna 🎻.md vault/contacts/Léo 💪🏻.md vault/contacts/Lochlan 𝛗.md vault/contacts/Lou 👀.md vault/contacts/Louis 🖱️.md vault/contacts/Louna 🇯🇵.md vault/contacts/Lucas 🎮.md vault/contacts/Lucas 𝛗.md vault/contacts/Luis 𝛗.md vault/contacts/Maé 🖋️.md vault/contacts/Maman.md vault/contacts/Mathis 🧠.md vault/contacts/Matilda 💃.md vault/contacts/Matthew 🇯🇵.md vault/contacts/Max 🐉.md vault/contacts/Mehdi 💻.md vault/contacts/Mia 🌱.md vault/contacts/Mizuki 🛍️.md vault/contacts/Moeka.md vault/contacts/Moritz 🪵.md vault/contacts/Nadège 👩🏻‍🍳.md vault/contacts/Noah ⚠️.md vault/contacts/Nora 🎻.md vault/contacts/Norah 🏳️‍🌈.md vault/contacts/Olga 🤝🏻.md vault/contacts/Papa.md vault/contacts/Paul 🎲.md vault/contacts/Pierce 𝛗.md vault/contacts/Roy 💅🏻.md vault/contacts/Sacha 🩺.md vault/contacts/Scarlet 🧗‍♀️.md vault/contacts/Sebastian 🧗🏻.md vault/contacts/Sebastiano 🧪.md vault/contacts/Sébastien 💻.md vault/contacts/Selina 🐶.md vault/contacts/Tamiris 💃.md vault/contacts/Tanishka 🥴.md vault/contacts/Thierry 🪂.md vault/contacts/Vincent 🧗🏻.md vault/contacts/Zac 🧠.md`});
+                    prompt: `Adrien Alex Alyssa Amy Ardit Berta Carine Caspar Chiara Christine Daniel Dheesh Eiji Elissa Emile Emilie Emma Felix Holly Hugo Jil Josh Julie Julie Karin Kevin Koki Léna Léo Lochlan Lou Louis Louna Lucas Lucas Luis Maé Maman Mathis Matilda Matthew Max Mehdi Mizuki Moeka Moritz Nadège Noah Nora Norah Olga Papa Paul Pierce Roy Sacha Scarlet Sebastian Sebastiano Sébastien Selina Tamiris Tanishka Thierry Vincent Zac`});
 
                 res.send({ transcription: translation.text });
             } catch (transcriptionError) {
@@ -181,7 +181,7 @@ app.post('/uploadTranscription', async(req, res) => {
         return;
     }
 
-    const notePath = path.join(notesDirectory, `${date}.md`);
+    const notePath = path.join(notesDirectory, `${date}`);
 
     const timeNow = new Date().toLocaleTimeString(); // HH:MM:SS format
     const content = `\n\n## Entry at ${timeNow}\n*Contacts seen today: ${contacts}*\n${translation}`;

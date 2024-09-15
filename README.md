@@ -1,0 +1,1 @@
+otononikki is a website that transcripts audio messages into journal entries. It contains an inner server that store the information in a vault, allowing to synchronize my computer with the server. 

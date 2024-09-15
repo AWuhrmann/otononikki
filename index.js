@@ -30,7 +30,7 @@ app.post('/login', (req, res) => { // When user tries to localhost:3000/login, g
     console.log('Login asked');
     // Check if the password matches
     if (req.body.password === process.env.USER_PASSWORD) {
-      const accessToken = jwt.sign({ username: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' }); // creates new jwt token for 1h (change to 7d or something)
+      const accessToken = jwt.sign({ username: 'admin' }, process.env.JWT_SECRET, { expiresIn: '7d' });
       return res.json({ accessToken });
     } else {
       res.status(401).send('Unauthorized');

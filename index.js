@@ -89,12 +89,13 @@ app.get('/contacts', (req, res) => {
             return;
         }
 
-        const contactNames = files.filter(file => file.endsWith('')).map(file => file.replace('', ''));
+        const contactNames = files.filter(file => file.endsWith('.md')).map(file => file.replace('.md', ''));
 
         // Create an array of promises to check for the existence of each profile picture
         const contactsWithPictures = contactNames.map(name => {
             const picturePathPng = path.join(picturesDir, `${name}.png`);
             const picturePathJpg = path.join(picturesDir, `${name}.jpg`);
+            console.log(picturePathJpg);
             return new Promise((resolve) => {
                 fs.access(picturePathPng, fs.constants.F_OK, (err) => {
                     if (!err) {

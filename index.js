@@ -30,6 +30,7 @@ app.post('/login', (req, res) => { // When user tries to localhost:3000/login, g
     console.log('Login asked');
     // Check if the password matches
     if (req.body.password === process.env.USER_PASSWORD) {
+      console.log('password checked and same.');
       const accessToken = jwt.sign({ username: 'admin' }, process.env.JWT_SECRET, { expiresIn: '7d' });
       return res.json({ accessToken });
     } else {
@@ -76,11 +77,9 @@ app.post('/verifyToken', (req, res) => {
       res.sendStatus(200);
     });
   });
-  
 
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
-
 
 app.get('/contacts', (req, res) => {
     fs.readdir(contactsDir, (err, files) => {
@@ -170,7 +169,6 @@ app.post('/transcribe', upload.single('audioFile'), async(req, res) => {
         res.status(400).send('No file uploaded.');
     }
 });
-
 
 // Only upload the text given on the file, and in the drive.
 app.post('/uploadTranscription', async(req, res) => {

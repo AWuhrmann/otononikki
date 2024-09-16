@@ -1,5 +1,5 @@
 body {
-    min-height: 100vh;
+    min-height: 30vh;
     display: flex;
     font-family: "Inter", Arial;
     justify-content: center;
@@ -52,6 +52,7 @@ body {
     font-weight: bold;
     padding: 30px;
     margin: 20px;
+    height: 200px;
 }
 
 .textarea {
@@ -79,7 +80,7 @@ body .grid {
     /* Center the grid container on the page */
     display: flex;
     flex-direction: column;
-    grid-template-columns: repeat(2, 1fr); /* Creates two equal columns */
+    grid-template-columns: repeat(1, 1fr); /* Creates two equal columns */
 
     /* Stack the children vertically */
     gap: 1rem;
@@ -91,9 +92,10 @@ body .grid {
 }
 
 body .grid-list {
-    display: flex;
-    flex-wrap: wrap; /* Allows items to wrap to the next line */
-    gap: 20px; /* Adjust the gap between grid items as needed */}
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* Creates as many columns as fit within the container */
+
+    gap: 10px; /* Adjust the gap between grid items as needed */}
 
 .grid ul {
     display: flex;
@@ -159,7 +161,7 @@ body .grid-list {
     --text-color: #666;
     --text-headline: #000;
     --card-shadow: #0082ff;
-    --card-height: 15%;
+    --card-height: 100%;
     /* --card-max-height: 400px; */
     --card-width: 100%;
     --card-radius: 12px;

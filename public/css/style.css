@@ -110,7 +110,7 @@ body .grid-list {
     /* Remove default outline on focus */
     box-sizing: border-box;
     /* Ensure padding does not affect the element's total width */
-    margin: 12px 0;
+    margin: 20px;
     padding: 7px;
     width: 100%;
 }

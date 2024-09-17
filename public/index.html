@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="css/style_tabs.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Inter:400,500,600,700&amp;display=swap'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 
     <!--- Fast select includes, for having tag input style in the search bar-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -35,24 +37,20 @@
                         <i class="fa fa-commenting-o" aria-hidden="true"></i>
                         Transcript
                     </button>
-                    <button class="tab" data-tab="materials">Stats</button>
-                    <button class="tab" data-tab="videos">Videos</button>
-                    <button class="tab" data-tab="doot">Doot</button>
+                    <button class="tab" data-tab="stats">Stats</button>
+                    <button class="tab" data-tab="planner">Planner</button>
                 </div>
-                <div class="tab-content" id="events">
+                <div class="tab-content" id="recorder">
                     <div class="left-panel">
                         <textarea class="textarea" id="transcriptBox" rows="10" cols="50"
                             placeholder="Transcription will appear here..."></textarea>
                         <!-- Add more text or content here as needed -->
                     </div>
                 </div>
-                <div class="tab-content" id="materials" style="display: none">
+                <div class="tab-content" id="stats" style="display: none">
                     <!-- content -->
                 </div>
-                <div class="tab-content" id="videos" style="display: none">
-                    <!-- content -->
-                </div>
-                <div class="tab-content" id="doot" style="display: none">
+                <div class="tab-content" id="planner" style="display: none">
                     <!-- content -->
                 </div>
             </div>

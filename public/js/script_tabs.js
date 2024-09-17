@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
       tab.classList.add('active');
 
       const target = tab.getAttribute('data-tab');
-
       contents.forEach(content => {
         if (content.id === target) {
           content.style.display = 'block';

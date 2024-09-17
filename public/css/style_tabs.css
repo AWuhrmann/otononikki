@@ -1,0 +1,87 @@
+.tab-container {
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.tabs {
+  display: flex;
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 10px;
+}
+.tabs .tab {
+  flex: 1;
+  padding: 10px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: #f1f1f1;
+  border: none;
+  outline: none;
+  font-size: 18px;
+  color: #989797;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  margin-right: 2px;
+  border: 1px solid #e7e7e7;
+}
+.tabs .tab:last-child {
+  margin-right: 0;
+}
+.tabs .tab.active {
+  background: #fff;
+  border: 1px solid #c2c2c2;
+  border-bottom: 4px solid #ffffff;
+  font-weight: bold;
+  color: #333;
+  position: relative;
+  top: 1px;
+}
+.tabs .tab:hover:not(.active) {
+  border: 1px solid transparent;
+  background-color: #e2e1e1;
+  border-bottom: 2px solid #989797;
+}
+
+.tab-content .filters {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.tab-content .filters .filter {
+  display: flex;
+  flex-direction: column;
+}
+.tab-content .filters .filter label {
+  font-size: 15px;
+  padding-bottom: 2px;
+}
+.tab-content .filters .filter select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 14px;
+  color: #333;
+  width: 200px;
+}
+.tab-content .filters .btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  margin-left: auto;
+  margin-top: 20px;
+}
+.tab-content .filters .btn.primary {
+  background: #007bff;
+  color: #fff;
+  margin-right: 20px;
+}
+.tab-content .filters .btn.clear {
+  background: transparent;
+  color: #007bff;
+  text-decoration: underline;
+}

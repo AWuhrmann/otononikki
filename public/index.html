@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <title>Day Journal Recorder</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style_tabs.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Inter:400,500,600,700&amp;display=swap'>
-    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
 
     <!--- Fast select includes, for having tag input style in the search bar-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -22,70 +22,101 @@
 </head>
 
 <body>
-    
+
     <div class="container">
         <header class="main-header">
             <h1>ボイス日記 - <span id="current-date"></span></h1>
         </header>
         <div class="content">
-            <div class="left-panel">
-                <textarea class="textarea" id="transcriptBox" rows="10" cols="50" placeholder="Transcription will appear here..."></textarea>
-                <!-- Add more text or content here as needed -->
-            </div>
-                <div class="grid" id="search-box-div">
-                    <ul id="tag-list">
-                        <input type="text" id="search-box" data-user-option-allowed="true" class="search-box" placeholder="Search contacts..." onkeyup="filterContacts()">
-                    </ul>
+
+            <div class="tab-container">
+                <div class="tabs">
+                    <button class="tab active" data-tab="recorder">
+                        <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                        Transcript
+                    </button>
+                    <button class="tab" data-tab="materials">Stats</button>
+                    <button class="tab" data-tab="videos">Videos</button>
+                    <button class="tab" data-tab="doot">Doot</button>
                 </div>
+                <div class="tab-content" id="events">
+                    <div class="left-panel">
+                        <textarea class="textarea" id="transcriptBox" rows="10" cols="50"
+                            placeholder="Transcription will appear here..."></textarea>
+                        <!-- Add more text or content here as needed -->
+                    </div>
+                </div>
+                <div class="tab-content" id="materials" style="display: none">
+                    <!-- content -->
+                </div>
+                <div class="tab-content" id="videos" style="display: none">
+                    <!-- content -->
+                </div>
+                <div class="tab-content" id="doot" style="display: none">
+                    <!-- content -->
+                </div>
+            </div>
+            <!-- partial -->
+            <script src="./../js/script_tabs.js"></script>
+
+            <div class="grid" id="search-box-div">
+                <ul id="tag-list">
+                    <input type="text" id="search-box" data-user-option-allowed="true" class="search-box"
+                        placeholder="Search contacts..." onkeyup="filterContacts()">
+                </ul>
+            </div>
             <div class="right-panel">
                 <div class="grid-list" id="checkbox-list">
                     <label class="card">
-                <input class="card__input" type="checkbox"/>
-                <div class="card__body">
-                  <header class="card__body-header">
-                    <h2 class="card__body-header-title">Category HUWH FUEW HFEWHU A 😁</h2>
-                    <p class="card__body-header-subtitle">Motorcycles</p>
-                  </header>
-                  <div class="card__body-cover"><img class="card__body-cover-image" src="https://i.ibb.co/zXmHzBk/category-a.png"/><span class="card__body-cover-checkbox"> 
-                    <svg class="card__body-cover-checkbox--svg" viewBox="0 0 12 10">
-                      <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                    </svg></span></div>
-                  </div>
-                </label>
+                        <input class="card__input" type="checkbox" />
+                        <div class="card__body">
+                            <header class="card__body-header">
+                                <h2 class="card__body-header-title">Category HUWH FUEW HFEWHU A 😁</h2>
+                                <p class="card__body-header-subtitle">Motorcycles</p>
+                            </header>
+                            <div class="card__body-cover"><img class="card__body-cover-image"
+                                    src="https://i.ibb.co/zXmHzBk/category-a.png" /><span
+                                    class="card__body-cover-checkbox">
+                                    <svg class="card__body-cover-checkbox--svg" viewBox="0 0 12 10">
+                                        <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                                    </svg></span></div>
+                        </div>
+                    </label>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <nav class="menu">
         <input type="checkbox" href="#" class="menu-open" name="menu-open" id="menu-open" />
         <label class="menu-open-button" for="menu-open">
-         <span class="lines line-1"></span>
-         <span class="lines line-2"></span>
-         <span class="lines line-3"></span>
+            <span class="lines line-1"></span>
+            <span class="lines line-2"></span>
+            <span class="lines line-3"></span>
         </label>
 
-        <button class="menu-item blue" id="recordButton" "> <i class="fa fa-circle-o "></i> </button>
-        <button class="menu-item red " onclick="onClickUploadButton() "> <i class="fa fa-arrow-circle-o-up "></i> </button>
-        <button class="menu-item green " onclick="addContact() "> <i class="fa fa-user-plus "></i> </button>
-      
-      </nav>
-       <script  src="js/script.js "></script>
-    <!--- <div class="container ">
+        <button class="menu-item blue" id="recordButton" "> <i class=" fa fa-circle-o "></i> </button>
+    <button class=" menu-item red " onclick=" onClickUploadButton() "> <i class=" fa fa-arrow-circle-o-up "></i> </button>
+    <button class=" menu-item green " onclick=" addContact() "> <i class=" fa fa-user-plus "></i> </button>
+    
+</nav>
+<script  src=" js/script.js "></script>
+    <!--- <div class=" container ">
         <h1>Day Journal Recorder</h1>
-        <input type="text " id="search-box " placeholder="Search contacts... " onkeyup="filterContacts() ">
-        <div id="checkbox-list " class="checkbox-list ">
+        <input type=" text " id=" search-box " placeholder=" Search contacts... " onkeyup=" filterContacts() ">
+        <div id=" checkbox-list " class=" checkbox-list ">
         </div>
     </div>    
-    <div class="add-contact-form ">
-        <input type="text " id="new-contact-name " placeholder="Enter new contact name " />
-        <button onclick="addContact() ">Add Person</button>
+    <div class=" add-contact-form ">
+        <input type=" text " id=" new-contact-name " placeholder=" Enter new contact name " />
+        <button onclick=" addContact() ">Add Person</button>
     </div>
-        <div class="recorder ">
-            <button id="recordButton ">Record</button>
-        </div>
-        <div class="transcript ">
-            <textarea id="transcriptBox " rows="10 " cols="50 " placeholder="Transcription will appear here... "></textarea>
+    <div class=" recorder ">
+        <button id=" recordButton ">Record</button>
+    </div>
+        <div class=" transcript ">
+            <textarea id=" transcriptBox " rows=" 10 " cols=" 50 " placeholder=" Transcription will appear here... "></textarea>
         </div>
     </div> --> 
 </body>

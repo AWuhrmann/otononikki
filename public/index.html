@@ -30,7 +30,7 @@
             <h1>ボイス日記 - <span id="current-date"></span></h1>
         </header>
         <div class="content">
-
+            
             <div class="tab-container">
                 <div class="tabs">
                     <button class="tab active" data-tab="recorder">
@@ -43,12 +43,37 @@
                 <div class="tab-content" id="recorder">
                     <div class="left-panel">
                         <textarea class="textarea" id="transcriptBox" rows="10" cols="50"
-                            placeholder="Transcription will appear here..."></textarea>
+                        placeholder="Transcription will appear here..."></textarea>
                         <!-- Add more text or content here as needed -->
+                    </div>
+                    <div class="grid" id="search-box-div">
+                        <ul id="tag-list">
+                            <input type="text" id="search-box" data-user-option-allowed="true" class="search-box"
+                                placeholder="Search contacts..." onkeyup="filterContacts()">
+                        </ul>
+                    </div>
+                    <div class="right-panel">
+                        <div class="grid-list" id="checkbox-list">
+                            <label class="card">
+                                <input class="card__input" type="checkbox" />
+                                <div class="card__body">
+                                    <header class="card__body-header">
+                                        <h2 class="card__body-header-title">Category HUWH FUEW HFEWHU A 😁</h2>
+                                        <p class="card__body-header-subtitle">Motorcycles</p>
+                                    </header>
+                                    <div class="card__body-cover"><img class="card__body-cover-image"
+                                            src="https://i.ibb.co/zXmHzBk/category-a.png" /><span
+                                            class="card__body-cover-checkbox">
+                                            <svg class="card__body-cover-checkbox--svg" viewBox="0 0 12 10">
+                                                <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                                            </svg></span></div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-content" id="stats" style="display: none">
-                    <!-- content -->
+                    <div>
                 </div>
                 <div class="tab-content" id="planner" style="display: none">
                     <!-- content -->
@@ -57,31 +82,6 @@
             <!-- partial -->
             <script src="./../js/script_tabs.js"></script>
 
-            <div class="grid" id="search-box-div">
-                <ul id="tag-list">
-                    <input type="text" id="search-box" data-user-option-allowed="true" class="search-box"
-                        placeholder="Search contacts..." onkeyup="filterContacts()">
-                </ul>
-            </div>
-            <div class="right-panel">
-                <div class="grid-list" id="checkbox-list">
-                    <label class="card">
-                        <input class="card__input" type="checkbox" />
-                        <div class="card__body">
-                            <header class="card__body-header">
-                                <h2 class="card__body-header-title">Category HUWH FUEW HFEWHU A 😁</h2>
-                                <p class="card__body-header-subtitle">Motorcycles</p>
-                            </header>
-                            <div class="card__body-cover"><img class="card__body-cover-image"
-                                    src="https://i.ibb.co/zXmHzBk/category-a.png" /><span
-                                    class="card__body-cover-checkbox">
-                                    <svg class="card__body-cover-checkbox--svg" viewBox="0 0 12 10">
-                                        <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                                    </svg></span></div>
-                        </div>
-                    </label>
-                </div>
-            </div>
         </div>
     </div>
     </div>

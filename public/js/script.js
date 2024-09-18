@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let liTag = '';
         Object.keys(selectedContacts).forEach((contactName) => {
-            liTag += `<li>${contactName}<i class="fa fa-times"></i></li>`;
+            liTag += `<li>${contactName} <i class="fa fa-times "></i></li>`;
         });
         tag_list.insertAdjacentHTML('afterbegin', liTag);
 

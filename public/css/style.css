@@ -124,17 +124,19 @@ body .grid-list {
     background: #e1f1ff;
     border: 2px solid #0082ff;
     border-radius: 10px;
+    font-size: 24px;
 }
 
 .grid ul li i {
     display: flex;
     align-items: center;
-    height: 20px;
+    height: 30px;
     width: 20px;
-    font-size: 12px;
 }
 
 .search-box {
+    font-family: "Inter" Arial;
+
     display: flex;
     align-items: center;
     flex: 1;
@@ -146,6 +148,7 @@ body .grid-list {
 
 .search-box li {
     font-size: 32px;
+    font-family: "Inter" Arial;
 }
 
 .selected-tag {
@@ -153,6 +156,10 @@ body .grid-list {
     /* Light red background */
     border-color: #ff0000 !important;
     /* Red border */
+}
+
+.grid .fa-times {
+    margin-left: 8px;
 }
 
 .card {

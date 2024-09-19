@@ -88,7 +88,7 @@ async function addMention(contactName) {
   try {
     await client.connect();
     const res = await client.query(
-      'INSERT INTO UserMentions (user_id, mention_date) VALUES ($1, $2) RETURNING *',
+      'INSERT INTO Mentions (user_id, mention_date) VALUES ($1, $2) RETURNING *',
       [userId, mentionDate]
     );
     await client.end();

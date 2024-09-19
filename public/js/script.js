@@ -1,3 +1,5 @@
+const { addMention } = require("../../scripts/manageContacts");
+
 document.addEventListener('DOMContentLoaded', function() {
 
     const recordButton = document.getElementById('recordButton');
@@ -287,6 +289,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .map(contact => `[[${contact}]]`)
             .join(', ');
         console.log(selectedContactsStr);
+
+        Object.keys(selectedContacts).forEach(contact => {addMention(contact)});
 
         const transcriptionData = {
             translation: transcriptBox.value, // content received from the transcription endpoint

@@ -100,5 +100,4 @@ async function addMention(contactName) {
   }
 }
 
-const contactName = 'Maman';
-addMention(contactName);
+module.exports = { addMention };

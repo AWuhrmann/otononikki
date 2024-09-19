@@ -38,6 +38,8 @@ app.post('/login', (req, res) => { // When user tries to localhost:3000/login, g
     }
 });
 
+
+
 const protectedRoutes = require('./routes/protected');
 app.use('/api', protectedRoutes); // /api/protected goes there
 

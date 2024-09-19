@@ -44,7 +44,7 @@ const usersDbConfig = {
 const mentionsDbConfig = {
   user: 'wuhrmann',           // Replace with your PostgreSQL username
   host: 'localhost',              // PostgreSQL server address
-  database: 'mentions_db',        // name of your mentions database
+  database: 'users_db',        // name of your mentions database
   password: 'wuhrmann',   // Replace with your PostgreSQL password
   port: 5432                      // default PostgreSQL port
 };
@@ -100,5 +100,5 @@ async function addMention(contactName) {
   }
 }
 
-const contactName = 'Maman.md';
+const contactName = 'Maman';
 addMention(contactName);

@@ -95,7 +95,6 @@ app.get('/contacts', (req, res) => {
         const contactsWithPictures = contactNames.map(name => {
             const picturePathPng = path.join(picturesDir, `${name}.png`);
             const picturePathJpg = path.join(picturesDir, `${name}.jpg`);
-            console.log(picturePathJpg);
             return new Promise((resolve) => {
                 fs.access(picturePathPng, fs.constants.F_OK, (err) => {
                     if (!err) {

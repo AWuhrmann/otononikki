@@ -1,5 +1,3 @@
-const { addMention } = require("../../scripts/manageContacts");
-
 document.addEventListener('DOMContentLoaded', function() {
 
     const recordButton = document.getElementById('recordButton');
@@ -290,7 +288,19 @@ document.addEventListener('DOMContentLoaded', function() {
             .join(', ');
         console.log(selectedContactsStr);
 
-        Object.keys(selectedContacts).forEach(contact => {addMention(contact)});
+        Object.keys(selectedContacts).forEach(contact => {
+            console.log('contact', contact);
+            fetch('/api/mentions/add-mention', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({contact})
+            })
+            .then(response => response.text())
+            .then(data => console.log('Upload response:', data))
+            .catch(error => console.error('Error:', error));
+        });
 
         const transcriptionData = {
             translation: transcriptBox.value, // content received from the transcription endpoint

@@ -21,6 +21,8 @@ const contactsDir = path.join(process.cwd(), 'vault', 'contacts');
 const picturesDir = path.join(contactsDir, 'pictures');
 const notesDirectory = path.join(process.cwd(), 'vault', 'notes');
 
+const mentionRoutes = require('./routes/mentionRoutes');
+
 app.use('/contacts/pictures', express.static(picturesDir));
 
 const jwt = require('jsonwebtoken');
@@ -38,11 +40,9 @@ app.post('/login', (req, res) => { // When user tries to localhost:3000/login, g
     }
 });
 
-
-
 const protectedRoutes = require('./routes/protected');
 app.use('/api', protectedRoutes); // /api/protected goes there
-
+app.use('/api/mentions', mentionRoutes);
 
 // Multer setup (ensure you've configured Multer here)
 const storage = multer.diskStorage({
@@ -122,21 +122,6 @@ app.get('/contacts', (req, res) => {
             console.error("Error processing contacts", error);
             res.status(500).send("Error processing contacts");
         });
-    });
-});
-
-app.post('/add-contact', (req, res) => {
-    const { name } = req.body;
-    const filePath = path.join(contactsDir, `${name}`);
-    const content = `# ${name}\n\nContact details here...`;
-
-    fs.writeFile(filePath, content, (err) => {
-        if (err) {
-            console.error("Error writing new contact file", err);
-            res.json({ success: false });
-            return;
-        }
-        res.json({ success: true });
     });
 });
 

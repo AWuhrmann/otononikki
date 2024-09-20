@@ -190,20 +190,6 @@ app.post('/uploadTranscription', async(req, res) => {
     }
 });
 
-function uploadFileOnDrive(filepath) {
-    exec(`python3 scripts/main.py '${filepath.split("/").pop()}' '${filepath}' `, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${error}`);
-            return;
-        }
-        if (stderr) {
-            console.error(`Stderr: ${stderr}`);
-            return;
-        }
-        console.log(`Python drive upload script output: \n${stdout}`);
-    });
-}
-
 // Start the server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port} :D`);

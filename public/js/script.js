@@ -146,7 +146,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to handle the addition of tags
     function addTagToSearch(element) {
-        console.log(element);
         element.checked = true;
         const event = new Event('change', {
             bubbles: true,
@@ -281,15 +280,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Transcript box and menu actions
 
     window.onClickUploadButton = function() {
-        console.log(transcriptBox.value);
-
         const selectedContactsStr = Object.keys(selectedContacts)
             .map(contact => `[[${contact}]]`)
             .join(', ');
-        console.log(selectedContactsStr);
-
         Object.keys(selectedContacts).forEach(contact => {
-            console.log('contact', contact);
             fetch('/api/mentions/add-mention', {
                 method: 'POST',
                 headers: {

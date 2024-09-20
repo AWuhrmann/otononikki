@@ -67,7 +67,7 @@ async function getOrderedContacts() {
       FROM Users u
       LEFT JOIN Mentions m ON u.id = m.user_id
       GROUP BY u.id, u.name
-      ORDER BY last_mention_date DESC NULLS LAST;
+      ORDER BY last_mention_date DESC NULLS LAST, u.name ASC;
     `;
     const res = await client.query(query);
     await client.end();

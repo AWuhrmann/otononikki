@@ -81,6 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 orderContacts = orderContacts.map(a => a.name);
                 
+                console.log(orderContacts);
+
                 allContacts = allContacts.sort((a, b) => {
                     // Compare the index of contact names in the orderedNames array
                     

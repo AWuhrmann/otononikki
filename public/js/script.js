@@ -75,6 +75,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 allContacts = data; // Store the fetched data
                 displayContacts(data); // Display all contacts initially
                 fuse = new Fuse(allContacts, options);
+                return fetch('/api/mentions/ordered-contacts');
+            })
+            .then(response => response.json())
+            .then(orderContacts => {
+                
+                orderContacts = orderContacts.map(a => a.name);
+                
+                const sortedContacts = allContacts.sort((a, b) => {
+                    // Compare the index of contact names in the orderedNames array
+                    
+                    return orderContacts.indexOf(a.name) - orderContacts.indexOf(b.name);
+                });
+
+                displayContacts(sortedContacts);
+                
             })
             .catch(error => {
                 console.error('Error fetching contacts:', error);
@@ -124,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('checkbox-list');
         return container.firstChild;
     }
+    
 
     // To have the nice contacts selected in the search bar :)
 

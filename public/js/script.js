@@ -74,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 allContacts = data; // Store the fetched data
                 displayContacts(data); // Display all contacts initially
-                fuse = new Fuse(allContacts, options);
                 return fetch('/api/mentions/ordered-contacts');
             })
             .then(response => response.json())
@@ -82,13 +81,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 orderContacts = orderContacts.map(a => a.name);
                 
-                const sortedContacts = allContacts.sort((a, b) => {
+                allContacts = allContacts.sort((a, b) => {
                     // Compare the index of contact names in the orderedNames array
                     
                     return orderContacts.indexOf(a.name) - orderContacts.indexOf(b.name);
                 });
-
-                displayContacts(sortedContacts);
+                
+                fuse = new Fuse(allContacts, options);
+                displayContacts(allContacts);
                 
             })
             .catch(error => {

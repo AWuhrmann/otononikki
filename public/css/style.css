@@ -7,12 +7,19 @@ body {
     background: #ffffff;
 }
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 .main-header {
     width: 100%;
     background: #FFFFFF;
     color: #333;
     padding: 20px 0;
     text-align: center;
+    height: 40px;
     /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
 }
 
@@ -20,13 +27,12 @@ body {
     margin: 0;
     font-size: 54px;
     font-weight: bold;
-    height: 80px;
 }
 
 .content {
     display: flex;
     width: 100%;
-    height: calc(100vh - 120px);
+    height: 100vh;
     flex-direction: column;
     /*overflow: hidden; 
     /* Adjust height to account for the header */
@@ -68,11 +74,11 @@ body {
 }
 
 .right-panel {
+    display: flex;
     flex: 1;
     padding: 15px;
     background: #ffffff;
     height: 60vh; /* or any other appropriate value */
-    display: flex;
     flex-direction: column;
 }
 
@@ -94,10 +100,11 @@ body .grid-list {
     gap: 10px;
     overflow-y: auto;
     flex: 1; /* Take up remaining space */
-    max-height: 100%; /* Ensure it doesn't exceed the parent's height */
+    max-height: calc(100% - 5px); /* Ensure it doesn't exceed the parent's height */
     padding-top: 5px; /* Add top padding */
     padding-left: 5px;
     padding-right: 5px;
+    margin-bottom: 0px; /* Negative margin to counteract any extra space */
 }
 .grid ul {
     display: flex;

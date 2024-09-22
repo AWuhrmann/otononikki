@@ -1,10 +1,12 @@
 body {
-    min-height: 30vh;
+    min-height: 20vh;
     display: flex;
+    flex-direction: column;
     font-family: "Inter", Arial;
     justify-content: center;
     align-items: center;
     background: #ffffff;
+    overflow-y: hidden;
 }
 
 html, body {
@@ -17,9 +19,11 @@ html, body {
     width: 100%;
     background: #FFFFFF;
     color: #333;
-    padding: 20px 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
     text-align: center;
-    height: 40px;
+    height: 54px;
+    margin-bottom: 20px;
     /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
 }
 
@@ -29,25 +33,110 @@ html, body {
     font-weight: bold;
 }
 
-.content {
-    display: flex;
-    width: 100%;
-    height: 100vh;
-    flex-direction: column;
-    /*overflow: hidden; 
-    /* Adjust height to account for the header */
-}
 
 .container {
     width: 100%;
 }
 
+.tab-container {
+    height: calc(100vh - 54px);
+}
+
+.tab-content {
+    display:flex;
+    flex-direction: column;
+    height: 100%;
+    height: calc(100vh - 100px);
+}
+
+.tabs {
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 10px;
+}
+.tabs .tab {
+  flex: 1;
+  padding: 10px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: #f1f1f1;
+  border: none;
+  outline: none;
+  font-size: 18px;
+  color: #989797;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  margin-right: 2px;
+  border: 1px solid #e7e7e7;
+}
+.tabs .tab:last-child {
+  margin-right: 0;
+}
+.tabs .tab.active {
+  background: #fff;
+  border: 1px solid #c2c2c2;
+  border-bottom: 4px solid #ffffff;
+  font-weight: bold;
+  color: #333;
+  position: relative;
+  top: 1px;
+}
+.tabs .tab:hover:not(.active) {
+  border: 1px solid transparent;
+  background-color: #e2e1e1;
+  border-bottom: 2px solid #989797;
+}
+
+.tab-content .filters {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.tab-content .filters .filter {
+  display: flex;
+  flex-direction: column;
+}
+.tab-content .filters .filter label {
+  font-size: 15px;
+  padding-bottom: 2px;
+}
+.tab-content .filters .filter select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 14px;
+  color: #333;
+  width: 200px;
+}
+.tab-content .filters .btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  margin-left: auto;
+  margin-top: 20px;
+}
+.tab-content .filters .btn.primary {
+  background: #007bff;
+  color: #fff;
+  margin-right: 20px;
+}
+.tab-content .filters .btn.clear {
+  background: transparent;
+  color: #007bff;
+  text-decoration: underline;
+}
+
 .left-panel {
-    flex: 0 0 30%;
+    flex-grow: 0;
+    min-height: 200px;
+    flex-shrink: 2;
     /* Adjust width as needed */
     background: #ffffff;
-    display: flex;
-    align-items: center;
     justify-content: center;
     border-radius: 32px;
     border: 2px solid rgba(148, 148, 148, 0.2);
@@ -59,16 +148,12 @@ html, body {
     padding: 30px;
     margin: 20px;
     margin-top: 0px;
-    height: 200px;
 }
 
 .textarea {
-    padding: px;
     background: transparent;
     border: none;
-    resize: none;
     width: 100%;
-    height: 100%;
     font-family: "Inter", Arial;
     font-size: 24px;
 }
@@ -76,10 +161,22 @@ html, body {
 .right-panel {
     display: flex;
     flex: 1;
-    padding: 15px;
     background: #ffffff;
-    height: 60vh; /* or any other appropriate value */
+    height: 30vh;
     flex-direction: column;
+}
+
+body .grid-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-auto-rows: max-content;
+    gap: 10px;
+    overflow-y: auto;
+    padding-top: 5px; /* Add top padding */
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 20px; /* Negative margin to counteract any extra space */
+
 }
 
 body .grid {
@@ -94,18 +191,6 @@ body .grid {
     padding-right: 20px; /* Add right padding */
 }
 
-body .grid-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 10px;
-    overflow-y: auto;
-    flex: 1; /* Take up remaining space */
-    max-height: calc(100% - 5px); /* Ensure it doesn't exceed the parent's height */
-    padding-top: 5px; /* Add top padding */
-    padding-left: 5px;
-    padding-right: 5px;
-    margin-bottom: 0px; /* Negative margin to counteract any extra space */
-}
 .grid ul {
     display: flex;
     align-items: center;
@@ -143,13 +228,13 @@ body .grid-list {
     font-family: "Inter", Arial;
     display: flex;
     align-items: center;
-    flex: 1;
+    flex: 2;
     width: 100%;
-    max-width: 100%; /* Ensure it doesn't exceed the parent's width */
     border: none;
     outline: none;
     padding: 12px;
     font-size: 24px;
+    height: 50px;
     box-sizing: border-box; /* Include padding in the width calculation */
 }
 
@@ -191,7 +276,7 @@ body .grid-list {
     flex-direction: column;
     align-items: center;
     /* Center content inside the card */
-    flex: 1 1 calc(50% - 20px); /* 50% width minus the gap */
+    flex: 1 1 calc(50% - 10px); /* 50% width minus the gap */
     box-sizing: border-box; /* Ensure padding and border are included in the width calculation */
     height: 100%;
 }

@@ -11,9 +11,6 @@
     padding: 20px;
 }
 
-.button-icon {
-    font-size: ;
-}
 
 .button-stats {
     font-family: "Inter", Arial;
@@ -23,7 +20,19 @@
     height: 150px;
     border-radius: 30px;
     transition: 0.2s;
-    
+    display: flex;
+    flex-direction: row;
+}
+
+.stats-header {
+    font-family: "Inter", Arial;
+    font-weight: bold;
+    font-size: 30px;
+    margin-top: 20px;
+}
+
+.button-stats:active {
+    transform: scale(.5);
 }
 
 .button-stats:hover {

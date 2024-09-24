@@ -17,11 +17,12 @@
     background-color: white;
     border: 2px solid #afafaf;
     width: 30vw;
-    height: 150px;
+    height: 100px;
     border-radius: 30px;
     transition: 0.2s;
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
 }
 
 .stats-header {
@@ -29,6 +30,17 @@
     font-weight: bold;
     font-size: 30px;
     margin-top: 20px;
+    margin-left: 20px;
+}
+
+.stats-interactive-div {
+    width: 30%;
+    margin-top: 20px;
+}
+
+.stats-type-counter {
+    align-items: flex-start;
+    font-size: 24px;
 }
 
 .button-stats:active {
@@ -40,5 +52,6 @@
 }
 
 .button-stats:active {
-    background-color: gray;
+    background-color: rgb(255, 249, 236);
+    border: 2px solid rgb(206, 150, 31);
 }

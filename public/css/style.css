@@ -16,6 +16,7 @@ html, body {
 }
 
 .main-header {
+    font-family: 'HelveticaNeue-Light';
     width: 100%;
     background: #FFFFFF;
     color: #333;
@@ -434,6 +435,7 @@ body .grid {
 }
 
 .card__body-header {
+    
     flex: 1;
     height: var(--header-height);
     background: var(--background);

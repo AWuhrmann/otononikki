@@ -169,7 +169,11 @@ app.post('/uploadTranscription', async(req, res) => {
     const notePath = path.join(notesDirectory, `${date}`);
 
     const timeNow = new Date().toLocaleTimeString(); // HH:MM:SS format
-    const content = `\n\n## Entry at ${timeNow}\n*Contacts seen today: ${contacts}*\n${translation}`;
+    let contactText = '';
+    if (contacts.length > 0) {
+        contactText = '\n*Contacts seen today: ${contacts}*'
+    }
+    const content = `\n\n## Entry at ${timeNow}${contactText}\n${translation}`;
 
 
     try {

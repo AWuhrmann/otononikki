@@ -7,3 +7,4 @@ venv/
 venvs
 vault
 .venv
+logs/*

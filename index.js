@@ -20,6 +20,8 @@ const openai = new OpenAI();
 const contactsDir = path.join(process.cwd(), 'vault', 'contacts');
 const picturesDir = path.join(contactsDir, 'pictures');
 const notesDirectory = path.join(process.cwd(), 'vault', 'notes');
+const statusFile = path.join(__dirname, 'pull_status.txt');
+
 
 const mentionRoutes = require('./routes/mentionRoutes');
 

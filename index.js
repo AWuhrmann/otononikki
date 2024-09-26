@@ -168,7 +168,7 @@ app.post('/uploadTranscription', async(req, res) => {
         return;
     }
 
-    const notePath = path.join(notesDirectory, `${date}`);
+    const notePath = path.join(notesDirectory, `${date}.md`);
 
     const timeNow = new Date().toLocaleTimeString(); // HH:MM:SS format
     let contactText = '';
@@ -194,6 +194,18 @@ app.post('/uploadTranscription', async(req, res) => {
         console.error('File creation/upload error:', fileError);
         res.status(500).send('Error creating or uploading file');
     }
+    exec("./git_sync.sh", (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error: ${error.message}`);
+            res.status(500).send('Script execution failed');
+            return;
+        }
+        if (stderr) {
+            console.error(`Stderr: ${stderr}`);
+        }
+        console.log(`Output: ${stdout}`);
+        res.send('Script executed successfully');
+    });
 });
 
 // Start the server

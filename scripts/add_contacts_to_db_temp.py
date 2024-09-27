@@ -1,14 +1,27 @@
 import os
 import psycopg2
 
-# Function to create a user in the database
-def create_user_in_db(name, cursor):
+# Function to check if a user already exists in the database
+def user_exists(name, cursor):
+    query = "SELECT COUNT(*) FROM Users WHERE name = %s;"
+    cursor.execute(query, (name,))
+    result = cursor.fetchone()
+    return result[0] > 0  # Returns True if user exists, False otherwise
+
+# Function to create or update a user in the database
+def create_or_update_user_in_db(name, cursor):
     try:
-        query = "INSERT INTO Users (name) VALUES (%s);"
-        cursor.execute(query, (name,))
-        print(f"User '{name}' added to the database.")
+        if user_exists(name, cursor):
+            print(f"User '{name}' already exists in the database. Skipping...")
+            # Optional: Update user info if needed
+            # update_query = "UPDATE Users SET column_name = value WHERE name = %s;"
+            # cursor.execute(update_query, (name,))
+        else:
+            query = "INSERT INTO Users (name) VALUES (%s);"
+            cursor.execute(query, (name,))
+            print(f"User '{name}' added to the database.")
     except Exception as e:
-        print(f"Error adding user '{name}': {e}")
+        print(f"Error processing user '{name}': {e}")
 
 # Function to process .md files in a given folder
 def process_md_files(folder_path, connection):
@@ -24,7 +37,7 @@ def process_md_files(folder_path, connection):
                 user_name = os.path.splitext(filename)[0]
                 
                 # Create a user in the database with the extracted name
-                create_user_in_db(user_name, cursor)
+                create_or_update_user_in_db(user_name, cursor)
 
         # Commit the changes
         connection.commit()

@@ -8,8 +8,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function onClickStatsButton(el){
-    console.log(el);
     const counter = el.getElementsByClassName('count-text')[0];
-    console.log(counter);
-    counter.innerHTML = 'a';
+    
+    // Get the current count, if empty or NaN, start with 0
+    let currentCount = parseInt(counter.innerHTML) || 0;
+
+    // Increment the count
+    currentCount++;
+
+    // Update the counter text
+    counter.innerHTML = currentCount;
 }

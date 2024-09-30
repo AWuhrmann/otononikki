@@ -74,17 +74,19 @@
                 </div>
                 <div class="tab-content" id="stats" style="display: none">
                     <div class="stats-div">
-                        <button class="button-stats">
+                        <button class="button-stats" data-type="counter">
                             <div class="stats-header-div"><h1 class="stats-header">Touching hair</h1></div>
                             <div class="stats-interactive-div">
-                                <h1 class="count-text">This week : </h1>
+                                <h1 class="count-text">0</h1>
                             </div></button>
-                        <div class="button-stats">
-                            <div class="stats-header-div"><h1 class="stats-header">A simple counter</h1></div>
-                            <div class="stats-interactive-div stats-type-counter">
-                                <h1>Today : </h1>
-                                <h1 class="count-text">This week : </h1>
-                            </div></div>
+                        <button class="button-stats" data-type="level" data-min="1" data-max="10">
+                            <div class="stats-header-div"><h1 class="stats-header">A simple level</h1></div>
+                            <div class="stats-interactive-div stats-type-level">
+                                <h1 class="level-text">5</h1>
+                                <!-- <button>Moins</button> -->
+                                <button class="why">Plus</button>
+                            </div>
+                        </button>
                         <button class="add-stats">Add stats</button>
                     </div>
                 </div>

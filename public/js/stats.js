@@ -30,7 +30,27 @@ function onClickCounterButton(el) {
     let currentCount = parseInt(counter.innerHTML) || 0;
     currentCount++;
     counter.innerHTML = currentCount;
+
+    const interactionData = {
+        button_id: el.id,
+        interaction_type: 'counter',
+        interaction_value: currentCount,
+        interaction_timestamp: new Date().toISOString()
+    };
+
+
+    fetch('/api/stats/add-stat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(interactionData)
+    })
+    .then(response => response.text())
+    .then(data => console.log('Upload response:', data))
+    .catch(error => console.error('Error:', error));
 }
+
 
 // Functionality for the Level Button
 function onClickLevelButton(el) {

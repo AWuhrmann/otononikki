@@ -24,6 +24,7 @@ const statusFile = path.join(__dirname, 'pull_status.txt');
 
 
 const mentionRoutes = require('./routes/mentionRoutes');
+const statsRoutes = require('./routes/statsRoutes');
 
 app.use('/contacts/pictures', express.static(picturesDir));
 
@@ -45,6 +46,7 @@ app.post('/login', (req, res) => { // When user tries to localhost:3000/login, g
 const protectedRoutes = require('./routes/protected');
 app.use('/api', protectedRoutes); // /api/protected goes there
 app.use('/api/mentions', mentionRoutes);
+app.use('/api/stats', statsRoutes);
 
 // Multer setup (ensure you've configured Multer here)
 const storage = multer.diskStorage({

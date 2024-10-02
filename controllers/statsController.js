@@ -35,12 +35,12 @@ async function addStat(req) {
     try {
       await client.connect();
       const res = await client.query(
-        'INSERT INTO Stats (user_id, interaction_type, interaction_value, button_id, interaction_date, start_time, end_time, duration) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-        [userId, interaction_type, interaction_value, button_id, statDate, start_time, end_time, duration]
+        'INSERT INTO Stats (interaction_type, interaction_value, button_id, interaction_date, start_time, end_time, duration) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+        [interaction_type, interaction_value, button_id, statDate, start_time, end_time, duration]
       );
       await client.end();
   
-      console.log(`Stat added for user ${contactName} with duration ${duration}, start_time ${start_time}, and end_time ${end_time}`);
+      console.log(`Stat  of type ${interaction_type} and value ${interaction_value} added with duration ${duration}, start_time ${start_time}, and end_time ${end_time}`);
     } catch (err) {
       console.error('Error adding stat:', err);
       await client.end();

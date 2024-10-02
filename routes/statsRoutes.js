@@ -5,4 +5,5 @@ const statsController = require('../controllers/statsController');
 
 // Route to add a mention
 router.post('/add-stat', statsController.addStat);
+router.get('/get-all-stats', statsController.getAllStats)
 module.exports = router;

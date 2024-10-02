@@ -49,6 +49,18 @@ function onClickCounterButton(el) {
     .then(response => response.text())
     .then(data => console.log('Upload response:', data))
     .catch(error => console.error('Error:', error));
+
+    fetch('/api/stats/get-all-stats', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.text())
+    .then(data => console.log('Upload response:', data))
+    .catch(error => console.error('Error:', error));
+
+
 }
 
 

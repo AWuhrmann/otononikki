@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     statsButtons = document.getElementsByClassName('button-stats')
 
+    var buttonConfigs = [];
+
     for (let el of statsButtons) {
         const buttonType = el.getAttribute('data-type');
 
@@ -11,7 +13,20 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (buttonType === 'level') {
             initLevelButton(el);
         }
+        buttonConfigs.push({buttonId: el.id, interactionType: buttonType});
     }
+
+        fetch('/api/stats/get-specific-stat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({buttonConfigs})
+        })
+        .then(response => response.text())
+        .then(data => console.log('Upload response:', data))
+        .catch(error => console.error('Error:', error));
+
 });
 
 function initCounterButton(el) {
@@ -80,4 +95,34 @@ function onClickLevelButton(el) {
     let currentLevel = parseInt(levelText.innerHTML) || min;
     currentLevel = currentLevel < max ? currentLevel + 1 : min;
     levelText.innerHTML = currentLevel;
+
+    const interactionData = {
+        button_id: el.id,
+        interaction_type: 'level',
+        interaction_value: currentLevel,
+        interaction_timestamp: new Date().toISOString()
+    };
+
+
+    fetch('/api/stats/add-stat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(interactionData)
+    })
+    .then(response => response.text())
+    .then(data => console.log('Upload response:', data))
+    .catch(error => console.error('Error:', error));
+
+    fetch('/api/stats/get-all-stats', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.text())
+    .then(data => console.log('Upload response:', data))
+    .catch(error => console.error('Error:', error));
+
 }

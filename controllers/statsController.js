@@ -2,7 +2,6 @@ const { Client } = require('pg');
 
 // Database configuration (you might already have this)
 const statsDbConfig = require('../config/db').statsDbConfig;  // Assuming you have this in your db config
-const usersDbConfig = require('../config/db').usersDbConfig;  // To fetch user info if needed
 
 // Function to add a stat record into stats_db for the user
 async function addStat(req) {
@@ -27,6 +26,65 @@ async function addStat(req) {
     }
 }
 
+// Function to fetch the sum of counter values for today
+async function getCounterData(buttonId, client) {
+  const query = `
+    SELECT SUM(interaction_value) AS total
+    FROM Stats
+    WHERE button_id = $1
+    AND interaction_type = 'counter'
+    AND interaction_date >= CURRENT_DATE;
+  `;
+  
+  const res = await client.query(query, [buttonId]);
+  return res.rows[0]?.total || 0; // Return the total, or 0 if no data
+}
+
+// Function to fetch the last level value
+async function getLevelData(buttonId, client) {
+  const query = `
+    SELECT interaction_value
+    FROM Stats
+    WHERE button_id = $1
+    AND interaction_type = 'level'
+    ORDER BY interaction_date DESC
+    LIMIT 1;
+  `;
+  
+  const res = await client.query(query, [buttonId]);
+  return res.rows[0]?.interaction_value || null; // Return the last value, or null if no data
+}
+
+const interactionTypeHandlers = {
+  counter: getCounterData,
+  level: getLevelData,
+  // Add new types here in the future, e.g., 'toggle': getToggleData
+};
+
+async function fetchInteractionData(buttonConfigs) {
+
+  const client = new Client(statsDbConfig);
+  await client.connect();
+
+  const results = {};
+  
+  // Loop through each button config and fetch data based on interaction type
+  for (const { buttonId, interactionType } of buttonConfigs) {
+    const handler = interactionTypeHandlers[interactionType];
+
+    if (handler) {
+      const data = await handler(buttonId, client);
+      results[buttonId] = { interactionType, data };
+    } else {
+      console.warn(`No handler found for interaction type: ${interactionType}`);
+    }
+  }
+
+  await client.end();
+  return results;  // Return the gathered data
+}
+
+
 // Function to retrieve all stats (optional)
 async function getAllStats(req, res) {
   const client = new Client(statsDbConfig);
@@ -44,4 +102,4 @@ async function getAllStats(req, res) {
   res.json(res2);
 }
 
-module.exports = { addStat, getAllStats };
+module.exports = { addStat, getAllStats, fetchInteractionData };

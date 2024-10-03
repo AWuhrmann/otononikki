@@ -23,8 +23,12 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({buttonConfigs})
         })
-        .then(response => response.text())
-        .then(data => console.log('Upload response:', data))
+        .then(response => response.json())
+        .then(data => {
+            for(key in data){
+                
+            }
+        })
         .catch(error => console.error('Error:', error));
 
 });

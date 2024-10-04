@@ -26,11 +26,15 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             for(key in data){
-                
+
+                for (let el of statsButtons) {
+                    if(el.id == key){
+                        console.log('ca marche');
+                    }
+                }
             }
         })
         .catch(error => console.error('Error:', error));
-
 });
 
 function initCounterButton(el) {
@@ -40,6 +44,8 @@ function initCounterButton(el) {
 function initLevelButton(el) {
     el.addEventListener('click', function() { onClickLevelButton(el); });
 }
+
+
 
 // Functionality for the Counter Button
 function onClickCounterButton(el) {

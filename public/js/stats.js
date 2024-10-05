@@ -1,3 +1,5 @@
+statsButtons = []
+
 document.addEventListener('DOMContentLoaded', function() {
 
     statsButtons = document.getElementsByClassName('button-stats')
@@ -15,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         buttonConfigs.push({buttonId: el.id, interactionType: buttonType});
     }
+    
 
         fetch('/api/stats/get-specific-stat', {
             method: 'POST',
@@ -26,11 +29,11 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             for(key in data){
-
-                for (let el of statsButtons) {
-                    if(el.id == key){
-                        console.log('ca marche');
-                    }
+                el = ([].slice.call(statsButtons).find((el) => el.id == key))
+                if(data[key]['interactionType'] == 'counter'){
+                    updateCounter(el, data[key]['data'])
+                } else if (data[key]['interactionType'] == 'level') {
+                    updateLevel(el, data[key]['data'])
                 }
             }
         })
@@ -45,7 +48,26 @@ function initLevelButton(el) {
     el.addEventListener('click', function() { onClickLevelButton(el); });
 }
 
+function updateElement(el, value){
+    
+}
 
+function updateCounter(el, value){
+    const counter = el.getElementsByClassName('count-text')[0];
+    counter.innerHTML = value;
+
+}
+
+function updateLevel(el, value){ // to finish
+    const parent = el.getElementsByClassName('stats-interactive-div')[0];
+    const levelText = parent.getElementsByClassName('level-text')[0];
+
+    const min = parseInt(el.getAttribute('data-min')) || 1;
+    const max = parseInt(el.getAttribute('data-max')) || 10;
+    
+    value = value < max ? value + 1 : min;
+    levelText.innerHTML = value;
+}
 
 // Functionality for the Counter Button
 function onClickCounterButton(el) {
@@ -54,12 +76,13 @@ function onClickCounterButton(el) {
     // Get and update the counter value
     let currentCount = parseInt(counter.innerHTML) || 0;
     currentCount++;
-    counter.innerHTML = currentCount;
+    
+    updateCounter(el, currentCount);
 
     const interactionData = {
         button_id: el.id,
         interaction_type: 'counter',
-        interaction_value: currentCount,
+        interaction_value: 1,
         interaction_timestamp: new Date().toISOString()
     };
 
@@ -102,14 +125,14 @@ function onClickLevelButton(el) {
     const max = parseInt(el.getAttribute('data-max')) || 10;
     
     // Get and update the current level
-    let currentLevel = parseInt(levelText.innerHTML) || min;
-    currentLevel = currentLevel < max ? currentLevel + 1 : min;
-    levelText.innerHTML = currentLevel;
+    let value = parseInt(levelText.innerHTML) || min;
+    value = value < max ? value + 1 : min;
+    levelText.innerHTML = value;
 
     const interactionData = {
         button_id: el.id,
         interaction_type: 'level',
-        interaction_value: currentLevel,
+        interaction_value: value,
         interaction_timestamp: new Date().toISOString()
     };
 

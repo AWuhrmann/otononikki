@@ -1,5 +1,29 @@
 statsButtons = []
 
+// Interaction functions for different types
+const interactionHandlers = {
+    counter: function(buttonElement) {
+      let count = parseInt(buttonElement.getElementsByClassName('count-text')[0].innerHTML) || 0;
+      count++;
+      buttonElement.getElementsByClassName('count-text')[0].innerHTML = count;
+      // Optionally, send data to the backend
+      console.log(`Counter incremented for button ${buttonElement.id}`);
+    },
+    
+    level: function(buttonElement) {
+      const levelText = buttonElement.getElementsByClassName('level-text')[0];
+      let currentLevel = parseInt(levelText.innerHTML);
+      const max = parseInt(buttonElement.getAttribute('data-max')) || 10;
+      currentLevel = currentLevel < max ? currentLevel + 1 : buttonElement.getAttribute('data-min');
+      levelText.innerHTML = currentLevel;
+      // Optionally, send data to the backend
+      console.log(`Level updated for button ${buttonElement.id}`);
+    },
+    
+    // You can add more types as needed, like 'toggle', 'slider', etc.
+  };
+  
+
 document.addEventListener('DOMContentLoaded', function() {
 
     statsButtons = document.getElementsByClassName('button-stats')
@@ -39,6 +63,16 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error:', error));
 });
+
+const buttonRegistry = new Map();
+
+// Register a new button to the map
+function registerButton(buttonId, interactionType, interactionFunction) {
+    buttonRegistry.set(buttonId, {
+      interactionType,
+      interactionFunction
+    });
+  }
 
 function initCounterButton(el) {
     el.addEventListener('click', function() { onClickCounterButton(el); });

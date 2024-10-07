@@ -4,7 +4,9 @@ const { Client } = require('pg');
 const statsDbConfig = require('../config/db').statsDbConfig;  // Assuming you have this in your db config
 
 // Function to add a stat record into stats_db for the user
-async function addStat(req) {
+async function addStat(req, res) {
+
+    console.log('called on server :)');
 
     const client = new Client(statsDbConfig);
 
@@ -13,12 +15,12 @@ async function addStat(req) {
     
     try {
       await client.connect();
-      const res = await client.query(
+      const result = await client.query(
         'INSERT INTO Stats (interaction_type, interaction_value, button_id, interaction_date, start_time, end_time, duration) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
         [interaction_type, interaction_value, button_id, statDate, start_time, end_time, duration]
       );
       await client.end();
-  
+      res.status(200).json({ success: true, data: result.rows[0] });
       console.log(`Stat  of type ${interaction_type} and value ${interaction_value} added with duration ${duration}, start_time ${start_time}, and end_time ${end_time}`);
     } catch (err) {
       console.error('Error adding stat:', err);

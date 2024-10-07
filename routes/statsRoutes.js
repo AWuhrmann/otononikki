@@ -7,10 +7,8 @@ const statsController = require('../controllers/statsController');
 router.post('/add-stat', statsController.addStat);
 router.get('/get-all-stats', statsController.getAllStats)
 router.post('/get-specific-stat', async (req, res) => {
-    const { buttonConfigs } = req.body;
-
   try {
-    const interactionData = await statsController.fetchInteractionData(buttonConfigs);
+    const interactionData = await statsController.fetchInteractionData(req.body);
     res.json(interactionData);
   } catch (err) {
     console.error('Error fetching interaction data:', err);

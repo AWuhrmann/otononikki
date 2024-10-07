@@ -31,7 +31,7 @@ async function addStat(req, res) {
 // Function to fetch the sum of counter values for today
 async function getCounterData(buttonId, client) {
   const query = `
-    SELECT SUM(interaction_value) AS total
+    SELECT COUNT(*) AS total
     FROM Stats
     WHERE button_id = $1
     AND interaction_type = 'counter'
@@ -69,7 +69,11 @@ async function fetchInteractionData(buttonConfigs) {
   await client.connect();
 
   const results = {};
-  
+ 
+  if (!Array.isArray(buttonConfigs)) {
+    buttonConfigs = [buttonConfigs];  // Wrap single config in an array
+  }
+
   // Loop through each button config and fetch data based on interaction type
   for (const { buttonId, interactionType } of buttonConfigs) {
     const handler = interactionTypeHandlers[interactionType];
@@ -84,6 +88,11 @@ async function fetchInteractionData(buttonConfigs) {
 
   await client.end();
   return results;  // Return the gathered data
+}
+
+
+// Function to retrieve all stats (optional)
+async function getAllStats(req, res) {  // Return the gathered data
 }
 
 

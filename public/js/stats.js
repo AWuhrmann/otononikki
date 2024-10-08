@@ -2,9 +2,9 @@ statsButtons = []
 
 const updateHandlers = {
     counter: function(buttonElement, value) {
-      const countText = buttonElement.getElementsByClassName('count-text')[0];
-      countText.innerHTML = value;
-      console.log(`Counter value set to ${value} for button ${buttonElement.id}`);
+        const countText = buttonElement.getElementsByClassName('count-text')[0];
+        countText.innerHTML = value;
+        console.log(`Counter value set to ${value} for button ${buttonElement.id}`);
     },
     
     level: function(buttonElement, value) {
@@ -45,6 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var buttonConfigs = [];
 
     statsButtons.forEach(button => {
+        updateID(button);
+
         const buttonId = button.id;
         const interactionType = button.getAttribute('data-type');
         
@@ -82,6 +84,10 @@ function registerButton(buttonId, interactionType, interactionFunction, updateFu
     });
 
   }
+
+function updateID(buttonElement){
+    buttonElement.getElementsByClassName('id-header')[0].innerHTML = buttonElement.id;
+}
 
 document.addEventListener('click', function(event) {
     event.preventDefault();

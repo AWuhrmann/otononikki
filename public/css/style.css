@@ -176,8 +176,7 @@ body .grid-list {
     padding-top: 5px; /* Add top padding */
     padding-left: 5px;
     padding-right: 5px;
-    padding-bottom: 20px; /* Negative margin to counteract any extra space */
-
+    /* padding-bottom: 20px; /* Negative margin to counteract any extra space */
 }
 
 body .grid {
@@ -185,7 +184,7 @@ body .grid {
     max-width: 100%; /* Ensure it doesn't exceed the parent's width */
     margin: auto;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
     overflow-x: hidden; /* Prevent horizontal scrolling */
     padding-left: 20px;  /* Add left padding */
@@ -203,6 +202,34 @@ body .grid {
     padding: 7px;
     width: 100%;
     max-width: 100%; /* Ensure it doesn't exceed the parent's width */
+}
+
+.menu-buttons{
+    display: flex;
+    flex-direction: row;
+    margin-right: 20px;
+}
+
+.menu-buttons button{    
+    border-radius: 20px;
+    box-sizing: border-box;
+    margin: 20px 2px;
+    padding: 7px;
+}
+
+#record-note{
+    background-color: rgb(255, 187, 187);
+    border: 3px solid rgb(177, 64, 64);
+}
+
+#upload-note{
+    background-color: rgb(187, 211, 255);
+    border: 2px solid rgb(114, 124, 255);
+}
+
+#add-image{
+    background-color: rgb(197, 255, 195);
+    border: 2px solid rgb(101, 221, 94);
 }
 
 .grid ul li {

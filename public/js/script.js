@@ -1,10 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    const recordButton = document.getElementById('recordButton');
-    const recordIcon = recordButton.querySelector('i');
+    const recordButton = document.getElementById('record-note');
+    const uploadButton = document.getElementById('upload-note');
+    
     const transcriptBox = document.getElementById('transcriptBox');
     let mediaRecorder;
     let audioChunks = [];
+
+    const button = document.getElementById('timer-button');
+    let isRunning = false;
+    let timerInterval;
+    let startTime;
 
     // Check if the browser supports the MediaRecorder API
     if (typeof MediaRecorder === "undefined") {
@@ -39,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     const { transcription } = data;
                     transcriptBox.value = transcription;
+                    recordButton.innerHTML = 'Record'
                     // Use the transcription and content as needed
                 })
                 .catch(error => console.error('Error:', error));
@@ -48,23 +55,41 @@ document.addEventListener('DOMContentLoaded', function() {
         mediaRecorder.start();
     }
 
+    function stopRecording(){
+        mediaRecorder.stop();
+    }
+
     let isRecording = false;
     recordButton.addEventListener('click', function() {
-        if (!isRecording) {
-            startRecording();
-            isRecording = true;
-            recordIcon.classList.remove('fa-circle-o');
-            recordIcon.classList.add('fa-dot-circle-o');
-        } else {
-            mediaRecorder.stop();
-            isRecording = false;
-            recordIcon.classList.remove('fa-dot-circle-o');
-            recordIcon.classList.add('fa-circle-o');
-        }
-    });
-});
+        if (!isRunning && (recordButton.innerHTML != 'Record')) {
 
-document.addEventListener('DOMContentLoaded', function() {
+            startRecording()
+
+            // Start the timer
+            isRunning = true;
+            startTime = Date.now();
+            recordButton.innerHTML = '0:00';  // Reset display text
+      
+            // Update the button every second
+            timerInterval = setInterval(() => {
+              const elapsedTime = Math.floor((Date.now() - startTime) / 1000);  // Calculate seconds
+              c =''
+              if (elapsedTime % 60 < 10) {
+                c = '0'
+              }
+              recordButton.innerHTML = `${Math.floor(elapsedTime/60)}:${c}${elapsedTime%60}`;
+            }, 1000);
+      
+          } else {
+            
+            stopRecording();
+            // Stop the timer
+            isRunning = false;
+            clearInterval(timerInterval);
+            recordButton.innerHTML = 'Transcribing...';  // Reset button text after stop
+          }
+    });
+      
     const searchBox = document.getElementById('search-box');
     let allContacts = []; // Store all contacts
 
@@ -251,38 +276,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.filterContacts = filterContacts; // Make the function globally available for the HTML input's event
-
-    window.addContact = function() {
-
-        const regex = /\[\[(.*?)\]\]/;
-        const match = transcriptBox.value.match(regex);
-        return;
-        const name = document.getElementById('new-contact-name').value;
-        if (!name) {
-            alert('Please enter a name.');
-            return;
-        }
-        fetch('/add-contact', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Contact added successfully!');
-                    fetchContacts(); // Refresh the contact list
-                } else {
-                    alert('Failed to add contact.');
-                }
-            })
-            .catch(error => {
-                console.error('Error adding contact:', error);
-                alert('Failed to add contact.');
-            });
-    };
 
     fetchContacts();
 

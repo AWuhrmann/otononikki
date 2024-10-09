@@ -54,7 +54,7 @@
                         <div class="menu-buttons">
                             <button id="record-note"> Record </button>
                             <button id="add-image"> Add image </button>
-                            <button id="upload-note"> Upload </button>
+                            <button id="upload-note" onclick=" onClickUploadButton() "> Upload </button>
                         </div>
                     </div>
                     <div class="right-panel">
@@ -108,42 +108,8 @@
             <!-- partial -->
             <script src="./../js/script_tabs.js"></script>
             <script src="./../js/stats.js"></script>
-
+            
         </div>
     </div>
-    </div>
-
-    <nav class="menu">
-        <input type="checkbox" href="#" class="menu-open" name="menu-open" id="menu-open" />
-        <label class="menu-open-button" for="menu-open">
-            <span class="lines line-1"></span>
-            <span class="lines line-2"></span>
-            <span class="lines line-3"></span>
-        </label>
-
-        <button class="menu-item blue" id="recordButton" "> <i class=" fa fa-circle-o "></i> </button>
-    <button class=" menu-item red " onclick=" onClickUploadButton() "> <i class=" fa fa-arrow-circle-o-up "></i> </button>
-    <button class=" menu-item green " onclick=" addContact() "> <i class=" fa fa-user-plus "></i> </button>
-    
-</nav>
+</div>
 <script  src=" js/script.js "></script>
-    <!--- <div class=" container ">
-        <h1>Day Journal Recorder</h1>
-        <input type=" text " id=" search-box " placeholder=" Search contacts... " onkeyup=" filterContacts() ">
-        <div id=" checkbox-list " class=" checkbox-list ">
-        </div>
-    </div>    
-    <div class=" add-contact-form ">
-        <input type=" text " id=" new-contact-name " placeholder=" Enter new contact name " />
-        <button onclick=" addContact() ">Add Person</button>
-    </div>
-    <div class=" recorder ">
-        <button id=" recordButton ">Record</button>
-    </div>
-        <div class=" transcript ">
-            <textarea id=" transcriptBox " rows=" 10 " cols=" 50 " placeholder=" Transcription will appear here... "></textarea>
-        </div>
-    </div> --> 
-</body>
-    
-</html>

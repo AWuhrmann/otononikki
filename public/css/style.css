@@ -207,14 +207,18 @@ body .grid {
 .menu-buttons{
     display: flex;
     flex-direction: row;
-    margin-right: 20px;
 }
 
 .menu-buttons button{    
     border-radius: 20px;
     box-sizing: border-box;
-    margin: 20px 2px;
+    margin: 20px 5px;
     padding: 7px;
+    font-size: 24px; 
+    transition: 0.2s;
+}
+.menu-buttons button:active {
+    transform: scale(.9);
 }
 
 #record-note{
@@ -222,15 +226,27 @@ body .grid {
     border: 3px solid rgb(177, 64, 64);
 }
 
+#record-note:hover{
+    background-color: rgb(255, 140, 140);
+}
+
 #upload-note{
     background-color: rgb(187, 211, 255);
-    border: 2px solid rgb(114, 124, 255);
+    border: 3px solid rgb(114, 124, 255);
+}
+#upload-note:hover{
+    background-color: rgb(164, 196, 255);
 }
 
 #add-image{
+    white-space: nowrap;
     background-color: rgb(197, 255, 195);
-    border: 2px solid rgb(101, 221, 94);
+    border: 3px solid rgb(101, 221, 94);
 }
+#add-image:hover{
+    background-color: rgb(158, 255, 155);
+}
+
 
 .grid ul li {
     display: flex;

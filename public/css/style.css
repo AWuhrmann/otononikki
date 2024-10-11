@@ -14,24 +14,24 @@ html, body {
     width: 100%;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: flex-start;
 }
 
 .main-header {
+    flex: 1;
     font-family: 'HelveticaNeue-Light';
     width: 100%;
     background: #FFFFFF;
     color: #333;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    text-align: center;
-    height: 54px;
-    margin-bottom: 20px;
-    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+    text-align: left;
+    margin-left: 5%;
+    height: 50px;    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+    margin-top: 15px;
 }
 
 .main-header h1 {
-    margin: 0;
-    font-size: 54px;
+    font-size: 30px;
     font-weight: bold;
 }
 
@@ -40,15 +40,12 @@ html, body {
     width: 100%;
 }
 
-.tab-container {
-    height: calc(100vh - 54px);
-}
 
 .tab-content {
     display:flex;
     flex-direction: column;
     height: 100%;
-    height: calc(100vh - 100px);
+    /* height: calc(100vh - 100px); */
 }
 
 .tabs {
@@ -184,7 +181,7 @@ body .middle-box {
     border: 2px solid rgba(189, 189, 189, 0.2);
     border-radius: 12px;
     box-sizing: border-box;
-    margin: 20px 0px; /* Remove horizontal margin */
+    margin: 5px 0px; /* Remove horizontal margin */
     padding: 7px;
     width: 100%;
     /* max-width: 100%;  */

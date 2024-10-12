@@ -1,3 +1,4 @@
+import '../style/styles.scss'
 document.addEventListener('DOMContentLoaded', function() {
 
     const recordButton = document.getElementById('record-note');

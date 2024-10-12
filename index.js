@@ -31,6 +31,12 @@ app.use('/contacts/pictures', express.static(picturesDir));
 const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
 
+app.use(express.static(path.join(__dirname, 'dist')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
 app.post('/login', (req, res) => { // When user tries to localhost:3000/login, goes first here
     console.log('Login asked');
     // Check if the password matches
@@ -84,8 +90,8 @@ app.post('/verifyToken', (req, res) => {
     });
   });
 
-// Serve static files from the 'public' directory
-app.use(express.static('public'));
+// Serve static files from the 'src' directory
+app.use(express.static('src'));
 
 app.get('/contacts', (req, res) => {
     fs.readdir(contactsDir, (err, files) => {

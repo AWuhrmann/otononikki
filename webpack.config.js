@@ -11,6 +11,16 @@ module.exports = {
 
   module: {
     rules: [
+        {
+            test: /\.js$/,  // Target .js files
+            exclude: /node_modules/,  // Don't process files in node_modules
+            use: {
+              loader: 'babel-loader',  // Use Babel to transpile JS
+              options: {
+                presets: ['@babel/preset-env'],  // Preset for modern JavaScript
+              },
+            },
+          },
       {
         test: /\.scss$/,  // Match SCSS files
         use: [

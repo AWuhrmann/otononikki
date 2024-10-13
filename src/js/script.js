@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // To have the nice contacts selected in the search bar :)
 
     const tag_list = document.getElementById("tag-list");
-    input_tag = tag_list.querySelector("input");
+    let input_tag = tag_list.querySelector("input");
 
     // Variables to keep track of selected tag for deletion
     let lastTagSelected = false;

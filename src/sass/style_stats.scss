@@ -1,0 +1,67 @@
+.stats-div {
+
+    border: 2px solid rgb(235, 235, 235);
+    border-radius:20px;
+    margin: 10px;
+    margin-top: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+
+.button-stats {
+    font-family: "Inter", Arial;
+    background-color: white;
+    border: 2px solid #afafaf;
+    width: 30vw;
+    height: 100px;
+    border-radius: 30px;
+    transition: 0.2s;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.stats-header {
+    font-family: "Inter", Arial;
+    font-weight: bold;
+    font-size: 30px;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+.id-header {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 20px;
+    justify-content: left;
+    margin-top: 10px;
+    margin-left: 20px;
+    border-radius: 10px;
+    background-color: rgb(218, 218, 218)
+}
+
+.stats-interactive-div {
+    width: 30%;
+    margin-top: 20px;
+}
+
+.stats-type-counter {
+    align-items: flex-start;
+    font-size: 24px;
+}
+
+.button-stats:active {
+    transform: scale(.5);
+}
+
+.button-stats:hover {
+    transform: scale(1.05);
+}
+
+.button-stats:active {
+    background-color: rgb(255, 249, 236);
+    border: 2px solid rgb(206, 150, 31);
+}

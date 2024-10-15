@@ -26,14 +26,7 @@ module.exports = {
         use: [
           MiniCssExtractPlugin.loader,  // Extract CSS to a separate file
           'css-loader',  // Turn CSS into JS modules
-          {
-            loader: 'sass-loader',
-            options: {
-              sassOptions: {
-                outputStyle: 'expanded',
-              },
-            },
-          },
+          'sass-loader',  // Compile SCSS to CSS
         ],
       },
     ],

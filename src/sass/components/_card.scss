@@ -24,6 +24,8 @@ $transition: 0.15s;
   color: $text-color;
   transition: $transition;
   @include user-select(none);
+
+  box-shadow: 2px solid#0082ff;
 }
 
 @mixin set-image-position($x-y1, $x-y2, $x-y3, $x-y4) {
@@ -40,13 +42,13 @@ $transition: 0.15s;
 .checkbox-card {
     &:nth-child(odd) {
       .checkbox-card__image {
-        @include set-image-position($x-y1-odd, $x-y2-odd, $x-y3-odd, $x-y4-odd);
+        @include set-image-position(10%, 16%, 10%, 13%);
       }
     }
   
     &:nth-child(even) {
       .checkbox-card__image {
-        @include set-image-position($x-y1-even, $x-y2-even, $x-y3-even, $x-y4-even);
+        @include set-image-position(13%, 10%, 16%, 10%,);
       }
     }
   }

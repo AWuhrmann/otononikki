@@ -90,7 +90,6 @@ function updateID(buttonElement){
 }
 
 document.addEventListener('click', function(event) {
-    event.preventDefault();
     const buttonElement = event.target.closest('.button-stats');
 
     if (buttonElement) {

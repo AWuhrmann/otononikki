@@ -1,0 +1,44 @@
+// Define your color palettes
+$themes: (
+  light: (
+    primary: #007bff,
+    secondary: #6c757d,
+    background: #ffffff,
+    text: #333333,
+  ),
+  dark: (
+    primary: #0056b3,
+    secondary: #495057,
+    background: #222222,
+    text: #f8f9fa,
+  ),
+  // Add more themes as needed
+);
+
+$default-theme: light !default;
+
+// Create a mixin for theme-aware styles
+@mixin themed() {
+  @each $theme, $map in $themes {
+    .theme-#{$theme} & {
+      $theme-map: () !global;
+      @each $key, $value in $map {
+        $theme-map: map-merge($theme-map, ($key: $value)) !global;
+      }
+      @content;
+      $theme-map: null !global;
+    }
+  }
+
+  // Apply default theme styles when no theme class is present
+  @at-root :not([class*='theme-']) & {
+    $theme-map: map-get($themes, $default-theme) !global;
+    @content;
+    // $theme-map: null !global;
+  }
+}
+
+// Function to get theme colors
+@function t($key) {
+  @return map-get($theme-map, $key);
+}

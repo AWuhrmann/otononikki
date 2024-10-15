@@ -1,3 +1,5 @@
+@import 'themes/themes';
+
 body {
     min-height: 20vh;
     display: flex;
@@ -5,7 +7,8 @@ body {
     font-family: "Inter", Arial;
     justify-content: center;
     align-items: center;
-    background: #ffffff;
+    @include themed();
+    background-color: t(background);
     overflow-y: hidden;
 }
 
@@ -20,7 +23,7 @@ html, body {
 
 .main-header {
     flex: 1;
-    font-family: 'HelveticaNeue-Light';
+    font-family: 'Inter', Arial;
     width: 100%;
     background: #FFFFFF;
     color: #333;

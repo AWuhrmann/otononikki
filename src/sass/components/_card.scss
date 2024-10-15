@@ -11,23 +11,6 @@ $header-height: 47px;
 $blend-mode: overlay;
 $transition: 0.15s;
 
-.card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1 1 calc(50% - 10px); // 50% width minus the gap
-  box-sizing: border-box;
-  height: 100%;
-  width: 100%;
-  border-radius: $card-radius;
-  background-color: $background;
-  color: $text-color;
-  transition: $transition;
-  @include user-select(none);
-
-  box-shadow: 2px solid#0082ff;
-}
-
 @mixin set-image-position($x-y1, $x-y2, $x-y3, $x-y4) {
     clip-path: polygon(
         100% 0%, 
@@ -39,19 +22,47 @@ $transition: 0.15s;
 );
 }
 
-.checkbox-card {
-    &:nth-child(odd) {
-      .checkbox-card__image {
-        @include set-image-position(10%, 16%, 10%, 13%);
-      }
-    }
-  
-    &:nth-child(even) {
-      .checkbox-card__image {
-        @include set-image-position(13%, 10%, 16%, 10%,);
-      }
-    }
-  }
+
+.card {
+    --background: #fff;
+    --background-checkbox: #0082ff;
+    --background-image: rgba(189, 189, 189, 0.2);
+    --text-color: #666;
+    --text-headline: #000;
+    --card-shadow: #0082ff;
+    --card-height: 100%;
+    /* --card-max-height: 400px; */
+    --card-width: 100%;
+    --card-radius: 12px;
+    --header-height: 47px;
+    --blend-mode: overlay;
+    --transition: 0.15s;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center content inside the card */
+    flex: 1 1 calc(50% - 10px); /* 50% width minus the gap */
+    box-sizing: border-box; /* Ensure padding and border are included in the width calculation */
+    height: 100%;
+}
+
+.card:nth-child(odd) .card__body-cover-image {
+    --x-y1: 10% 100%;
+    --x-y2: 16% 67%;
+    --x-y3: 10% 33%;
+    --x-y4: 13% 0%;
+}
+
+.card:nth-child(even) .card__body-cover-image {
+    --x-y1: 13% 100%;
+    --x-y2: 10% 67%;
+    --x-y3: 16% 33%;
+    --x-y4: 10% 0%;
+}
 
 .card__input {
     position: absolute;
@@ -192,7 +203,6 @@ $transition: 0.15s;
 }
 
 .card__body-header {
-    
     flex: 1;
     height: var(--header-height);
     background: var(--background);

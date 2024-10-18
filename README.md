@@ -1,7 +1,11 @@
 otononikki is a website that transcripts audio messages into journal entries. It contains an inner server that store the information in a vault, allowing to synchronize my computer with the server. 
 
 # Current state
-Migrating to Svelte, day 1. 
+
+Migrating to Svelte, day 1.
+Added some new components, read some documention, day 2.
+
+
 Logs:
 Project created, read the doc. Try some copy pasting, still needs to create components for example.
 

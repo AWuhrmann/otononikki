@@ -4,6 +4,7 @@ otononikki is a website that transcripts audio messages into journal entries. It
 
 Migrating to Svelte, day 1.
 Added some new components, read some documention, day 2.
+Added Journal components, and added style in it.
 
 
 Logs:

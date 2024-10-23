@@ -9,6 +9,8 @@ lerna-debug.log*
 
 .env
 
+vault
+
 node_modules
 dist
 dist-ssr

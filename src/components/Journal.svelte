@@ -38,7 +38,6 @@
     
 .left-panel {
     flex-grow: 0;
-    min-height: 200px;
     flex-shrink: 2;
     /* Adjust width as needed */
     background: #ffffff;
@@ -67,7 +66,7 @@
     display: flex;
     flex: 1;
     background: #ffffff;
-    height: calc(100vh - 610px);
+    height: calc(100vh - 1210px);
     flex-direction: column;
 }
 

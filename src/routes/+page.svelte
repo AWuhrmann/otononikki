@@ -1,27 +1,26 @@
 <script>
-    import svelteLogo from './assets/svelte.svg'
+    import svelteLogo from '../assets/svelte.svg'
     import viteLogo from '/vite.svg'
-    import Counter from './lib/Counter.svelte'
-    import Header from './components/Header.svelte'
-    import Journal from './components/Journal.svelte';
-    import Stats from './components/Stats.svelte';
-    import Tabs from './components/Tabs.svelte';
+    import Counter from '../lib/Counter.svelte'
+    import Header from '../components/header.svelte'
+    import Journal from '../components/Journal.svelte';
+    import Stats from '../components/Stats.svelte';
+    import Tabs from '../components/Tabs.svelte';
 
     let items = [
         { label: 'Recorder', value: 1, component: Journal },
         { label: 'Stats', value: 2, component: Stats },
     ]
-
 </script>
 
 <main>
     <div class="container">
         <Header></Header>
-        <div class="content">
+        <!-- <div class="content">
             <div class="tab-container">
                 <Tabs {items} />
             </div>
-        </div>
+        </div> -->
     </div>
 </main>
 

@@ -1,3 +1,6 @@
+I lost the previous readme.md lmao, anyway small commit cuz I managed to make the system of auth work. Tmr is the day hopefully.
+
+
 # Svelte + Vite
 
 This template should help get you started developing with Svelte in Vite.

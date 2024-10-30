@@ -5,9 +5,9 @@
 /// <reference types="@sveltejs/kit" />
 
 /**
- * Environment variables [loaded by Vite](https://vitejs.dev/guide/env-and-mode.html#env-files) from `.env` files and `process.env`. Like [`$env/dynamic/private`](https://svelte.dev/docs/kit/$env-dynamic-private), this module cannot be imported into client-side code. This module only includes variables that _do not_ begin with [`config.kit.env.publicPrefix`](https://svelte.dev/docs/kit/configuration#env) _and do_ start with [`config.kit.env.privatePrefix`](https://svelte.dev/docs/kit/configuration#env) (if configured).
+ * Environment variables [loaded by Vite](https://vitejs.dev/guide/env-and-mode.html#env-files) from `.env` files and `process.env`. Like [`$env/dynamic/private`](https://kit.svelte.dev/docs/modules#$env-dynamic-private), this module cannot be imported into client-side code. This module only includes variables that _do not_ begin with [`config.kit.env.publicPrefix`](https://kit.svelte.dev/docs/configuration#env) _and do_ start with [`config.kit.env.privatePrefix`](https://kit.svelte.dev/docs/configuration#env) (if configured).
  * 
- * _Unlike_ [`$env/dynamic/private`](https://svelte.dev/docs/kit/$env-dynamic-private), the values exported from this module are statically injected into your bundle at build time, enabling optimisations like dead code elimination.
+ * _Unlike_ [`$env/dynamic/private`](https://kit.svelte.dev/docs/modules#$env-dynamic-private), the values exported from this module are statically injected into your bundle at build time, enabling optimisations like dead code elimination.
  * 
  * ```ts
  * import { API_KEY } from '$env/static/private';
@@ -26,6 +26,26 @@
  * ```
  */
 declare module '$env/static/private' {
+	export const AUTH_GITHUB_ID: string;
+	export const AUTH_GITHUB_SECRET: string;
+	export const AUTH_LINKEDIN_ID: string;
+	export const AUTH_LINKEDIN_SECRET: string;
+	export const AUTH_GOOGLE_ID: string;
+	export const AUTH_GOOGLE_SECRET: string;
+	export const AUTH_FACEBOOK_ID: string;
+	export const AUTH_FACEBOOK_SECRET: string;
+	export const AUTH_TWITTER_ID: string;
+	export const AUTH_TWITTER_SECRET: string;
+	export const AUTH_AUTH0_ID: string;
+	export const AUTH_AUTH0_SECRET: string;
+	export const AUTH_AUTH0_ISSUER: string;
+	export const AUTH_DISCORD_ID: string;
+	export const AUTH_DISCORD_SECRET: string;
+	export const AUTH_TWITCH_ID: string;
+	export const AUTH_TWITCH_SECRET: string;
+	export const AUTH_PINTEREST_ID: string;
+	export const AUTH_PINTEREST_SECRET: string;
+	export const AUTH_SECRET: string;
 	export const LESSOPEN: string;
 	export const USER: string;
 	export const npm_config_user_agent: string;
@@ -71,7 +91,6 @@ declare module '$env/static/private' {
 	export const PATH: string;
 	export const SESSION_MANAGER: string;
 	export const NODE: string;
-	export const npm_package_name: string;
 	export const XDG_MENU_PREFIX: string;
 	export const GNOME_TERMINAL_SCREEN: string;
 	export const XDG_RUNTIME_DIR: string;
@@ -90,7 +109,6 @@ declare module '$env/static/private' {
 	export const SSH_AUTH_SOCK: string;
 	export const ORIGINAL_XDG_CURRENT_DESKTOP: string;
 	export const SHELL: string;
-	export const npm_package_version: string;
 	export const npm_lifecycle_event: string;
 	export const QT_ACCESSIBILITY: string;
 	export const GDMSESSION: string;
@@ -118,7 +136,7 @@ declare module '$env/static/private' {
 }
 
 /**
- * Similar to [`$env/static/private`](https://svelte.dev/docs/kit/$env-static-private), except that it only includes environment variables that begin with [`config.kit.env.publicPrefix`](https://svelte.dev/docs/kit/configuration#env) (which defaults to `PUBLIC_`), and can therefore safely be exposed to client-side code.
+ * Similar to [`$env/static/private`](https://kit.svelte.dev/docs/modules#$env-static-private), except that it only includes environment variables that begin with [`config.kit.env.publicPrefix`](https://kit.svelte.dev/docs/configuration#env) (which defaults to `PUBLIC_`), and can therefore safely be exposed to client-side code.
  * 
  * Values are replaced statically at build time.
  * 
@@ -131,7 +149,7 @@ declare module '$env/static/public' {
 }
 
 /**
- * This module provides access to runtime environment variables, as defined by the platform you're running on. For example if you're using [`adapter-node`](https://github.com/sveltejs/kit/tree/main/packages/adapter-node) (or running [`vite preview`](https://svelte.dev/docs/kit/cli)), this is equivalent to `process.env`. This module only includes variables that _do not_ begin with [`config.kit.env.publicPrefix`](https://svelte.dev/docs/kit/configuration#env) _and do_ start with [`config.kit.env.privatePrefix`](https://svelte.dev/docs/kit/configuration#env) (if configured).
+ * This module provides access to runtime environment variables, as defined by the platform you're running on. For example if you're using [`adapter-node`](https://github.com/sveltejs/kit/tree/main/packages/adapter-node) (or running [`vite preview`](https://kit.svelte.dev/docs/cli)), this is equivalent to `process.env`. This module only includes variables that _do not_ begin with [`config.kit.env.publicPrefix`](https://kit.svelte.dev/docs/configuration#env) _and do_ start with [`config.kit.env.privatePrefix`](https://kit.svelte.dev/docs/configuration#env) (if configured).
  * 
  * This module cannot be imported into client-side code.
  * 
@@ -146,6 +164,26 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		AUTH_GITHUB_ID: string;
+		AUTH_GITHUB_SECRET: string;
+		AUTH_LINKEDIN_ID: string;
+		AUTH_LINKEDIN_SECRET: string;
+		AUTH_GOOGLE_ID: string;
+		AUTH_GOOGLE_SECRET: string;
+		AUTH_FACEBOOK_ID: string;
+		AUTH_FACEBOOK_SECRET: string;
+		AUTH_TWITTER_ID: string;
+		AUTH_TWITTER_SECRET: string;
+		AUTH_AUTH0_ID: string;
+		AUTH_AUTH0_SECRET: string;
+		AUTH_AUTH0_ISSUER: string;
+		AUTH_DISCORD_ID: string;
+		AUTH_DISCORD_SECRET: string;
+		AUTH_TWITCH_ID: string;
+		AUTH_TWITCH_SECRET: string;
+		AUTH_PINTEREST_ID: string;
+		AUTH_PINTEREST_SECRET: string;
+		AUTH_SECRET: string;
 		LESSOPEN: string;
 		USER: string;
 		npm_config_user_agent: string;
@@ -191,7 +229,6 @@ declare module '$env/dynamic/private' {
 		PATH: string;
 		SESSION_MANAGER: string;
 		NODE: string;
-		npm_package_name: string;
 		XDG_MENU_PREFIX: string;
 		GNOME_TERMINAL_SCREEN: string;
 		XDG_RUNTIME_DIR: string;
@@ -210,7 +247,6 @@ declare module '$env/dynamic/private' {
 		SSH_AUTH_SOCK: string;
 		ORIGINAL_XDG_CURRENT_DESKTOP: string;
 		SHELL: string;
-		npm_package_version: string;
 		npm_lifecycle_event: string;
 		QT_ACCESSIBILITY: string;
 		GDMSESSION: string;
@@ -241,7 +277,7 @@ declare module '$env/dynamic/private' {
 }
 
 /**
- * Similar to [`$env/dynamic/private`](https://svelte.dev/docs/kit/$env-dynamic-private), but only includes variables that begin with [`config.kit.env.publicPrefix`](https://svelte.dev/docs/kit/configuration#env) (which defaults to `PUBLIC_`), and can therefore safely be exposed to client-side code.
+ * Similar to [`$env/dynamic/private`](https://kit.svelte.dev/docs/modules#$env-dynamic-private), but only includes variables that begin with [`config.kit.env.publicPrefix`](https://kit.svelte.dev/docs/configuration#env) (which defaults to `PUBLIC_`), and can therefore safely be exposed to client-side code.
  * 
  * Note that public dynamic environment variables must all be sent from the server to the client, causing larger network requests — when possible, use `$env/static/public` instead.
  * 

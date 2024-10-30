@@ -12,7 +12,7 @@ export const nodes = [
 export const server_loads = [0];
 
 export const dictionary = {
-		"/": [2],
+		"/": [~2],
 		"/protected": [3],
 		"/signin": [~4],
 		"/signout": [~5]

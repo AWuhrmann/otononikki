@@ -1,5 +1,8 @@
 <script lang="ts">
   import { SignIn } from "@auth/sveltekit/components";
+
+  export let data;
+  const { session } = data;
 </script>
 
 <main>
@@ -10,6 +13,7 @@
     >
     with <a href="https://sveltekit.authjs.dev">SvelteKit Auth</a> for authentication.
   </p>
+  <p>Your role: {session.user.role}</p>
   <SignIn>
     <div slot="submitButton" class="buttonPrimary">Sign in</div>
   </SignIn>

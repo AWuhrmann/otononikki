@@ -15,7 +15,6 @@
 
 <main>
     <div class="container">
-        <Header></Header>
         <!-- <div class="content">
             <div class="tab-container">
                 <Tabs {items} />

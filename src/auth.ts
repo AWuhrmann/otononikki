@@ -7,7 +7,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
     GitHub({
       profile(profile) {
         console.log(profile);
-        const role = profile.email === "arthur.wuhrmdann@epfl.ch" ? "admin" : "user";
+        const role = profile.email === "arthur.wuhrmann@epfl.ch" ? "admin" : "user";
         return { ...profile, role: role }; 
     }})
   ],  

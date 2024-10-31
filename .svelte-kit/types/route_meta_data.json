@@ -4,6 +4,12 @@
 		"src/routes/+layout.server.ts",
 		"src/routes/+layout.server.ts"
 	],
+	"/contacts": [
+		"src/routes/contacts/+server.ts"
+	],
+	"/contacts/pictures/[slug]": [
+		"src/routes/contacts/pictures/[slug]/+server.ts"
+	],
 	"/protected": [
 		"src/routes/+layout.server.ts"
 	],

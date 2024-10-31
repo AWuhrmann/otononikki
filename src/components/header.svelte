@@ -7,11 +7,17 @@
   <div class="signedInStatus">
     <div class="nojs-show loaded">
       <img
-        alt="User avatar"
-        src={$page.data?.session?.user?.image ??
+      alt="User avatar"
+      src={$page.data?.session?.user?.image ??
           `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(Math.random() * 100000) + 1}&randomizeIds=true`}
         class="avatar"
-      />
+        />
+        <nav>
+          <ul class="navItems">
+            <li class="navItem"><a href="/">Home</a></li>
+            <li class="navItem"><a href="/protected">Protected</a></li>
+          </ul>
+        </nav>
       {#if $page.data.session}
         <span class="signedInText">
           {$page.data.session.user?.email ?? $page.data.session.user?.name}
@@ -27,12 +33,6 @@
       {/if}
     </div>
   </div>
-  <nav>
-    <ul class="navItems">
-      <li class="navItem"><a href="/">Home</a></li>
-      <li class="navItem"><a href="/protected">Protected</a></li>
-    </ul>
-  </nav>
 </header>
 
 <style>

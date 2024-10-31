@@ -1,3 +1,22 @@
+<script>
+
+    import Card from './Card.svelte';
+
+  import { onMount } from 'svelte';
+  let contacts = [];
+
+  onMount(async () => {
+    const response = await fetch('/contacts');
+    if (response.ok) {
+      contacts = await response.json();
+      console.log(contacts)
+    } else {
+      console.error("Failed to load contacts");
+    }
+  });
+
+</script>
+
 <div class="left-panel">
     <textarea class="textarea" id="transcriptBox" rows="10" cols="50"
     placeholder="Transcription will appear here..."></textarea>
@@ -16,21 +35,9 @@
 </div>
 <div class="right-panel">
     <div class="list-cards" id="checkbox-list">
-        <label class="card">
-            <input class="card__input" type="checkbox" />
-            <div class="card__body">
-                <header class="card__body-header">
-                    <h2 class="card__body-header-title">King Baldwin 😁</h2>
-                    <p class="card__body-header-subtitle">womp womp</p>
-                </header>
-                <div class="card__body-cover"><img class="card__body-cover-image" src=""/><span
-                        class="card__body-cover-checkbox">
-                        <svg class="card__body-cover-checkbox--svg" viewBox="0 0 12 10">
-                            <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                        </svg></span>
-                </div>
-            </div>
-        </label>
+        {#each contacts as contact}
+            <Card name={contact.name} picture={contact.picture} />
+        {/each}
     </div>
 </div>
 

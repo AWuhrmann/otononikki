@@ -73,7 +73,7 @@
     display: flex;
     flex: 1;
     background: #ffffff;
-    height: calc(100vh - 1210px);
+    height: calc(100vh - 660px);
     flex-direction: column;
 }
 
@@ -192,13 +192,15 @@
     margin-left: 8px;
 }
 
-body .list-cards {
+.list-cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    grid-auto-rows: max-content;
+    /* grid-auto-rows: max-content; */
     gap: 10px;
+    height: 500px;
     overflow-y: auto;
-    padding-top: 20px; /* Add top padding */
+    padding-top: 20px; 
+    padding-bottom: 20px; 
     padding-left: 5px;
     padding-right: 5px;
 }

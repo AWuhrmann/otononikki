@@ -34,4 +34,4 @@ dist-ssr
 *.sw?
 static/*
 src/static/*
-.svelte-kit
+.svelte-kit/*

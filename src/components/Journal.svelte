@@ -1,6 +1,6 @@
-<script>
+<script lang='ts' >
 
-    import Card from './Card.svelte';
+  import Card from './Card.svelte';
 
   import { onMount } from 'svelte';
   let contacts = [];
@@ -15,10 +15,124 @@
     }
   });
 
+  type AudioState = {
+    isRunning: boolean;
+    startTime: number | null;
+    timerInterval: number | null;
+    mediaRecorder: MediaRecorder | null;
+    audioChunks: Blob[];
+  };
+
+  // Props
+  export let onTranscriptionComplete: (transcription: string) => void = () => {};
+
+  // State
+  let recordButton: HTMLButtonElement;
+  let transcriptBox: HTMLTextAreaElement;
+  let state: AudioState = {
+    isRunning: false,
+    startTime: null,
+    timerInterval: null,
+    mediaRecorder: null,
+    audioChunks: []
+  };
+
+  // Format time for display
+  const formatTime = (elapsedTime: number): string => {
+    const minutes = Math.floor(elapsedTime / 60);
+    const seconds = elapsedTime % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      state.mediaRecorder = new MediaRecorder(stream);
+      state.audioChunks = [];
+
+      state.mediaRecorder.ondataavailable = (event: BlobEvent) => {
+        state.audioChunks.push(event.data);
+      };
+
+      state.mediaRecorder.onstop = async () => {
+        const selectedContacts = Array.from(
+          document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]:checked')
+        ).map(input => `[[${input.value}]]`).join(', ');
+
+        const audioBlob = new Blob(state.audioChunks, { type: 'audio/mpeg-3' });
+        const formData = new FormData();
+        formData.append('audioFile', audioBlob, 'audio.mp3');
+        formData.append('contacts', selectedContacts);
+
+        try {
+          const response = await fetch('/transcribe', {
+            method: 'POST',
+            body: formData
+          });
+          
+          const data = await response.json();
+          transcriptBox.value = data.transcription;
+          recordButton.innerHTML = 'Record';
+          onTranscriptionComplete(data.transcription);
+        } catch (error) {
+          console.error('Error during transcription:', error);
+          recordButton.innerHTML = 'Error';
+        }
+      };
+
+      state.mediaRecorder.start();
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      recordButton.innerHTML = 'Error';
+    }
+  };
+
+  const stopRecording = () => {
+    if (state.mediaRecorder) {
+      state.mediaRecorder.stop();
+    }
+  };
+
+  const handleRecord = async () => {
+    if (!state.isRunning && recordButton.innerHTML !== 'Record') {
+      // Start recording
+      await startRecording();
+      state.isRunning = true;
+      state.startTime = Date.now();
+      recordButton.innerHTML = '0:00';
+
+      state.timerInterval = window.setInterval(() => {
+        if (state.startTime) {
+          const elapsedTime = Math.floor((Date.now() - state.startTime) / 1000);
+          recordButton.innerHTML = formatTime(elapsedTime);
+        }
+      }, 1000);
+    } else {
+      // Stop recording
+      stopRecording();
+      state.isRunning = false;
+      if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+      }
+      recordButton.innerHTML = 'Transcribing...';
+    }
+  };
+
+  onMount(() => {
+    return () => {
+      // Cleanup on component destruction
+      if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+      }
+      if (state.mediaRecorder && state.isRunning) {
+        stopRecording();
+      }
+    };
+  });
 </script>
 
 <div class="left-panel">
-    <textarea class="textarea" id="transcriptBox" rows="10" cols="50"
+    <textarea class="textarea" id="transcriptBox" bind:this={transcriptBox} rows="10" cols="50"
     placeholder="Transcription will appear here..."></textarea>
     <!-- Add more text or content here as needed -->
 </div>
@@ -28,9 +142,9 @@
             placeholder="Search contacts..." onkeyup="filterContacts()">
     </ul>
     <div class="menu-buttons">
-        <button id="record-note"> Record </button>
+        <button id="record-note" on:click={handleRecord} bind:this={recordButton}> Record </button>
         <button id="add-image"> Add image </button>
-        <button id="upload-note" onclick=" onClickUploadButton() "> Upload </button>
+    <button id="upload-note" on:click={handleRecord}> Upload </button>
     </div>
 </div>
 <div class="right-panel">

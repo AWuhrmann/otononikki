@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@auth/sveltekit": "latest",
+    "openai": "^4.70.3",
     "pg": "^8.13.1"
   },
   "type": "module"

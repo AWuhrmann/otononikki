@@ -65,7 +65,7 @@
         formData.append('contacts', selectedContacts);
 
         try {
-          const response = await fetch('/transcribe', {
+          const response = await fetch('/api/transcribe', {
             method: 'POST',
             body: formData
           });

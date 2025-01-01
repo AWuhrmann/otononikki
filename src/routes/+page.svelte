@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SignIn } from "@auth/sveltekit/components";
 
-  export let data;
+  let { data } = $props();
   const { session } = data;
 </script>
 
@@ -15,7 +15,9 @@
   </p>
   <p>Your role: {session.user.role}</p>
   <SignIn>
-    <div slot="submitButton" class="buttonPrimary">Sign in</div>
+    {#snippet submitButton()}
+        <div  class="buttonPrimary">Sign in</div>
+      {/snippet}
   </SignIn>
 </main>
 

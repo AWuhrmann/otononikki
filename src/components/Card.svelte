@@ -1,6 +1,5 @@
-<script>
-    export let name;
-    export let picture;
+<script lang="ts">
+    let { name, picture } = $props();
 </script>
 
 <label class="card">

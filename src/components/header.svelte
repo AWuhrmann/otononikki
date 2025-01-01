@@ -23,12 +23,16 @@
           {$page.data.session.user?.email ?? $page.data.session.user?.name}
         </span>
         <SignOut>
-          <div slot="submitButton" class="buttonPrimary">Sign out</div>
+          {#snippet submitButton()}
+                    <div  class="buttonPrimary">Sign out</div>
+                  {/snippet}
         </SignOut>
       {:else}
         <span class="notSignedInText">You are not signed in</span>
         <SignIn>
-          <div slot="submitButton" class="buttonPrimary">Sign in</div>
+          {#snippet submitButton()}
+                    <div  class="buttonPrimary">Sign in</div>
+                  {/snippet}
         </SignIn>
       {/if}
     </div>

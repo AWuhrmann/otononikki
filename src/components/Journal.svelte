@@ -141,7 +141,7 @@ https://svelte.dev/e/attribute_invalid_event_handler -->
 <div class="middle-box" id="search-box-div">
     <ul id="tag-list">
         <input type="text" id="search-box" data-user-option-allowed="true" class="search-box"
-            placeholder="Search contacts..." onkeyup="filterContacts()">
+            placeholder="Search contacts...">
     </ul>
     <div class="menu-buttons">
         <button id="record-note" on:click={handleRecord} bind:this={recordButton}> Record </button>

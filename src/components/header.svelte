@@ -15,7 +15,8 @@
         <nav>
           <ul class="navItems">
             <li class="navItem"><a href="/">Home</a></li>
-            <li class="navItem"><a href="/protected">Protected</a></li>
+            <li class="navItem"><a href="/protected">Journal</a></li>
+            <li class="navItem"><a href="/stats">Stats</a></li>
           </ul>
         </nav>
       {#if $page.data.session}

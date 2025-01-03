@@ -2,7 +2,7 @@
 https://svelte.dev/e/attribute_invalid_event_handler -->
 <script lang='ts' >
 
-  import Card from './Card.svelte';
+  import Card from './cards/CardCounter.svelte';
 
   import { onMount } from 'svelte';
   let contacts = [];

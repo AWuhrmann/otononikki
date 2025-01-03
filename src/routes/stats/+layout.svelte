@@ -1,4 +1,6 @@
 <script lang="ts">
+  import "../../app.css";
+
   import type { Snippet } from "svelte"
   import type { LayoutData } from "./$types"
 
@@ -11,7 +13,7 @@
 
 <style>
   :global(body) {
-    background-color: #f0f0f0;
+    background-color: #e9edf4;
     margin: 0;
   }
 </style>

@@ -7,7 +7,7 @@
   let { children }: Props = $props();
 </script>
 
-<div class="container">
+<div class="w-full h-full">
   <Header />
   {@render children?.()}
 </div>

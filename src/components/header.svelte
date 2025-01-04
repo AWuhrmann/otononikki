@@ -13,14 +13,14 @@
         class="avatar"
         />
         <nav>
-          <ul class="navItems">
+          <ul class="navItems my-auto">
             <li class="navItem"><a href="/">Home</a></li>
             <li class="navItem"><a href="/protected">Journal</a></li>
             <li class="navItem"><a href="/stats">Stats</a></li>
           </ul>
         </nav>
       {#if $page.data.session}
-        <span class="signedInText">
+        <span class="signedInText pr-10 font-courier">
           {$page.data.session.user?.email ?? $page.data.session.user?.name}
         </span>
         <SignOut>
@@ -59,7 +59,7 @@
     border-radius: 0 0 0.6rem 0.6rem;
     padding: 0.6rem 1rem;
     margin: 0;
-    background-color: rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(83, 83, 83, 0.5);
     transition: all 0.2s ease-in;
   }
   .signedInText,
@@ -103,13 +103,20 @@
     box-shadow: inset 0 0 5rem rgba(0, 0, 0, 0.2);
   }
   .navItems {
-    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: row;
+    justify-items: flex-start;
+    gap: 20px;
+    margin-left: 20px;
     padding: 0;
     list-style: none;
   }
   .navItem {
     display: inline-block;
     margin-right: 1rem;
+    font-size: 20px;
+    font-weight: bold;
+    color: rgb(85, 85, 85);
   }
   :global(form button) {
     border: none !important;

@@ -6,7 +6,9 @@ export async function GET({ params }) {
     console.log('test');
 
   const { id } = params;
-  
+
+  // differentiate the case where id is a number or a string
+
   const cardResult = await pool.query(
     `SELECT uc.*, ct.name as template_name 
      FROM user_cards uc 

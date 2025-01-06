@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { pool } from '$lib/server/db';
-import type { CardState } from '$lib/card.svelte.js';
+import { CardState } from '$lib/card.svelte.js';
 
 export async function GET({ params }) {
 
@@ -33,7 +33,7 @@ export async function GET({ params }) {
     const cards = cardsResults.rows;
     console.log(cards)
 
-    const cardStates: CardState[] = cards.map(card => ({
+    const cardStates: CardState[] = cards.map(card => new CardState({
         id: card.id,
         title: card.title,
         description: card.description,
@@ -43,8 +43,6 @@ export async function GET({ params }) {
         name: card.name || '',
         settings: card.settings || {},
         values: card.values || [],
-        setValue: card.setValue || (() => { }),
-        save: card.save || (() => { })
     }));
 
     user.cards = cardStates;

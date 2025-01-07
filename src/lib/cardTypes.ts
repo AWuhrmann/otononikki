@@ -5,7 +5,7 @@ import type { Component } from 'svelte';
   
 export type CardType = 'number' | 'timer' | 'default';
 
-export const cardComponents: Record<CardType, Component> = {
+export const cardComponents: Record<CardType, Component<any>> = {
   'number': Counter,
   'timer': CardTimer,
   'default': Counter

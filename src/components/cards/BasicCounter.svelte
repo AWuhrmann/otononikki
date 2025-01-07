@@ -2,9 +2,17 @@
 
     import { CounterState } from "$lib/counter.svelte";
 
+    import { CardState } from "$lib/card.svelte";
+
     import { Plus, Minus } from 'lucide-svelte'
 
-    let {counter = new CounterState(0), name = 'My buttons\' name'} = $props();
+    // let {counter = new CounterState(0), name = 'My buttons\' name',} = $props();
+
+    let { card } = $props();
+
+    function getValue() {    
+        return card.values[card.values.length - 1]
+    }
 
 </script>
 
@@ -13,21 +21,21 @@
     <div class="info">
         
         <p class="font-bold">
-            {name}
+            {card.name}
         </p>
         
-        <p class="">{counter.value}</p>
+        <p class="">{getValue()}</p>
 
     </div>
 
 
     <div class="controls">
 
-        <button class="button" onclick={() => counter.increment()}>
+        <button class="button">
             <Plus/>
         </button>
         
-        <button class="button" onclick={() => counter.decrement()}>
+        <button class="button">
             <Minus/>
         </button>
     </div>

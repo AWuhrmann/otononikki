@@ -1,8 +1,16 @@
+
+export type CardSettings = Record<string, string | number | boolean>;
+
+interface CardValue {
+  value: number;
+  date: Date;
+}
+
 export class CardState {
     id = $state<number>(0);
     name = $state<string>('');
     settings = $state<Record<string, any>>({});
-    values = $state<Record<string, any>>({});
+    values = $state<CardValue[]>([]);
   
     constructor(data?: any) {
       if (data) {
@@ -11,10 +19,6 @@ export class CardState {
         this.settings = data.settings || {};
         this.values = data.values || {};
       }
-    }
-  
-    setValue(settingName: string, value: any) {
-      this.values[settingName] = value;
     }
   
     async save() {

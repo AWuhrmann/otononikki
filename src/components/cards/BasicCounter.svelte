@@ -10,7 +10,11 @@
   let value: number = $state(getValue());
 
   function getValue() {
-    return parseFloat(card.values[card.values.length - 1]);
+    return parseFloat(card.values[card.values.length - 1].value);
+  }
+
+  function getDate() {
+    return card.values[card.values.length - 1].timestamp;
   }
 
 
@@ -20,7 +24,7 @@
 
   function parseData(data: (string | number)[]) {
     // Convert all values to numbers
-    return data.map((d) => (typeof d === "string" ? parseFloat(d) : d))
+    return data.map((d) => (typeof d.value === "string" ? parseFloat(d.value) : d))
   }
 
   function updateChart() {
@@ -35,7 +39,7 @@
 
     const margin = { top: 10, right: 10, bottom: 10, left: 10 }
     const width = 200 - margin.left - margin.right
-    const height = 60 - margin.top - margin.bottom
+    const height = 100 - margin.top - margin.bottom
 
     const svg = d3
       .select("#chart-" + card.name.replace(/\s+/g, "-"))
@@ -76,7 +80,11 @@
     <p class="font-bold">
       {card.name}
     </p>
-    <p class="">{value}</p>
+    <p class="text-4xl">{value}</p>
+    <p class="text-gray-400 text-sm">{getDate()}</p>
+    {#each Object.entries(card.settings) as [name, value]}
+        <p class="text-gray-400 text-sm">{name}: {value}</p>
+    {/each}
   </div>
   <div id="chart-{card.name.replace(/\s+/g, '-')}" class="chart"></div>
   <div class="controls">
@@ -92,7 +100,7 @@
 <style>
   .card {
     border-radius: 10px;
-    height: 100px;
+    padding: 15px 0;
     width: 500px;
     background-color: white;
     display: flex;
@@ -109,8 +117,8 @@
 
   .chart {
     margin: auto 0;
-    height: 60px;
-  }
+    height: 120px;
+}
 
   .controls {
     display: flex;

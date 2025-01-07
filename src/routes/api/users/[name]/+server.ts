@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { pool } from '$lib/server/db';
-import { CardState } from '$lib/card.svelte.js';
+import { CardState, type CardSettings } from '$lib/card.svelte.js';
 
 export async function GET({ params }) {
 
@@ -18,19 +18,19 @@ export async function GET({ params }) {
 
     const cardsResults = await pool.query(
         `SELECT c.*,
-  (SELECT ARRAY_AGG(cv.current_value) 
-   FROM card_values cv 
-   WHERE cv.card_id = c.id) as values,
-  (SELECT ARRAY_AGG(cs.setting_name) 
-   FROM card_settings cs 
-   WHERE cs.card_id = c.id) as settings
+ (SELECT ARRAY_AGG(json_build_object('value', cv.current_value, 'timestamp', cv.updated_at))
+  FROM card_values cv
+  WHERE cv.card_id = c.id) as values,
+ (SELECT ARRAY_AGG(json_build_object('name', cs.setting_name, 'value', cs.value))
+  FROM card_settings cs
+  WHERE cs.card_id = c.id) as settings
 FROM user_cards c
 WHERE c.user_id = $1;`,  // Need to group by the card ID to aggregate values/settings`,
         [user.id]
     );
 
     const cards = cardsResults.rows;
-    console.log(cards)
+    console.log(cards);
 
     const cardStates: CardState[] = cards.map(card => new CardState({
         id: card.id,
@@ -40,12 +40,19 @@ WHERE c.user_id = $1;`,  // Need to group by the card ID to aggregate values/set
         createdAt: card.created_at,
         updatedAt: card.updated_at,
         name: card.name || '',
-        settings: card.settings || {},
-        values: card.values || [],
+        settings: card.settings.reduce((acc, item) => {
+            acc[item.name] = item.value;
+            return acc;
+          }, {} as Record<string, number>) || {},
+        values: card.values?.map(v => ({
+            value: v.value,
+            timestamp: new Date(v.timestamp)
+          })) || [],
     }));
 
-    user.cards = cardStates;
+    console.log(cardStates[0].settings)
 
+    user.cards = cardStates;
 
     return json({ ...user });
 }

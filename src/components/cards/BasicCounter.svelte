@@ -1,81 +1,127 @@
 <script lang="ts">
+  import { CounterState } from "$lib/counter.svelte"
+  import { CardState } from "$lib/card.svelte"
+  import { Plus, Minus } from "lucide-svelte"
+  import { onMount } from "svelte"
+  import * as d3 from "d3"
 
-    import { CounterState } from "$lib/counter.svelte";
+  let { card } = $props()
 
-    import { CardState } from "$lib/card.svelte";
+  let value: number = $state(getValue());
 
-    import { Plus, Minus } from 'lucide-svelte'
+  function getValue() {
+    return parseFloat(card.values[card.values.length - 1]);
+  }
 
-    // let {counter = new CounterState(0), name = 'My buttons\' name',} = $props();
 
-    let { card } = $props();
+  $effect(() => {
+    updateChart()
+  })
 
-    function getValue() {    
-        return card.values[card.values.length - 1]
-    }
+  function parseData(data: (string | number)[]) {
+    // Convert all values to numbers
+    return data.map((d) => (typeof d === "string" ? parseFloat(d) : d))
+  }
 
+  function updateChart() {
+    // Get the last 10 values
+
+    const rawData = card.values.slice(-10)
+    const data = parseData(rawData)
+    // Clear existing chart
+    d3.select("#chart-" + card.name.replace(/\s+/g, "-"))
+      .selectAll("*")
+      .remove()
+
+    const margin = { top: 10, right: 10, bottom: 10, left: 10 }
+    const width = 200 - margin.left - margin.right
+    const height = 60 - margin.top - margin.bottom
+
+    const svg = d3
+      .select("#chart-" + card.name.replace(/\s+/g, "-"))
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`)
+
+    const x = d3
+      .scaleBand()
+      .range([0, width])
+      .domain(d3.range(data.length))
+      .padding(0.1)
+
+    const y = d3
+      .scaleLinear()
+      .range([height, 0])
+      .domain([0, d3.max(data) || 0])
+
+    svg
+      .selectAll("rect")
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("x", (d, i) => x(i) ?? 0)
+      .attr("y", (d) => y(d))
+      .attr("width", x.bandwidth())
+      .attr("height", (d) => height - y(d))
+      .attr("rx", 4) // Rounded corners
+      .attr("ry", 4) // Rounded corners
+      .attr("fill", "#e2e8f0")
+  }
 </script>
 
 <div class="card">
-
-    <div class="info">
-        
-        <p class="font-bold">
-            {card.name}
-        </p>
-        
-        <p class="">{getValue()}</p>
-
-    </div>
-
-
-    <div class="controls">
-
-        <button class="button">
-            <Plus/>
-        </button>
-        
-        <button class="button">
-            <Minus/>
-        </button>
-    </div>
-
+  <div class="info">
+    <p class="font-bold">
+      {card.name}
+    </p>
+    <p class="">{value}</p>
+  </div>
+  <div id="chart-{card.name.replace(/\s+/g, '-')}" class="chart"></div>
+  <div class="controls">
+    <button class="button" onclick={() => {value += 1}}>
+      <Plus />
+    </button>
+    <button class="button" onclick={() => {value -= 1}}>
+      <Minus />
+    </button>
+  </div>
 </div>
 
 <style>
-    .card {
-        border-radius: 10px;
-        height: 100px;
-        width: 500px;
-        background-color: white;
+  .card {
+    border-radius: 10px;
+    height: 100px;
+    width: 500px;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-        display:flex;
-        justify-content: space-between;
-    }
+  .info {
+    margin: auto 0;
+    padding-left: 10px;
+    font-family: Inter;
+    font-size: 20px;
+  }
 
-    .info {
-        margin: auto 0;
-        padding-left: 10px;
+  .chart {
+    margin: auto 0;
+    height: 60px;
+  }
 
-        font-family: Inter;
-        font-size: 20px;
-    }
+  .controls {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding-right: 10px;
+  }
 
-    .controls {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-
-        padding-right: 10px;
-    }
-
-    .button {
-        background-color: white;
-        box-shadow: none;
-        border: 0;
-    }
-
-    
-
-    
+  .button {
+    background-color: white;
+    box-shadow: none;
+    border: 0;
+  }
 </style>

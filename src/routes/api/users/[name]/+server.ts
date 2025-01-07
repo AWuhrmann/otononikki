@@ -4,8 +4,6 @@ import { CardState } from '$lib/card.svelte.js';
 
 export async function GET({ params }) {
 
-    console.log('test');
-
     const { name } = params;
 
     const userResult = await pool.query(
@@ -20,13 +18,14 @@ export async function GET({ params }) {
 
     const cardsResults = await pool.query(
         `SELECT c.*,
-            ARRAY_AGG(cv.current_value) as values,
-            ARRAY_AGG(cs.setting_name) as settings
-     FROM user_cards c
-     LEFT JOIN card_values cv ON c.id = cv.id 
-     LEFT JOIN card_settings cs ON c.id = cs.id
-     WHERE c.user_id = $1
-        GROUP BY c.id`,  // Need to group by the card ID to aggregate values/settings`,
+  (SELECT ARRAY_AGG(cv.current_value) 
+   FROM card_values cv 
+   WHERE cv.card_id = c.id) as values,
+  (SELECT ARRAY_AGG(cs.setting_name) 
+   FROM card_settings cs 
+   WHERE cs.card_id = c.id) as settings
+FROM user_cards c
+WHERE c.user_id = $1;`,  // Need to group by the card ID to aggregate values/settings`,
         [user.id]
     );
 
@@ -47,9 +46,6 @@ export async function GET({ params }) {
 
     user.cards = cardStates;
 
-    console.log(user)
-
-    console.log(user.cards[0].values)
 
     return json({ ...user });
 }

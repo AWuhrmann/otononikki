@@ -9,18 +9,26 @@ const pool = new pg.Pool({
   password: env.POSTGRES_PASSWORD
 });
 
-// Add error listener
-pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
-});
+export async function getUser(username: string) {
 
-// Test the connection
-pool.query('SELECT NOW()', (err, res) => {
-  if (err) {
-    console.error('Error connecting to the database:', err);
-  } else {
-    console.log('Database connected successfully');
-  }
-});
+  const userResult = await pool.query(
+    `SELECT u.*, u.username as username 
+  FROM users u WHERE u.username = $1`,
+    [username]
+  );
+
+  return userResult.rows[0] || null;
+}
+
+export async function createUser(data: { username: string }) {
+
+  const userResult = await pool.query(
+    `INSERT INTO users (username) VALUES ($1) RETURNING *`,
+    [data.username]
+  );
+
+  return userResult.rows[0];
+
+}
 
 export { pool };

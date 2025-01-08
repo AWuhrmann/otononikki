@@ -18,6 +18,26 @@
     return card.values[card.values.length - 1].timestamp
   }
 
+  function increment() {
+    if ('max_value' in card.settings && value >= card.settings.max_value) {
+      return
+    }
+    value += 1
+  }
+
+  function decrement() {
+    console.log(colorClass)
+    if ('min_value' in card.settings && value <= card.settings.min_value) {
+      return
+    }
+    value -= 1
+  }
+
+  let colorClass = $derived(
+    'min_value' in card.settings && value <= card.settings.min_value 
+      ? 'text-gray-500 cursor-default' 
+      : 'text-black hover:opacity-80 transition-colors cursor-pointer'  );
+
   $effect(() => {
     updateChart()
   })
@@ -112,19 +132,15 @@
   <div class="controls">
     <button
       class="button"
-      onclick={() => {
-        value += 1
-      }}
+      onclick={increment}
     >
       <Plus />
     </button>
     <button
       class="button"
-      onclick={() => {
-        value -= 1
-      }}
+      onclick={decrement}
     >
-      <Minus />
+      <Minus class={colorClass}/>
     </button>
   </div>
 </div>

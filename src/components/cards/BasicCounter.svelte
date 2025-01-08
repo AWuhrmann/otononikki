@@ -1,6 +1,6 @@
 <script lang="ts">
   import { CounterState } from "$lib/counter.svelte"
-  import { CardState } from "$lib/card.svelte"
+  import { CardState, saveCard } from "$lib/card.svelte"
   import { Plus, Minus } from "lucide-svelte"
   import { onMount } from "svelte"
   import * as d3 from "d3"
@@ -23,6 +23,8 @@
       return
     }
     value += 1
+    console.log(card);
+    saveCard(card, value);
   }
 
   function decrement() {

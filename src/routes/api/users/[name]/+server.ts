@@ -14,7 +14,6 @@ export async function GET({ params }) {
 
     const user = userResult.rows[0];
 
-    console.log(user);
 
     const cardsResults = await pool.query(
         `SELECT c.*,
@@ -33,6 +32,7 @@ WHERE c.user_id = $1;`,  // Need to group by the card ID to aggregate values/set
     console.log(cards);
 
     const cardStates: CardState[] = cards.map(card => new CardState({
+        userId: card.user_id,
         id: card.id,
         title: card.title,
         description: card.description,

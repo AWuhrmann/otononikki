@@ -17,14 +17,21 @@ export async function GET({ params }) {
 
     const cardsResults = await pool.query(
         `SELECT c.*,
- (SELECT ARRAY_AGG(json_build_object('value', cv.current_value, 'timestamp', cv.updated_at))
-  FROM card_values cv
-  WHERE cv.card_id = c.id) as values,
- (SELECT ARRAY_AGG(json_build_object('name', cs.setting_name, 'value', cs.value))
-  FROM card_settings cs
-  WHERE cs.card_id = c.id) as settings
+    ARRAY_AGG(
+        CASE 
+            WHEN cv.id IS NOT NULL 
+            THEN json_build_object('value', cv.current_value, 'timestamp', cv.updated_at)
+        END) FILTER (WHERE cv.id IS NOT NULL) as values,
+    ARRAY_AGG(
+        CASE 
+            WHEN cs.id IS NOT NULL 
+            THEN json_build_object('name', cs.setting_name, 'value', cs.value)
+        END) FILTER (WHERE cs.id IS NOT NULL) as settings
 FROM user_cards c
-WHERE c.user_id = $1;`,  // Need to group by the card ID to aggregate values/settings`,
+LEFT JOIN card_values cv ON cv.card_id = c.id
+LEFT JOIN card_settings cs ON cs.card_id = c.id
+WHERE c.user_id = $1
+GROUP BY c.id, c.user_id /* add other columns from c.* as needed */;;`,  // Need to group by the card ID to aggregate values/settings`,
         [user.id]
     );
 
@@ -50,7 +57,7 @@ WHERE c.user_id = $1;`,  // Need to group by the card ID to aggregate values/set
           })) || [],
     }));
 
-    console.log(cardStates[0].settings)
+    console.log(cardStates[0])
 
     user.cards = cardStates;
 

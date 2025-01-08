@@ -23,16 +23,15 @@
       return
     }
     value += 1
-    console.log(card);
     saveCard(card, value);
   }
 
   function decrement() {
-    console.log(colorClass)
     if ('min_value' in card.settings && value <= card.settings.min_value) {
       return
     }
     value -= 1
+    saveCard(card, value);
   }
 
   let colorClass = $derived(
@@ -71,10 +70,7 @@
   function updateChart() {
     // Get the last 10 values
 
-    const rawData = card.values.slice(-10)
-    const data = parseData(rawData)
-
-    console.log(data.length)
+    const data = parseData(card.values)
 
     // Clear existing chart
     d3.select("#chart-" + card.name.replace(/\s+/g, "-"))

@@ -4,19 +4,19 @@
   import { Plus, Minus } from "lucide-svelte"
   import { onMount } from "svelte"
   import * as d3 from "d3"
+  import _ from "lodash"
 
   let { card } = $props()
 
-  let value: number = $state(getValue());
+  let value: number = $state(getValue())
 
   function getValue() {
-    return parseFloat(card.values[card.values.length - 1].value);
+    return parseFloat(card.values[card.values.length - 1].value)
   }
 
   function getDate() {
-    return card.values[card.values.length - 1].timestamp;
+    return card.values[card.values.length - 1].timestamp
   }
-
 
   $effect(() => {
     updateChart()
@@ -24,7 +24,26 @@
 
   function parseData(data: (string | number)[]) {
     // Convert all values to numbers
-    return data.map((d) => (typeof d.value === "string" ? parseFloat(d.value) : d))
+    const dateMap = {}
+
+    for (const item of data) {
+      const value =
+        typeof item.value === "string" ? parseFloat(item.value) : item.value
+      const date = new Date(item.timestamp).toISOString().split("T")[0] // YYYY-MM-DD
+
+      // If we haven't seen this date before, or if this timestamp is later than what we have
+      if (!dateMap[date] || item.timestamp > dateMap[date].timestamp) {
+        dateMap[date] = {
+          date,
+          value,
+          timestamp: item.timestamp,
+        }
+      }
+
+    }
+
+    // Convert the map back to an array
+    return Object.values(dateMap).map((item) => item.value)
   }
 
   function updateChart() {
@@ -32,6 +51,9 @@
 
     const rawData = card.values.slice(-10)
     const data = parseData(rawData)
+
+    console.log(data.length)
+
     // Clear existing chart
     d3.select("#chart-" + card.name.replace(/\s+/g, "-"))
       .selectAll("*")
@@ -83,15 +105,25 @@
     <p class="text-4xl">{value}</p>
     <p class="text-gray-400 text-sm">{getDate()}</p>
     {#each Object.entries(card.settings) as [name, value]}
-        <p class="text-gray-400 text-sm">{name}: {value}</p>
+      <p class="text-gray-400 text-sm">{name}: {value}</p>
     {/each}
   </div>
   <div id="chart-{card.name.replace(/\s+/g, '-')}" class="chart"></div>
   <div class="controls">
-    <button class="button" onclick={() => {value += 1}}>
+    <button
+      class="button"
+      onclick={() => {
+        value += 1
+      }}
+    >
       <Plus />
     </button>
-    <button class="button" onclick={() => {value -= 1}}>
+    <button
+      class="button"
+      onclick={() => {
+        value -= 1
+      }}
+    >
       <Minus />
     </button>
   </div>
@@ -118,7 +150,7 @@
   .chart {
     margin: auto 0;
     height: 120px;
-}
+  }
 
   .controls {
     display: flex;

@@ -40,7 +40,7 @@ WHERE c.user_id = $1;`,  // Need to group by the card ID to aggregate values/set
         createdAt: card.created_at,
         updatedAt: card.updated_at,
         name: card.name || '',
-        settings: card.settings.reduce((acc, item) => {
+        settings: card.settings?.reduce((acc, item) => {
             acc[item.name] = item.value;
             return acc;
           }, {} as Record<string, number>) || {},

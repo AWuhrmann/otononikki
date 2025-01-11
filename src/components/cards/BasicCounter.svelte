@@ -19,39 +19,38 @@
   }
 
   function increment() {
-    if ('max_value' in card.settings && value >= card.settings.max_value) {
+    if ("max_value" in card.settings && value >= card.settings.max_value) {
       return
     }
     value += 1
-    saveCard(card, value);
+    saveCard(card, value)
   }
 
   function decrement() {
-    if ('min_value' in card.settings && value <= card.settings.min_value) {
+    if ("min_value" in card.settings && value <= card.settings.min_value) {
       return
     }
     value -= 1
-    saveCard(card, value);
+    saveCard(card, value)
   }
 
   let colorClass = $derived(
-    'min_value' in card.settings && value <= card.settings.min_value 
-      ? 'text-gray-500 cursor-default' 
-      : 'text-black hover:opacity-80 transition-colors cursor-pointer'  );
+    "min_value" in card.settings && value <= card.settings.min_value
+      ? "text-gray-500 cursor-default"
+      : "text-black hover:opacity-80 transition-colors cursor-pointer",
+  )
 
   $effect(() => {
     updateChart()
   })
 
-  function parseData(data: (string | number)[]) {
+  function parseData(data) {
     // Convert all values to numbers
     const dateMap = {}
-
     for (const item of data) {
       const value =
         typeof item.value === "string" ? parseFloat(item.value) : item.value
       const date = new Date(item.timestamp).toISOString().split("T")[0] // YYYY-MM-DD
-
       // If we haven't seen this date before, or if this timestamp is later than what we have
       if (!dateMap[date] || item.timestamp > dateMap[date].timestamp) {
         dateMap[date] = {
@@ -60,17 +59,14 @@
           timestamp: item.timestamp,
         }
       }
-
     }
-
-    // Convert the map back to an array
-    return Object.values(dateMap).map((item) => item.value)
+    // Convert the map back to an array and preserve dates
+    return Object.values(dateMap)
   }
 
   function updateChart() {
-    // Get the last 10 values
-
-    const data = parseData(card.values)
+    // Get the last 10 values with their dates
+    const chartData = parseData(card.values)
 
     // Clear existing chart
     d3.select("#chart-" + card.name.replace(/\s+/g, "-"))
@@ -80,6 +76,19 @@
     const margin = { top: 10, right: 10, bottom: 10, left: 10 }
     const width = 200 - margin.left - margin.right
     const height = 100 - margin.top - margin.bottom
+
+    // Create tooltip div
+    const tooltip = d3
+      .select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0)
+      .style("position", "absolute")
+      .style("background-color", "white")
+      .style("border", "1px solid #ddd")
+      .style("border-radius", "4px")
+      .style("padding", "5px")
+      .style("pointer-events", "none")
 
     const svg = d3
       .select("#chart-" + card.name.replace(/\s+/g, "-"))
@@ -92,26 +101,36 @@
     const x = d3
       .scaleBand()
       .range([0, width])
-      .domain(d3.range(data.length))
+      .domain(d3.range(chartData.length))
       .padding(0.1)
 
     const y = d3
       .scaleLinear()
       .range([height, 0])
-      .domain([0, d3.max(data) || 0])
+      .domain([0, d3.max(chartData, (d) => d.value) || 0])
 
     svg
       .selectAll("rect")
-      .data(data)
+      .data(chartData)
       .enter()
       .append("rect")
       .attr("x", (d, i) => x(i) ?? 0)
-      .attr("y", (d) => y(d))
+      .attr("y", (d) => y(d.value))
       .attr("width", x.bandwidth())
-      .attr("height", (d) => height - y(d))
-      .attr("rx", 4) // Rounded corners
-      .attr("ry", 4) // Rounded corners
+      .attr("height", (d) => height - y(d.value))
+      .attr("rx", 4)
+      .attr("ry", 4)
       .attr("fill", "#e2e8f0")
+      .on("mouseover", function (event, d) {
+        tooltip.transition().duration(200).style("opacity", 0.9)
+        tooltip
+          .html(d.date)
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY - 28 + "px")
+      })
+      .on("mouseout", function (d) {
+        tooltip.transition().duration(500).style("opacity", 0)
+      })
   }
 </script>
 
@@ -120,8 +139,9 @@
     <p class="font-bold">
       {card.name}
     </p>
-    <p class="text-4xl">{value}
-      {#if 'unit' in card.settings}
+    <p class="text-4xl">
+      {value}
+      {#if "unit" in card.settings}
         {card.settings.unit}
       {/if}
     </p>
@@ -132,17 +152,11 @@
   </div>
   <div id="chart-{card.name.replace(/\s+/g, '-')}" class="chart"></div>
   <div class="controls">
-    <button
-      class="button"
-      onclick={increment}
-    >
+    <button class="button" onclick={increment}>
       <Plus />
     </button>
-    <button
-      class="button"
-      onclick={decrement}
-    >
-      <Minus class={colorClass}/>
+    <button class="button" onclick={decrement}>
+      <Minus class={colorClass} />
     </button>
   </div>
 </div>

@@ -120,7 +120,11 @@
     <p class="font-bold">
       {card.name}
     </p>
-    <p class="text-4xl">{value}</p>
+    <p class="text-4xl">{value}
+      {#if 'unit' in card.settings}
+        {card.settings.unit}
+      {/if}
+    </p>
     <p class="text-gray-400 text-sm">{getDate()}</p>
     {#each Object.entries(card.settings) as [name, value]}
       <p class="text-gray-400 text-sm">{name}: {value}</p>

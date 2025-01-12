@@ -23,14 +23,16 @@
       return
     }
     value += 1
+    updateChart()
     saveCard(card, value)
   }
-
+  
   function decrement() {
     if ("min_value" in card.settings && value <= card.settings.min_value) {
       return
     }
     value -= 1
+    updateChart()
     saveCard(card, value)
   }
 
@@ -44,14 +46,15 @@
     updateChart()
   })
 
-  function parseData(data) {
-    // Convert all values to numbers
+  function parseData(data, lastValue) {
+    // First create the date map as before
     const dateMap = {}
+
+    // Process input data
     for (const item of data) {
       const value =
         typeof item.value === "string" ? parseFloat(item.value) : item.value
       const date = new Date(item.timestamp).toISOString().split("T")[0] // YYYY-MM-DD
-      // If we haven't seen this date before, or if this timestamp is later than what we have
       if (!dateMap[date] || item.timestamp > dateMap[date].timestamp) {
         dateMap[date] = {
           date,
@@ -60,16 +63,67 @@
         }
       }
     }
-    // Convert the map back to an array and preserve dates
-    return Object.values(dateMap)
+
+    // Find the date range
+    const dates = Object.keys(dateMap)
+    let startDate =
+      dates.length > 0
+        ? new Date(Math.min(...dates.map((d) => new Date(d))))
+        : new Date() // If no dates, use today
+    const today = new Date()
+    today.setHours(23, 59, 59, 999) // Set to end of day
+
+    // Fill in missing dates with zeros up to today
+    const allDates = []
+    const currentDate = new Date(startDate)
+
+    while (currentDate <= today) {
+      const dateStr = currentDate.toISOString().split("T")[0]
+      if (!dateMap[dateStr]) {
+        dateMap[dateStr] = {
+          date: dateStr,
+          value: 0,
+          timestamp: currentDate.getTime(),
+        }
+      }
+      allDates.push(dateStr)
+      currentDate.setDate(currentDate.getDate() + 1)
+    }
+
+    // Sort dates and create final array
+    const sortedData = allDates.map((date) => dateMap[date])
+
+    // Check if we need to modify the last value
+    if (sortedData.length > 0 && lastValue !== undefined) {
+      const lastEntry = sortedData[sortedData.length - 1]
+      if (lastEntry.value !== lastValue) {
+        lastEntry.value = lastValue
+      }
+    }
+
+    return sortedData
+  }
+
+  function createSafeId(name) {
+    // Replace any non-alphanumeric character with a dash and convert to lowercase
+    return (
+      "chart-" +
+      name
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "-")
+        .replace(/-+/g, "-") // Replace multiple consecutive dashes with a single dash
+        .replace(/^-|-$/g, "")
+    ) // Remove leading and trailing dashes
   }
 
   function updateChart() {
     // Get the last 10 values with their dates
-    const chartData = parseData(card.values)
+    const lastValue = value;
+    const chartData = parseData(card.values, lastValue)
+    const chartId = createSafeId(card.name)
 
     // Clear existing chart
-    d3.select("#chart-" + card.name.replace(/\s+/g, "-"))
+    d3.select("#" + chartId)
       .selectAll("*")
       .remove()
 
@@ -91,7 +145,7 @@
       .style("pointer-events", "none")
 
     const svg = d3
-      .select("#chart-" + card.name.replace(/\s+/g, "-"))
+      .select("#" + chartId)
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -150,7 +204,7 @@
       <p class="text-gray-400 text-sm">{name}: {value}</p>
     {/each}
   </div>
-  <div id="chart-{card.name.replace(/\s+/g, '-')}" class="chart"></div>
+  <div id={createSafeId(card.name)} class="chart"></div>
   <div class="controls">
     <button class="button" onclick={increment}>
       <Plus />

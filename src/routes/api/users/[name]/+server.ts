@@ -21,17 +21,19 @@ export async function GET({ params }) {
         CASE 
             WHEN cv.id IS NOT NULL 
             THEN json_build_object('value', cv.current_value, 'timestamp', cv.updated_at)
-        END) FILTER (WHERE cv.id IS NOT NULL) as values,
+        END ORDER BY cv.updated_at ASC
+    ) FILTER (WHERE cv.id IS NOT NULL) as values,
     ARRAY_AGG(
         CASE 
             WHEN cs.id IS NOT NULL 
             THEN json_build_object('name', cs.setting_name, 'value', cs.value)
-        END) FILTER (WHERE cs.id IS NOT NULL) as settings
+        END
+    ) FILTER (WHERE cs.id IS NOT NULL) as settings
 FROM user_cards c
 LEFT JOIN card_values cv ON cv.card_id = c.id
 LEFT JOIN card_settings cs ON cs.card_id = c.id
 WHERE c.user_id = $1
-GROUP BY c.id, c.user_id /* add other columns from c.* as needed */;;`,  // Need to group by the card ID to aggregate values/settings`,
+GROUP BY c.id, c.user_id;`,  // Need to group by the card ID to aggregate values/settings`,
         [user.id]
     );
 

@@ -1,22 +1,23 @@
 <!-- Modal.svelte -->
+<!-- Modal.svelte -->
 <script>
-    /** @type {{ title: string, onClose: () => void, children?: import('svelte').Snippet }} */
-    let { title, onClose, children } = $props();
-  </script>
-  
-  <div class="modal-backdrop">
-    <div class="modal">
-      <header>
-        <h2>{title}</h2>
-        <button class="close-button" onclick={onClose}>×</button>
-      </header>
-      
-      <div class="modal-content">
-        {@render children?.()}
-      </div>
+  /** @type {{ title: string, onClose: () => void, currentStep: number, children?: import('svelte').Snippet }} */
+  let { title, onClose, currentStep, children } = $props();
+</script>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <header>
+      <h2>{title}</h2>
+      <button class="close-button" onclick={onClose}>×</button>
+    </header>
+    
+    <div class="modal-content">
+      {@render children?.({ currentStep })}
     </div>
   </div>
-  
+</div>
+
   <style>
     .modal-backdrop {
       position: fixed;

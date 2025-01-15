@@ -1,7 +1,11 @@
 <!-- Modal.svelte -->
-<!-- Modal.svelte -->
 <script>
-  /** @type {{ title: string, onClose: () => void, currentStep: number, children?: import('svelte').Snippet }} */
+  /** @type {{ 
+    title: string, 
+    onClose: () => void, 
+    currentStep: number, 
+    children?: import('svelte').Snippet<[{ currentStep: number }]>
+  }} */
   let { title, onClose, currentStep, children } = $props();
 </script>
 
@@ -13,59 +17,70 @@
     </header>
     
     <div class="modal-content">
+      <div class="progress-bar">
+        <div class="step-indicator" class:active={currentStep >= 1}>1</div>
+        <div class="step-indicator" class:active={currentStep >= 2}>2</div>
+      </div>
       {@render children?.({ currentStep })}
     </div>
   </div>
 </div>
 
-  <style>
-    .modal-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-  
-    .modal {
-      background: white;
-      border-radius: 4px;
-      padding: 20px;
-      width: 80%;
-      max-width: 500px;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-  
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-  
-    h2 {
-      margin: 0;
-    }
-  
-    .close-button {
-      background: none;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      padding: 0 8px;
-    }
-  
-    .close-button:hover {
-      opacity: 0.7;
-    }
-  
-    .modal-content {
-      /* Add any specific styling for the content area */
-    }
-  </style>
+<style>
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal {
+    background: white;
+    border-radius: 4px;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .progress-bar {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+
+  .step-indicator {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  .step-indicator.active {
+    background: #0066cc;
+    color: white;
+  }
+</style>

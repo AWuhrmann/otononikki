@@ -1,12 +1,27 @@
 <!-- App.svelte -->
 <script>
     import Modal from "$components/Modal.svelte"
+    import { Heart, Star, Zap } from 'lucide-svelte'
 
+    
 
   let showModal = $state(false);
   let currentStep = $state(1);
   let name = $state('');
   let color = $state('');
+
+  let type = $state('');
+
+  let selected = 'option1'
+
+  let categories = [
+    {name:'Counter',
+    icon: Heart},
+    {name:'Timer',
+    icon: Star},
+    {name:'Category',
+    icon: Zap},
+  ];
 
   function closeModal() {
     showModal = false;
@@ -33,19 +48,39 @@
 
 {#if showModal}
   <Modal 
-    title="Profile Setup" 
+    title="Create new card" 
     onClose={closeModal}
-    {currentStep}
+    nSteps={3}
+    currentStep={currentStep}
   >
     {#snippet children({ currentStep })}
       {#if currentStep === 1}
         <div class="step">
-          <h3>Step 1: Enter Your Name</h3>
+          <h3>Step 1: Card name and types</h3>
           <input 
             type="text" 
             placeholder="Enter your name"
             bind:value={name}
           />
+          
+          <h3>What type of cards do you want ?</h3>
+          <div class="categories-group flex-row">
+            {#each categories as category}
+            <label class="radio-button">
+              <input 
+                type="radio" 
+                name="options" 
+                value="option1" 
+                bind:group={selected}
+              />
+              <div class="content-cat">
+                <category.icon size={20} />
+                <span>{category.name}</span>
+              </div>
+            </label>
+            {/each}
+          </div>
+
           
           <div class="button-group">
             <button class="secondary" onclick={closeModal}>Cancel</button>
@@ -91,6 +126,39 @@
 {/if}
 
 <style>
+
+.categories-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .radio-button {
+    cursor: pointer;
+  }
+
+  .radio-button input[type="radio"] {
+    display: none;
+  }
+
+  .content-cat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+  }
+
+  .radio-button input[type="radio"]:checked + .content-cat {
+    background-color: #e2e8f0;
+    border-color: #64748b;
+  }
+
+  .content-cat:hover {
+    background-color: #f1f5f9;
+  }
+
   .step {
     display: flex;
     flex-direction: column;

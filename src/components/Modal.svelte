@@ -3,10 +3,11 @@
   /** @type {{ 
     title: string, 
     onClose: () => void, 
+    nSteps: number,
     currentStep: number, 
     children?: import('svelte').Snippet<[{ currentStep: number }]>
   }} */
-  let { title, onClose, currentStep, children } = $props();
+  let { title, onClose, nSteps, currentStep, children } = $props();
 </script>
 
 <div class="modal-backdrop">
@@ -18,8 +19,9 @@
     
     <div class="modal-content">
       <div class="progress-bar">
-        <div class="step-indicator" class:active={currentStep >= 1}>1</div>
-        <div class="step-indicator" class:active={currentStep >= 2}>2</div>
+        {#each {length: nSteps}, i}
+          <div class="step-indicator" class:active={currentStep >= i+1}>{i+1}</div>
+        {/each}
       </div>
       {@render children?.({ currentStep })}
     </div>

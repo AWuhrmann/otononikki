@@ -7,8 +7,8 @@ export async function GET({ params }) {
     const { name } = params;
 
     const userResult = await pool.query(
-        `SELECT u.*, u.username as username 
-     FROM users u WHERE u.username = $1`,
+        `SELECT u.*, u.name as username 
+     FROM users u WHERE u.name = $1`,
         [name]
     );
 
@@ -20,16 +20,16 @@ export async function GET({ params }) {
     ARRAY_AGG(
         CASE 
             WHEN cv.id IS NOT NULL 
-            THEN json_build_object('value', cv.current_value, 'timestamp', cv.updated_at)
+            THEN json_build_object('value', cv.value, 'timestamp', cv.updated_at)
         END ORDER BY cv.updated_at ASC
     ) FILTER (WHERE cv.id IS NOT NULL) as values,
     ARRAY_AGG(
         CASE 
             WHEN cs.id IS NOT NULL 
-            THEN json_build_object('name', cs.setting_name, 'value', cs.value)
+            THEN json_build_object('name', cs.name, 'value', cs.value)
         END
     ) FILTER (WHERE cs.id IS NOT NULL) as settings
-FROM user_cards c
+FROM cards c
 LEFT JOIN card_values cv ON cv.card_id = c.id
 LEFT JOIN card_settings cs ON cs.card_id = c.id
 WHERE c.user_id = $1

@@ -12,8 +12,8 @@ const pool = new pg.Pool({
 export async function getUser(username: string) {
 
   const userResult = await pool.query(
-    `SELECT u.*, u.username as username 
-  FROM users u WHERE u.username = $1`,
+    `SELECT u.*, u.name as username 
+  FROM users u WHERE u.name = $1`,
     [username]
   );
 
@@ -23,7 +23,7 @@ export async function getUser(username: string) {
 export async function createUser(data: { username: string }) {
 
   const userResult = await pool.query(
-    `INSERT INTO users (username) VALUES ($1) RETURNING *`,
+    `INSERT INTO users (name) VALUES ($1) RETURNING *`,
     [data.username]
   );
 

@@ -1,9 +1,10 @@
 <!-- App.svelte -->
 <script>
     import Modal from "$components/Modal.svelte"
-    import { Heart, Star, Zap } from 'lucide-svelte'
+    import { RotateCcw, Timer, Grid2x2Plus } from 'lucide-svelte'
 
-    
+    import CardPreview from './CardPreview.svelte';
+    import ColorPicker from './ColorPicker.svelte';
 
   let showModal = $state(false);
   let currentStep = $state(1);
@@ -12,15 +13,15 @@
 
   let type = $state('');
 
-  let selected = 'option1'
+  let selected = $state('option1');
 
   let categories = [
     {name:'Counter',
-    icon: Heart},
+    icon: RotateCcw},
     {name:'Timer',
-    icon: Star},
+    icon: Timer},
     {name:'Category',
-    icon: Zap},
+    icon: Grid2x2Plus},
   ];
 
   function closeModal() {
@@ -96,17 +97,13 @@
 
       {:else if currentStep === 2}
         <div class="step">
-          <h3>Step 2: Choose Your Favorite Color</h3>
-          <select bind:value={color}>
-            <option value="">Select a color...</option>
-            <option value="red">Red</option>
-            <option value="blue">Blue</option>
-            <option value="green">Green</option>
-            <option value="purple">Purple</option>
-          </select>
+          <div class="color-section">
+            <ColorPicker bind:value={color} />
+          </div>
 
-          <div class="summary">
-            <p>Name: {name}</p>
+          <div class="preview-section">
+            <h4>Card Preview</h4>
+            <CardPreview {name} {color} />
           </div>
           
           <div class="button-group">
@@ -126,6 +123,19 @@
 {/if}
 
 <style>
+
+.preview-section {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+  }
+
+  .preview-section h4 {
+    margin: 0 0 1rem 0;
+    font-size: 0.875rem;
+    color: #64748b;
+  }
 
 .categories-group {
     display: flex;

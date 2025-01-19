@@ -39,9 +39,21 @@
     currentStep--
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     console.log("Submitted:", { name, color })
-    closeModal()
+    const response = await fetch(`/api/cards/new`, {
+      method: "POST",
+      body: JSON.stringify({
+        userId: 1,
+        title: "Fix my bugs",
+        completed: false,
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+
+    //    closeModal()
   }
 
   // Define a type for our settings
@@ -135,7 +147,9 @@
           </div>
 
           <div class="button-group">
-            <button class="secondary" onclick={previousStep}>Previous step</button>
+            <button class="secondary" onclick={previousStep}
+              >Previous step</button
+            >
             <button class="primary" onclick={nextStep} disabled={!name}>
               Next
             </button>
@@ -147,7 +161,9 @@
 
           <div class="space-y-0">
             {#each settings as setting}
-              <div class="flex items-center gap-4 p-4 rounded-lg justify-between">
+              <div
+                class="flex items-center gap-4 p-4 rounded-lg justify-between"
+              >
                 <button
                   class="flex items-center gap-3 focus:outline-none"
                   onclick={() => toggleSetting(setting)}
@@ -183,27 +199,25 @@
                     {setting.label}
                   </span>
                 </button>
-                <div class="w-24 ">
-
+                <div class="w-24">
                   <input
-                  type="number"
-                  bind:value={setting.value}
-                  disabled={!setting.enabled}
-                  class="px-3 py-1.5 text-sm bg-white border rounded-md
+                    type="number"
+                    bind:value={setting.value}
+                    disabled={!setting.enabled}
+                    class="px-3 py-1.5 text-sm bg-white border rounded-md
                   focus:outline-none focus:ring-2 focus:ring-blue-500
                   disabled:opacity-50 disabled:bg-gray-100"
                   />
                 </div>
-                </div>
+              </div>
             {/each}
           </div>
         </div>
 
         <div class="button-group">
-          <button class="secondary" onclick={previousStep}>Previous step</button>
-          <button class="primary" onclick={handleSubmit}>
-            Submit
-          </button>
+          <button class="secondary" onclick={previousStep}>Previous step</button
+          >
+          <button class="primary" onclick={handleSubmit}> Submit </button>
         </div>
       {/if}
     {/snippet}

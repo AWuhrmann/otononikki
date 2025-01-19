@@ -44,9 +44,10 @@
     const response = await fetch(`/api/cards/new`, {
       method: "POST",
       body: JSON.stringify({
-        userId: 1,
-        title: "Fix my bugs",
-        completed: false,
+        name: name,
+        color: color,
+        type: type,
+        settings: settings
       }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",

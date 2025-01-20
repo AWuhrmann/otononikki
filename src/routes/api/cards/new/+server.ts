@@ -8,6 +8,5 @@ export async function POST({ locals, request, params }) {
 
     console.log(data);
 
-
+d
     return json({ success: true });
-}

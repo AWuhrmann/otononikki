@@ -11,10 +11,12 @@
   let value: number = $state(getValue())
 
   function getValue() {
+    if(card.values.length == 0) return 0
     return parseFloat(card.values[card.values.length - 1].value)
   }
 
   function getDate() {
+    if(card.values.length == 0) return new Date().getTime();
     return card.values[card.values.length - 1].timestamp
   }
 

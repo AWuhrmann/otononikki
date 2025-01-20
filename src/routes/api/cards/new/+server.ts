@@ -16,7 +16,11 @@ export async function POST({ locals, request, params }) {
 
     console.log(data);
 
-    pool.query('INSERT INTO cards (name, user_id) VALUES ($1, $2)', [data.name, id])
+    const row = await pool.query('INSERT INTO cards (name, user_id) VALUES ($1, $2) RETURNING id', [data.name, id])
+
+    const card_id = row.rows[0].id;
+
+    pool.query('INSERT INTO card_settings (name, value, card_id) VALUES ($1, $2, $3)', ['color', data.color, card_id]);
 
     return json({ success: true });
 }

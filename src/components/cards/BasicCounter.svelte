@@ -1,7 +1,7 @@
 <script lang="ts">
   import { CounterState } from "$lib/counter.svelte"
   import { CardState, saveCard } from "$lib/card.svelte"
-  import { Plus, Minus } from "lucide-svelte"
+  import { Plus, Minus, SlidersHorizontal } from "lucide-svelte"
   import { onMount } from "svelte"
   import * as d3 from "d3"
   import _ from "lodash"
@@ -207,13 +207,18 @@
     {/each}
   </div>
   <div id={createSafeId(card.name)} class="chart"></div>
-  <div class="controls">
-    <button class="button" onclick={increment}>
-      <Plus />
+  <div class="controls flex flex-col h-full pr-[10px]">
+    <button class="button">
+      <SlidersHorizontal />
     </button>
-    <button class="button" onclick={decrement}>
-      <Minus class={colorClass} />
-    </button>
+    <div class="flex flex-col justify-center flex-1 gap-[1px]">
+      <button class="button" onclick={increment}>
+        <Plus />
+      </button>
+      <button class="button" onclick={decrement}>
+        <Minus class={colorClass} />
+      </button>
+    </div>
   </div>
 </div>
 
@@ -227,29 +232,31 @@
     justify-content: space-between;
     align-items: center;
   }
-
+  
   .info {
     margin: auto 0;
     padding-left: 10px;
     font-family: Inter;
     font-size: 20px;
   }
-
+  
   .chart {
     margin: auto 0;
     height: 120px;
   }
-
+  
   .controls {
-    display: flex;
     flex-direction: column;
-    justify-content: space-around;
     padding-right: 10px;
+    gap: 1px;
+    height: 120px; /* Match the chart height */
+    display: flex;
+    justify-content: center; /* This will center the buttons vertically */
   }
-
+  
   .button {
     background-color: white;
     box-shadow: none;
     border: 0;
   }
-</style>
+  </style>

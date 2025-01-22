@@ -41,7 +41,7 @@ export async function POST({ locals, request, params }) {
     } 
     // If no value exists for today, insert new one
     await pool.query(
-      `INSERT INTO card_values (card_id, current_value) 
+      `INSERT INTO card_values (card_id, value) 
         VALUES ($1, $2)`,
       [card_id, value]
     );

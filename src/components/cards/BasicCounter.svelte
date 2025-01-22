@@ -176,7 +176,7 @@
       .attr("height", (d) => height - y(d.value))
       .attr("rx", 4)
       .attr("ry", 4)
-      .attr("fill", "#e2e8f0")
+      .attr("fill", card.settings['color'])
       .on("mouseover", function (event, d) {
         tooltip.transition().duration(200).style("opacity", 0.9)
         tooltip

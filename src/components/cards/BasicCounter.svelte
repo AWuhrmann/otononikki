@@ -193,7 +193,10 @@
 
 <div class="flex items-center justify-between bg-white rounded-lg py-4 w-[500px] h-[150px]">
   <div class="flex flex-col justify-start gap-[20px] pl-4 font-['Inter'] h-full w-[200px]">
-    <p class="font-bold text-xl">{card.name}</p>
+    <div>
+      <p class="font-bold text-xl">{card.name}</p>
+      <button class="text-gray-400" onclick={() => console.log(card.settings)}>test</button>
+    </div>
     <p class="text-4xl">
       {value}
       {#if "unit" in card.settings}{card.settings.unit}{/if}

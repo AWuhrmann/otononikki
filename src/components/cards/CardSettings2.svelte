@@ -103,7 +103,7 @@
   
             <div class="button-group">
               <button class="secondary" onclick={closeModal}>Cancel</button>
-              <button class="primary" onclick={nextStep} disabled={!name}>
+              <button class="primary" onclick={nextStep}>
                 Next
               </button>
             </div>
@@ -111,12 +111,12 @@
         {:else if currentStep === 2}
           <div class="step">
             <div class="color-section">
-              <ColorPicker bind:value={color} />
+              <ColorPicker bind:value={card.settings['color']} />
             </div>
   
             <div class="preview-section">
               <h4>Card Preview</h4>
-              <CardPreview {name} {color} />
+              <CardPreview name={card.name} color={card.settings['color']} />
             </div>
   
             <div class="button-group">

@@ -1,7 +1,7 @@
 <!-- App.svelte -->
 <script lang="ts">
   import Modal from "$components/Modal.svelte"
-  import { RotateCcw, Timer, Grid2x2Plus } from "lucide-svelte"
+  import { RotateCcw, Timer, Grid2x2Plus, SquarePlus } from "lucide-svelte"
 
   import CardPreview from "./CardPreview.svelte"
   import ColorPicker from "./ColorPicker.svelte"
@@ -101,7 +101,7 @@
   }
 </script>
 
-<button onclick={() => (showModal = true)}>Open Modal</button>
+<button onclick={() => (showModal = true)}><SquarePlus/></button>
 
 {#if showModal}
   <Modal title="Create new card" onClose={closeModal} nSteps={3} {currentStep}>

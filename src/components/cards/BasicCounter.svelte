@@ -5,6 +5,7 @@
   import { onMount } from "svelte"
   import * as d3 from "d3"
   import _ from "lodash"
+    import CardSettings2 from "./CardSettings2.svelte"
 
   let { card } = $props()
 
@@ -106,7 +107,7 @@
     return sortedData
   }
 
-  function createSafeId(name) {
+  function createSafeId(name: string) {
     // Replace any non-alphanumeric character with a dash and convert to lowercase
     return (
       "chart-" +
@@ -190,73 +191,24 @@
   }
 </script>
 
-<div class="card">
-  <div class="info">
-    <p class="font-bold">
-      {card.name}
-    </p>
+<div class="flex items-center justify-between bg-white rounded-lg py-4 w-[500px] h-[150px]">
+  <div class="flex flex-col justify-start gap-[20px] pl-4 font-['Inter'] h-full w-[200px]">
+    <p class="font-bold text-xl">{card.name}</p>
     <p class="text-4xl">
       {value}
-      {#if "unit" in card.settings}
-        {card.settings.unit}
-      {/if}
+      {#if "unit" in card.settings}{card.settings.unit}{/if}
     </p>
-    <p class="text-gray-400 text-sm">{getDate()}</p>
-    {#each Object.entries(card.settings) as [name, value]}
-      <p class="text-gray-400 text-sm">{name}: {value}</p>
-    {/each}
   </div>
-  <div id={createSafeId(card.name)} class="chart"></div>
-  <div class="controls flex flex-col h-full pr-[10px]">
-    <button class="button">
-      <SlidersHorizontal />
-    </button>
-    <div class="flex flex-col justify-center flex-1 gap-[1px]">
-      <button class="button" onclick={increment}>
-        <Plus />
-      </button>
-      <button class="button" onclick={decrement}>
-        <Minus class={colorClass} />
-      </button>
+  <div class="w-[200px]" id={createSafeId(card.name)}></div>
+  <div class="flex flex-col items-center pr-2 h-full">
+    <CardSettings2 card={card} class="bg-white border-0 shadow-none" />
+    <div class="flex-grow flex flex-col justify-center gap-0">
+      <button class="bg-white border-0 shadow-none" onclick={increment}><Plus /></button>
+      <button class="bg-white border-0 shadow-none" onclick={decrement}><Minus class={colorClass} /></button>
     </div>
   </div>
-</div>
+ </div>
 
 <style>
-  .card {
-    border-radius: 10px;
-    padding: 15px 0;
-    width: 500px;
-    background-color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
   
-  .info {
-    margin: auto 0;
-    padding-left: 10px;
-    font-family: Inter;
-    font-size: 20px;
-  }
-  
-  .chart {
-    margin: auto 0;
-    height: 120px;
-  }
-  
-  .controls {
-    flex-direction: column;
-    padding-right: 10px;
-    gap: 1px;
-    height: 120px; /* Match the chart height */
-    display: flex;
-    justify-content: center; /* This will center the buttons vertically */
-  }
-  
-  .button {
-    background-color: white;
-    box-shadow: none;
-    border: 0;
-  }
-  </style>
+</style>

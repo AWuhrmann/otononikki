@@ -37,7 +37,6 @@ export class CardState {
 }
 
 export async function saveCard(card: CardState, value: number) {
-  console.log('Saving !')
 
   const response = await fetch(`/api/cards/${card.id}/values`, {
     method: 'POST',

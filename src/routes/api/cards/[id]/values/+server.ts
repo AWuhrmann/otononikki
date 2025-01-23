@@ -17,8 +17,9 @@ export async function POST({ locals, request, params }) {
     });
 
     // First check if we already have a value for today
-    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+    const today = new Date().toLocaleDateString('en-CA'); // Get today's date in YYYY-MM-DD format
     
+
     const existingValue = await pool.query(
       `SELECT id 
        FROM card_values 
@@ -27,7 +28,7 @@ export async function POST({ locals, request, params }) {
       [card_id, today]
     );
 
-    console.log(existingValue);
+    console.log(today);
 
     if (existingValue.rows.length > 0) {
       // If value exists for today, delete it

@@ -1,39 +1,47 @@
 <script lang="ts">
   import { page } from "$app/stores"
   import { SignIn, SignOut } from "@auth/sveltekit/components"
+
+  import {
+    Notebook,
+    House,
+    ChartColumnStacked,
+    LogOut,
+    LogIn,
+  } from "lucide-svelte"
 </script>
 
 <header>
   <div class="signedInStatus">
     <div class="nojs-show loaded">
       <img
-      alt="User avatar"
-      src={$page.data?.session?.user?.image ??
+        alt="User avatar"
+        src={$page.data?.session?.user?.image ??
           `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(Math.random() * 100000) + 1}&randomizeIds=true`}
         class="avatar"
-        />
-        <nav>
-          <ul class="navItems my-auto">
-            <li class="navItem"><a href="/">Home</a></li>
-            <li class="navItem"><a href="/protected">Journal</a></li>
-            <li class="navItem"><a href="/stats">Stats</a></li>
-          </ul>
-        </nav>
+      />
+      <nav>
+        <ul class="navItems my-auto">
+          <li class="navItem"><a href="/"><House /></a></li>
+          <li class="navItem"><a href="/protected"><Notebook /></a></li>
+          <li class="navItem"><a href="/stats"><ChartColumnStacked /></a></li>
+        </ul>
+      </nav>
       {#if $page.data.session}
-        <span class="signedInText pr-10 font-courier">
+        <span class="signedInText pr-10">
           {$page.data.session.user?.email ?? $page.data.session.user?.name}
         </span>
         <SignOut>
           {#snippet submitButton()}
-                    <div  class="buttonPrimary">Sign out</div>
-                  {/snippet}
+            <LogOut />
+          {/snippet}
         </SignOut>
       {:else}
         <span class="notSignedInText">You are not signed in</span>
         <SignIn>
           {#snippet submitButton()}
-                    <div  class="buttonPrimary">Sign in</div>
-                  {/snippet}
+            <LogIn />
+          {/snippet}
         </SignIn>
       {/if}
     </div>
@@ -79,6 +87,7 @@
   }
   .avatar {
     border-radius: 2rem;
+    margin-right: 30px;
     float: left;
     height: 2.8rem;
     width: 2.8rem;

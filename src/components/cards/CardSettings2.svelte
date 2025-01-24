@@ -66,9 +66,7 @@
 <button onclick={() => (showModal = true)}><SlidersHorizontal /></button>
 
 {#if showModal}
-<input bind:value={card.name}>  
-<p>{card.name}</p>
-  <!-- <Modal title="Update card" onClose={closeModal} nSteps={3} {currentStep}>
+  <Modal title="Update card" onClose={closeModal} nSteps={3} {currentStep}>
     {#snippet children({ currentStep })}
       {#if currentStep === 1}
       <div class="step">
@@ -180,7 +178,7 @@
         </div>
       {/if}
     {/snippet}
-  </Modal> -->
+  </Modal>
 {/if}
 
 <style>

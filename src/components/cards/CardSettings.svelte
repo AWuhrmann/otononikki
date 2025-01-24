@@ -6,7 +6,7 @@
   import CardPreview from "./CardPreview.svelte"
   import ColorPicker from "./ColorPicker.svelte"
 
-  let showModal = $state(true)
+  let showModal = $state(false)
   let currentStep = $state(1)
   let name = $state("")
   let color = $state("")

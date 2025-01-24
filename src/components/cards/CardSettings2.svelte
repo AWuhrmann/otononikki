@@ -12,13 +12,16 @@
   import ColorPicker from "./ColorPicker.svelte"
 
   let showModal = $state(false)
+  
+  let {card = $bindable()} = $props();
+  
   let currentStep = $state(1)
   let color = $state("")
-  
+
   let type = $state("")
 
   let selected = $state("Counter")
-  
+
   let categories = [
     { name: "Counter", icon: RotateCcw },
     { name: "Timer", icon: Timer },
@@ -28,7 +31,6 @@
   function closeModal() {
     showModal = false
     currentStep = 1
-    name = ""
     color = ""
   }
 
@@ -41,25 +43,17 @@
   }
 
   async function handleSubmit() {
-    console.log("Submitted:", { name, color })
     closeModal()
   }
 
   type Setting = {
-      key: string
-      label: string
-      value: number
+    key: string
+    label: string
+    value: number
     enabled: boolean
     defaultValue?: number
   }
 
-  let { card = $bindable(), name = $bindable() } = $props()
-
-  $effect(() => {
-    console.log(card);
-    console.log(name);
-    card.name = name;
-  })
   // Toggle setting enabled state
   function toggleSetting(setting: Setting) {
     setting.enabled = !setting.enabled
@@ -72,17 +66,13 @@
 <button onclick={() => (showModal = true)}><SlidersHorizontal /></button>
 
 {#if showModal}
-  <Modal title="Update card" onClose={closeModal} nSteps={3} {currentStep}>
+<input bind:value={card.name}>  
+<p>{card.name}</p>
+  <!-- <Modal title="Update card" onClose={closeModal} nSteps={3} {currentStep}>
     {#snippet children({ currentStep })}
       {#if currentStep === 1}
-        <div class="step">
+      <div class="step">
           <h3>Step 1: Card name and types</h3>
-          <input
-            type="text"
-            placeholder="Enter your name"
-            bind:value={name}
-          />
-
           <h3>What type of cards do you want ?</h3>
           <div class="categories-group flex-row">
             {#each categories as category}
@@ -190,7 +180,7 @@
         </div>
       {/if}
     {/snippet}
-  </Modal>
+  </Modal> -->
 {/if}
 
 <style>
@@ -250,15 +240,6 @@
     justify-content: space-between;
     gap: 1rem;
     margin-top: 1rem;
-  }
-
-  input,
-  select {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-    font-size: 1rem;
   }
 
   button {

@@ -2,6 +2,7 @@
   import { page } from "$app/state"
   import Card from "$components/cards/Card.svelte"
   import CardSettings from "$components/cards/CardSettings.svelte"
+    import Parent from "$components/Parent.svelte"
 
   let { data } = $props()
 </script>

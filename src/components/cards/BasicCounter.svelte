@@ -5,21 +5,27 @@
   import { onMount } from "svelte"
   import * as d3 from "d3"
   import _ from "lodash"
-    import CardSettings2 from "./CardSettings2.svelte"
+  import CardSettings2 from "./CardSettings2.svelte"
+    import Children from "$components/Children.svelte"
 
   let { card } = $props()
 
+  let card_: CardState = $state(structuredClone(card));
+
   let value: number = $state(getValue())
 
-  let name = $state('test');
+  let name = $state(card.name)
 
   function getValue() {
-    if(card.values.length == 0) return 0
+    console.log('original', card)
+    console.log('copy', card_)
+    
+    if (card.values.length == 0) return 0
     return parseFloat(card.values[card.values.length - 1].value)
   }
 
   function getDate() {
-    if(card.values.length == 0) return new Date().getTime();
+    if (card.values.length == 0) return new Date().getTime()
     return card.values[card.values.length - 1].timestamp
   }
 
@@ -31,7 +37,7 @@
     updateChart()
     saveCard(card, value)
   }
-  
+
   function decrement() {
     if ("min_value" in card.settings && value <= card.settings.min_value) {
       return
@@ -116,7 +122,7 @@
 
   function updateChart() {
     // Get the last 10 values with their dates
-    const lastValue = value;
+    const lastValue = value
     const chartData = parseData(card.values, lastValue)
     const chartId = createSafeId(card.id)
 
@@ -172,7 +178,7 @@
       .attr("height", (d) => height - y(d.value))
       .attr("rx", 4)
       .attr("ry", 4)
-      .attr("fill", card.settings['color'])
+      .attr("fill", card.settings["color"])
       .on("mouseover", function (event, d) {
         tooltip.transition().duration(200).style("opacity", 0.9)
         tooltip
@@ -186,11 +192,17 @@
   }
 </script>
 
-<div class="flex items-center justify-between bg-white rounded-lg py-4 w-[500px] h-[150px]">
-  <div class="flex flex-col justify-start gap-[20px] pl-4 font-['Inter'] h-full w-[200px]">
+<div
+  class="flex items-center justify-between bg-white rounded-lg py-4 w-[500px] h-[150px]"
+>
+  <div
+    class="flex flex-col justify-start gap-[20px] pl-4 font-['Inter'] h-full w-[200px]"
+  >
     <div>
-      <p class="font-bold text-xl">{card.name}</p>
-      <button class="text-gray-400" onclick={() => console.log(card.settings)}>{name}</button>
+      <p class="font-bold text-xl">{card_.name}</p>
+      <button class="text-gray-400" onclick={() => console.log(card.settings)}
+        >{name}</button
+      >
     </div>
     <p class="text-4xl">
       {value}
@@ -199,14 +211,17 @@
   </div>
   <div class="w-[200px]" id={createSafeId(card.id)}></div>
   <div class="flex flex-col items-center pr-2 h-full">
-    <CardSettings2 bind:card={card} bind:name={name} />
+    <Children bind:herited={card_}/>
     <div class="flex-grow flex flex-col justify-center gap-0">
-      <button class="bg-white border-0 shadow-none" onclick={increment}><Plus /></button>
-      <button class="bg-white border-0 shadow-none" onclick={decrement}><Minus class={colorClass} /></button>
+      <button class="bg-white border-0 shadow-none" onclick={increment}
+        ><Plus /></button
+      >
+      <button class="bg-white border-0 shadow-none" onclick={decrement}
+        ><Minus class={colorClass} /></button
+      >
     </div>
   </div>
- </div>
+</div>
 
 <style>
-  
 </style>

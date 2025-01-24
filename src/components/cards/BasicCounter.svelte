@@ -11,6 +11,8 @@
 
   let value: number = $state(getValue())
 
+  let name = $state('test');
+
   function getValue() {
     if(card.values.length == 0) return 0
     return parseFloat(card.values[card.values.length - 1].value)
@@ -107,23 +109,16 @@
     return sortedData
   }
 
-  function createSafeId(name: string) {
+  function createSafeId(id: string) {
     // Replace any non-alphanumeric character with a dash and convert to lowercase
-    return (
-      "chart-" +
-      name
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, "-")
-        .replace(/-+/g, "-") // Replace multiple consecutive dashes with a single dash
-        .replace(/^-|-$/g, "")
-    ) // Remove leading and trailing dashes
+    return "chart-" + id
   }
 
   function updateChart() {
     // Get the last 10 values with their dates
     const lastValue = value;
     const chartData = parseData(card.values, lastValue)
-    const chartId = createSafeId(card.name)
+    const chartId = createSafeId(card.id)
 
     // Clear existing chart
     d3.select("#" + chartId)
@@ -195,16 +190,16 @@
   <div class="flex flex-col justify-start gap-[20px] pl-4 font-['Inter'] h-full w-[200px]">
     <div>
       <p class="font-bold text-xl">{card.name}</p>
-      <button class="text-gray-400" onclick={() => console.log(card.settings)}>test</button>
+      <button class="text-gray-400" onclick={() => console.log(card.settings)}>{name}</button>
     </div>
     <p class="text-4xl">
       {value}
       {#if "unit" in card.settings}{card.settings.unit}{/if}
     </p>
   </div>
-  <div class="w-[200px]" id={createSafeId(card.name)}></div>
+  <div class="w-[200px]" id={createSafeId(card.id)}></div>
   <div class="flex flex-col items-center pr-2 h-full">
-    <CardSettings2 card={card} class="bg-white border-0 shadow-none" />
+    <CardSettings2 bind:card={card} bind:name={name} />
     <div class="flex-grow flex flex-col justify-center gap-0">
       <button class="bg-white border-0 shadow-none" onclick={increment}><Plus /></button>
       <button class="bg-white border-0 shadow-none" onclick={decrement}><Minus class={colorClass} /></button>

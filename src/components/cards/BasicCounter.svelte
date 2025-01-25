@@ -8,6 +8,8 @@
   import CardSettings2 from "./CardSettings2.svelte"
     import Children from "$components/Children.svelte"
 
+  // I will try to implement floating UIs type shit :))
+
   let { card } = $props()
 
   let card_: CardState = $state(structuredClone(card));

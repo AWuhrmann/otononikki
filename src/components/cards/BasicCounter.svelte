@@ -20,8 +20,6 @@
   let name = $state(card.name)
 
   function getValue() {
-    console.log('original', card)
-    console.log('copy', card_)
     
     if (card.values.length == 0) return 0
     return parseFloat(card.values[card.values.length - 1].value)

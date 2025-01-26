@@ -47,3 +47,16 @@ export async function saveCard(card: CardState, value: number) {
   });
   return response.json();
 }
+
+export async function deleteCard(card: CardState) { 
+
+  const response = await fetch(`/api/cards/${card.id}/delete`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({user_id: card.userId, card_id: card.id})
+  });
+  return response.json();
+
+}

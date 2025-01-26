@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { deleteCard } from "$lib/card.svelte"
   import { computePosition, flip, offset, shift } from "@floating-ui/dom"
   import { SlidersHorizontal } from "lucide-svelte"
   import { onMount, onDestroy } from "svelte"
@@ -26,6 +27,11 @@
     { id: "green", label: "Green", value: "#10B981" },
   ]
 
+  function delCard(): void { 
+
+    deleteCard(card)
+
+  }
   function updatePosition(): void {
     if (!triggerEl || !menuEl) return
 
@@ -83,7 +89,7 @@
   <button
     bind:this={triggerEl}
     class="px-4 py-2 text-gray-500 rounded outline-none"
-    on:click={() => (open = !open)}
+    onclick={() => (open = !open)}
   >
     <SlidersHorizontal />
   </button>
@@ -132,6 +138,10 @@
               </label><!-- /color-option -->
             {/each}
           </div>
+        </div>
+          <!-- Delete card button -->
+        <div>
+          <button class="bg-red-500 hover:bg-red-700 text-white py-1 px-2 roundedborder border-red-200" onclick={delCard}> Delete card </button>
         </div>
       </div>
     </div>

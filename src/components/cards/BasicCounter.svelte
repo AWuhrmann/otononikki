@@ -214,7 +214,7 @@
   </div>
   <div class="w-[200px]" id={createSafeId(card.id)}></div>
   <div class="flex flex-col items-center pr-2 h-full">
-    <SuperParent open={true}/>
+    <SuperParent bind:card={card_}/>
     <div class="flex-grow flex flex-col justify-center gap-0">
       <button class="bg-white border-0 shadow-none" onclick={increment}
         ><Plus /></button

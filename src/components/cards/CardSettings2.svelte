@@ -70,7 +70,7 @@
     {#snippet children({ currentStep })}
       {#if currentStep === 1}
       <div class="step">
-          <h3>Step 1: Card name and types</h3>
+          <h3>Step 1: Card statename and types</h3>
           <h3>What type of cards do you want ?</h3>
           <div class="categories-group flex-row">
             {#each categories as category}

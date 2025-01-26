@@ -1,5 +1,6 @@
 <script>
     import { computePosition, flip, offset, shift } from '@floating-ui/dom';
+    import { SlidersHorizontal } from 'lucide-svelte'
     import { onMount, onDestroy } from 'svelte';
     
     let triggerEl;
@@ -58,10 +59,10 @@
     <div class="relative inline-block">
       <button
         bind:this={triggerEl}
-        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
+        class="px-4 py-2 text-gray-500 rounded outline-none"
         onclick={() => open = !open}
       >
-        Menu
+      <SlidersHorizontal />
       </button>
     
       {#if open}

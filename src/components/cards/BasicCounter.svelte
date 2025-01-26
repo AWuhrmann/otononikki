@@ -7,6 +7,7 @@
   import _ from "lodash"
   import CardSettings2 from "./CardSettings2.svelte"
     import Children from "$components/Children.svelte"
+    import SuperParent from "$components/SuperParent.svelte"
 
   // I will try to implement floating UIs type shit :))
 
@@ -213,7 +214,7 @@
   </div>
   <div class="w-[200px]" id={createSafeId(card.id)}></div>
   <div class="flex flex-col items-center pr-2 h-full">
-    <CardSettings2 bind:card={card_}/>
+    <SuperParent open={true}/>
     <div class="flex-grow flex flex-col justify-center gap-0">
       <button class="bg-white border-0 shadow-none" onclick={increment}
         ><Plus /></button

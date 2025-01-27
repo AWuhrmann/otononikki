@@ -69,12 +69,11 @@ function createCardsStore() {
     const data = await response.json();
     // Update the nested cards array
     cards = data.cards;
-    console.log('from the loading store',cards);
   }
 
   // Expose a getter for the cards
   function getCards() {
-    return structuredClone(toRaw(cards));
+    return $state.snapshot(cards);
   }
 
   return {

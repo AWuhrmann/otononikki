@@ -60,3 +60,27 @@ export async function deleteCard(card: CardState) {
   return response.json();
 
 }
+
+function createCardsStore() {
+  let cards = $state([]);
+  
+  async function load(name: string) {
+    const response = await fetch(`/api/users/${name}`);
+    const data = await response.json();
+    // Update the nested cards array
+    cards = data.cards;
+    console.log('from the loading store',cards);
+  }
+
+  // Expose a getter for the cards
+  function getCards() {
+    return structuredClone(toRaw(cards));
+  }
+
+  return {
+    load,
+    getCards
+  };
+}
+
+export const cardsStore = createCardsStore();

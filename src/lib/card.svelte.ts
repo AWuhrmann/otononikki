@@ -43,43 +43,31 @@ export async function saveCard(card: CardState, value: number) {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({user_id: card.userId, card_id: card.id, value: value})
+    body: JSON.stringify({ user_id: card.userId, card_id: card.id, value: value })
   });
   return response.json();
 }
 
-export async function deleteCard(card: CardState) { 
+export async function deleteCard(card: CardState) {
 
   const response = await fetch(`/api/cards/${card.id}/delete`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({user_id: card.userId, card_id: card.id})
+    body: JSON.stringify({ user_id: card.userId, card_id: card.id })
   });
   return response.json();
 
 }
 
-function createCardsStore() {
-  let cards = $state([]);
-  
-  async function load(name: string) {
-    const response = await fetch(`/api/users/${name}`);
-    const data = await response.json();
-    // Update the nested cards array
-    cards = data.cards;
-  }
+let cards = $state([]);
 
-  // Expose a getter for the cards
-  function getCards() {
-    return $state.snapshot(cards);
-  }
-
-  return {
-    load,
-    getCards
-  };
+export async function load(name: string) {
+  const response = await fetch(`/api/users/${name}`);
+  const data = await response.json();
+  // Update the nested cards array
+  cards = data.cards;
 }
 
-export const cardsStore = createCardsStore();
+export const getCards = () => cards;

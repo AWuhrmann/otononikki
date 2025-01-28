@@ -2,15 +2,17 @@
   import { page } from "$app/state"
   import Card from "$components/cards/Card.svelte"
   import CardSettings from "$components/cards/CardSettings.svelte"
-  import { cardsStore } from "$lib/card.svelte"
+  import { getCards, load } from "$lib/card.svelte.js"
   import { onMount } from "svelte"
   
-  let { data } = $props()
-  let cards = $derived(cardsStore.getCards())
   let loading = $state(true)
   
+  let { data } = $props();
+
+  let cards = getCards();
+
   onMount(async () => {
-    await cardsStore.load(data.username)
+    await load(data.username)
     loading = false
   })
 

@@ -61,13 +61,11 @@ export async function deleteCard(card: CardState) {
 
 }
 
-let cards = $state([]);
+export let cards = $state({value: []});
 
 export async function load(name: string) {
   const response = await fetch(`/api/users/${name}`);
   const data = await response.json();
   // Update the nested cards array
-  cards = data.cards;
+  cards.value = data.cards;
 }
-
-export const getCards = () => cards;

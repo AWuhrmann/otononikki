@@ -2,6 +2,8 @@
     import { deleteCard } from "$lib/card.svelte"
   import { computePosition, flip, offset, shift } from "@floating-ui/dom"
   import { SlidersHorizontal } from "lucide-svelte"
+  import { colors } from '$lib/colors';
+  
   import { onMount, onDestroy } from "svelte"
 
   // Props interface
@@ -21,11 +23,7 @@
   let open = false
   let cleanup: (() => void) | null = null
 
-  const colors: ColorOption[] = [
-    { id: "red", label: "Red", value: "#EF4444" },
-    { id: "blue", label: "Blue", value: "#3B82F6" },
-    { id: "green", label: "Green", value: "#10B981" },
-  ]
+
 
   function delCard(): void { 
 
@@ -88,7 +86,7 @@
 <div class="relative inline-block">
   <button
     bind:this={triggerEl}
-    class="px-4 py-2 text-gray-500 rounded outline-none"
+    class="text-gray-500 rounded outline-none"
     onclick={() => (open = !open)}
   >
     <SlidersHorizontal />

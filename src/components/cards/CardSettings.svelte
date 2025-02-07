@@ -118,7 +118,7 @@
                 <input
                   type="radio"
                   name="options"
-                  value={selected}
+                  value={category.name}
                   bind:group={selected}
                 />
                 <div class="content-cat">

@@ -101,7 +101,7 @@
   }
 </script>
 
-<button onclick={() => (showModal = true)}><SquarePlus/></button>
+<button class="p-2" onclick={() => (showModal = true)}><SquarePlus/></button>
 
 {#if showModal}
   <Modal title="Create new card" onClose={closeModal} nSteps={3} {currentStep}>
@@ -293,7 +293,7 @@
     font-size: 1rem;
   }
 
-  button {
+  .button {
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 4px;

@@ -30,6 +30,7 @@ export class CardState {
   constructor(data?: any) {
     if (data) {
       this.id = data.id;
+      this.userId = data.userId;
       this.name = data.name;
       this.settings = data.settings || {};
       this.values = data.values || {};
@@ -49,7 +50,42 @@ export async function saveCard(card: CardState, value: number) {
   return response.json();
 }
 
-export async function deleteCard(id: string) {
+export async function updateCardProps(card_id: number, user_id: number, name: string, value: any){
+
+  if(name === 'name') {
+
+    cards.update((l) => {
+      const cardIndex = l.findIndex(card => card.id === card_id);
+      if (cardIndex !== -1) {
+        l[cardIndex].name = value;
+      }
+      return l;
+    });
+
+  } else {
+
+    cards.update((l) => {
+      const cardIndex = l.findIndex(card => card.id === card_id);
+      if (cardIndex !== -1) {
+      l[cardIndex].settings[name] = value;
+      }
+      return l;
+    });
+
+  }
+
+  const response = await fetch(`/api/cards/${card_id}/settings/update`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ user_id: user_id, card_id: card_id, setting_name: name, setting_value: value })
+  });
+  return response.json();
+
+}
+
+export async function deleteCard(id: number) {
 
   console.log(id);
 
@@ -68,7 +104,7 @@ export async function deleteCard(id: string) {
 
 }
 
-export let cards = writable([]);
+export let cards = writable<CardState[]>([]);
 
 export async function load(name: string) {
   const response = await fetch(`/api/users/${name}`);

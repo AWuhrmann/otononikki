@@ -1,26 +1,25 @@
 <script lang="ts">
   import { CounterState } from "$lib/counter.svelte"
-  import { CardState, saveCard } from "$lib/card.svelte"
-  import { Plus, Minus, SlidersHorizontal } from "lucide-svelte"
+  import { CardState, saveCard, updateCardProps } from "$lib/card.svelte"
+  import { Plus, Minus, SlidersHorizontal, CalendarCheck } from "lucide-svelte"
   import { onMount } from "svelte"
   import * as d3 from "d3"
   import _ from "lodash"
   import CardSettings2 from "./CardSettings2.svelte"
-    import Children from "$components/Children.svelte"
-    import SuperParent from "$components/SuperParent.svelte"
+  import Children from "$components/Children.svelte"
+  import SuperParent from "$components/SuperParent.svelte"
 
   // I will try to implement floating UIs type shit :))
 
   let { card } = $props()
 
-  let card_: CardState = $state(structuredClone(card));
+  let card_: CardState = $state(structuredClone(card))
 
   let value: number = $state(getValue())
 
   let name = $state(card.name)
 
   function getValue() {
-    
     if (card.values.length == 0) return 0
     return parseFloat(card.values[card.values.length - 1].value)
   }
@@ -58,7 +57,7 @@
     updateChart()
   })
 
-  function parseData(data, lastValue) {
+  function parseData(data, lastValue, n = 15) {
     // First create the date map as before
     const dateMap = {}
 
@@ -111,6 +110,11 @@
       if (lastEntry.value !== lastValue) {
         lastEntry.value = lastValue
       }
+    }
+
+    // Only keep the last n values
+    if (sortedData.length > n) {
+      sortedData.splice(0, sortedData.length - n)
     }
 
     return sortedData
@@ -191,10 +195,22 @@
         tooltip.transition().duration(500).style("opacity", 0)
       })
   }
+
+  $effect(() => {
+    Object.entries(card_.settings).forEach(([key, value]) => {
+      console.log(`${key}: ${value}`)
+      updateCardProps(card_.id, card_.userId, key, value);
+    })
+    updateCardProps(card_.id, card_.userId, 'name', card_.name);
+  })
+
+  function validateCard() {
+    // hides the card until next day
+  }
 </script>
 
 <div
-  class="flex items-center justify-between bg-white rounded-lg py-4 w-[500px] h-[150px]"
+  class="flex items-center justify-between bg-white rounded-lg py-2 w-[500px] h-[150px]"
 >
   <div
     class="flex flex-col justify-start gap-[20px] pl-4 font-['Inter'] h-full w-[200px]"
@@ -202,7 +218,7 @@
     <div>
       <p class="font-bold text-xl">{card_.name}</p>
       <button class="text-gray-400" onclick={() => console.log(card.settings)}
-        >{name}</button
+        >{card_.name}</button
       >
     </div>
     <p class="text-4xl">
@@ -212,7 +228,7 @@
   </div>
   <div class="w-[200px]" id={createSafeId(card.id)}></div>
   <div class="flex flex-col items-center pr-2 h-full">
-    <SuperParent bind:card={card_}/>
+    <SuperParent bind:card={card_} />
     <div class="flex-grow flex flex-col justify-center gap-0">
       <button class="bg-white border-0 shadow-none" onclick={increment}
         ><Plus /></button
@@ -221,6 +237,9 @@
         ><Minus class={colorClass} /></button
       >
     </div>
+    <button class="bg-white border-0 shadow-none"
+      ><CalendarCheck class={colorClass} /></button
+    >
   </div>
 </div>
 

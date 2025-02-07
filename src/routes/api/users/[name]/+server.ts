@@ -13,7 +13,7 @@ export async function GET({ params }) {
     );
 
     const user = userResult.rows[0];
-
+    console.log(user)
 
     const cardsResults = await pool.query(
         `SELECT c.*,
@@ -38,7 +38,6 @@ GROUP BY c.id, c.user_id;`,  // Need to group by the card ID to aggregate values
     );
 
     const cards = cardsResults.rows;
-    console.log(cards);
 
     const cardStates: CardState[] = cards.map(card => new CardState({
         userId: card.user_id,
@@ -58,8 +57,6 @@ GROUP BY c.id, c.user_id;`,  // Need to group by the card ID to aggregate values
             timestamp: new Date(v.timestamp)
           })) || [],
     }));
-
-    console.log(cardStates[0])
 
     user.cards = cardStates;
 

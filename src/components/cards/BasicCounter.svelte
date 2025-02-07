@@ -205,12 +205,15 @@
   })
 
   function validateCard() {
+
+    card_.settings['validated_at'] = new Date().getTime()
+
     // hides the card until next day
   }
 </script>
 
 <div
-  class="flex items-center justify-between bg-white rounded-lg py-2 w-[500px] h-[150px]"
+  class="flex items-center justify-between bg-white rounded-lg py-2 w-[500px] h-[150px] box-shadow shadow-md"
 >
   <div
     class="flex flex-col justify-start gap-[20px] pl-4 font-['Inter'] h-full w-[200px]"
@@ -237,7 +240,7 @@
         ><Minus class={colorClass} /></button
       >
     </div>
-    <button class="bg-white border-0 shadow-none"
+    <button class="bg-white border-0 shadow-none" onclick={validateCard}
       ><CalendarCheck class={colorClass} /></button
     >
   </div>

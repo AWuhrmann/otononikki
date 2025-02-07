@@ -13,7 +13,7 @@
 
 <style>
   :global(body) {
-    background-color: #e9edf4;
+    background-color: #f7f8fa;
     margin: 0;
   }
 </style>

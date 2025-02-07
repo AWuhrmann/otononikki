@@ -37,11 +37,12 @@ export async function POST({ locals, request, params }) {
             );
         } else {
             const result = await pool.query(
-            `UPDATE card_settings
-             SET value = $3
-             WHERE card_id = $1 AND name = $2
-             RETURNING *`,
-            [Number(card_id), setting_name, setting_value]
+                `INSERT INTO card_settings (card_id, name, value)
+                 VALUES ($1, $2, $3)
+                 ON CONFLICT (card_id, name) 
+                 DO UPDATE SET value = $3
+                 RETURNING *`,
+                [Number(card_id), setting_name, setting_value]
             );
         }
 

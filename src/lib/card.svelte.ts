@@ -1,3 +1,4 @@
+import { writable } from "svelte/store";
 
 export type CardSettings = Record<string, string | number | boolean>;
 
@@ -48,7 +49,13 @@ export async function saveCard(card: CardState, value: number) {
   return response.json();
 }
 
-export async function deleteCard(card: CardState) {
+export async function deleteCard(id: string) {
+
+  console.log(id);
+
+  cards.update((l) => l.filter(card => card.id !== id));
+
+  return;
 
   const response = await fetch(`/api/cards/${card.id}/delete`, {
     method: 'POST',
@@ -61,11 +68,11 @@ export async function deleteCard(card: CardState) {
 
 }
 
-export let cards = $state({value: []});
+export let cards = writable([]);
 
 export async function load(name: string) {
   const response = await fetch(`/api/users/${name}`);
   const data = await response.json();
   // Update the nested cards array
-  cards.value = data.cards;
+  cards.set(data.cards);
 }

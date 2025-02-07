@@ -29,7 +29,7 @@
 
   function delCard(): void { 
 
-    deleteCard(card)
+    deleteCard(card.id)
 
   }
   function updatePosition(): void {

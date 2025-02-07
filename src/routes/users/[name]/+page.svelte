@@ -17,7 +17,7 @@
 
 </script>
 
-<button onclick={() => {cards.value.pop(0)}}>print cards</button>
+<button onclick={() => {console.log($cards)}}>print cards</button>
 
   <div class="layout">
     {#if page.data.session?.user?.role === "admin"}
@@ -30,7 +30,7 @@
         {#if loading}
           <p>Loading cards...</p>
         {:else}
-          {#each $state.snapshot(cards).value as card}
+          {#each $cards as card (card.id)}
           <div class="card">
               <Card {card} />
             </div>

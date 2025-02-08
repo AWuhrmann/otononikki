@@ -118,22 +118,15 @@
             Select Color
           </label>
 
-          <div class="color-options space-y-2">
+          <div class="color-options flex gap-2">
             {#each colors as color}
-              <label class="color-option flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="color"
-                  value={color.value}
-                  bind:group={card.settings["color"]}
-                  class="text-blue-500 focus:ring-blue-500"
-                />
-                <div
-                  class="color-preview w-4 h-4 rounded-full"
-                  style="background-color: {color.value}"
-                ></div>
-                <!-- /color-preview -->
-              </label><!-- /color-option -->
+              <button
+                class="color-button w-8 h-8 rounded-full border-2 transition-all"
+                style="background-color: {color.value}; border-color: {card.settings['color'] === color.value ? color.value : 'transparent'}"
+                onclick={() => card.settings['color'] = color.value}
+                aria-checked={card.settings['color'] === color.value}
+                role="radio"
+              />
             {/each}
           </div>
         </div>
@@ -145,3 +138,18 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .color-button {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .color-button:hover {
+    transform: scale(1.1);
+  }
+
+  .color-button[aria-checked="true"] {
+    box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor;
+  }
+</style>

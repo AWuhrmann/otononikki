@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { deleteCard } from "$lib/card.svelte"
+  import { deleteCard } from "$lib/card.svelte"
   import { computePosition, flip, offset, shift } from "@floating-ui/dom"
-  import { SlidersHorizontal } from "lucide-svelte"
-  import { colors } from '$lib/colors';
-  
+  import { SlidersHorizontal, Download } from "lucide-svelte"
+  import { colors } from "$lib/colors"
+
   import { onMount, onDestroy } from "svelte"
 
   // Props interface
@@ -14,21 +14,41 @@
   }
 
   // Props
-  export let card: any // Replace 'any' with your card type
-  export let offsetDistance = 8 // Allow customizing the offset distance
+  let { card = $bindable(), offsetDistance = 8 } = $props() // Replace 'any' with your card type
 
   // State
   let triggerEl: HTMLElement
   let menuEl: HTMLElement
-  let open = false
+  let open = $state(false)
   let cleanup: (() => void) | null = null
 
+  function downloadJson() {
+    // Convert the data object to a JSON string
+    const jsonString = JSON.stringify(card, null, 2);
+    
+    // Create a blob with the JSON data
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    
+    // Create a URL for the blob
+    const url = URL.createObjectURL(blob);
+    
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'data.json'; // Name of the downloaded file
+    
+    // Append the link to the body, click it, and remove it
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up the URL object
+    URL.revokeObjectURL(url);
+  }
 
 
-  function delCard(): void { 
-
+  function delCard(): void {
     deleteCard(card.id)
-
   }
   function updatePosition(): void {
     if (!triggerEl || !menuEl) return
@@ -65,21 +85,23 @@
   }
 
   // Reactive statement
-  $: if (open) {
-    updatePosition()
-    document.addEventListener("click", handleClickOutside)
-    window.addEventListener("resize", handleResize)
-    cleanup = () => {
-      document.removeEventListener("click", handleClickOutside)
-      window.removeEventListener("resize", handleResize)
+  $effect(() => {
+    if (open) {
+      updatePosition()
+      document.addEventListener("click", handleClickOutside)
+      window.addEventListener("resize", handleResize)
+      cleanup = () => {
+        document.removeEventListener("click", handleClickOutside)
+        window.removeEventListener("resize", handleResize)
+      }
+    } else if (cleanup) {
+      cleanup()
+      cleanup = null
     }
-  } else if (cleanup) {
-    cleanup()
-    cleanup = null
-  }
 
-  onDestroy(() => {
-    if (cleanup) cleanup()
+    onDestroy(() => {
+      if (cleanup) cleanup()
+    })
   })
 </script>
 
@@ -122,9 +144,12 @@
             {#each colors as color}
               <button
                 class="color-button w-8 h-8 rounded-full border-2 transition-all"
-                style="background-color: {color.value}; border-color: {card.settings['color'] === color.value ? color.value : 'transparent'}"
-                onclick={() => card.settings['color'] = color.value}
-                aria-checked={card.settings['color'] === color.value}
+                style="background-color: {color.value}; border-color: {card
+                  .settings['color'] === color.value
+                  ? color.value
+                  : 'transparent'}"
+                onclick={() => (card.settings["color"] = color.value)}
+                aria-checked={card.settings["color"] === color.value}
                 aria-label="color of the plot"
                 role="radio"
               ></button>
@@ -134,20 +159,20 @@
 
         <div class="flex items-center gap-3">
           <label class="flex items-center gap-2 cursor-pointer">
-            <input 
-              type="checkbox" 
-              checked={card.settings.showUnit} 
+            <input
+              type="checkbox"
+              checked={card.settings.showUnit}
               onchange={(e) => {
-                card.settings.showUnit = e.target.checked;
+                card.settings.showUnit = e.target.checked
                 if (!e.target.checked) {
-                  card.settings.unit = '';
+                  card.settings.unit = ""
                 }
               }}
               class="w-4 h-4 text-blue-500 rounded focus:ring-blue-500"
             />
             <span class="block text-sm font-medium text-gray-700">Unit</span>
           </label>
-          
+
           <input
             type="text"
             bind:value={card.settings.unit}
@@ -156,9 +181,20 @@
             placeholder="Enter unit..."
           />
         </div>
-          <!-- Delete card button -->
-        <div>
-          <button class="bg-red-500 hover:bg-red-700 text-white py-1 px-2 roundedborder border-red-200" onclick={delCard}> Delete card </button>
+        <!-- Delete card button -->
+        <div class="flex justify-between">
+          <button
+            class="bg-red-500 hover:bg-red-700 text-white py-1 px-2 roundedborder border-red-200"
+            onclick={delCard}
+          >
+            Delete card
+          </button>
+          <button
+            onclick={downloadJson}
+          >
+            <Download />
+          </button>
+
         </div>
       </div>
     </div>
@@ -176,6 +212,8 @@
   }
 
   .color-button[aria-checked="true"] {
-    box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor;
+    box-shadow:
+      0 0 0 2px white,
+      0 0 0 4px currentColor;
   }
 </style>

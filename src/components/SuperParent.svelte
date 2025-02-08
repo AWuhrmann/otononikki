@@ -125,10 +125,36 @@
                 style="background-color: {color.value}; border-color: {card.settings['color'] === color.value ? color.value : 'transparent'}"
                 onclick={() => card.settings['color'] = color.value}
                 aria-checked={card.settings['color'] === color.value}
+                aria-label="color of the plot"
                 role="radio"
-              />
+              ></button>
             {/each}
           </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input 
+              type="checkbox" 
+              checked={card.settings.showUnit} 
+              onchange={(e) => {
+                card.settings.showUnit = e.target.checked;
+                if (!e.target.checked) {
+                  card.settings.unit = '';
+                }
+              }}
+              class="w-4 h-4 text-blue-500 rounded focus:ring-blue-500"
+            />
+            <span class="block text-sm font-medium text-gray-700">Unit</span>
+          </label>
+          
+          <input
+            type="text"
+            bind:value={card.settings.unit}
+            disabled={!card.settings.showUnit}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            placeholder="Enter unit..."
+          />
         </div>
           <!-- Delete card button -->
         <div>

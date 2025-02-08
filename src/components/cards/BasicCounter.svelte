@@ -87,7 +87,9 @@
     </div>
     <p class="text-4xl">
       {value}
-      {#if "unit" in card.settings}{card.settings.unit}{/if}
+      {#if "unit" in card.settings}
+        <span class="text-lg text-gray-400">{card.settings.unit}</span>
+      {/if}
     </p>
   </div>
   <div class="w-[200px]" id={createSafeId(card.id)}>

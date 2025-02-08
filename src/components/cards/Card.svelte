@@ -5,11 +5,11 @@
   
     let { card } = $props<{ card: CardState }>();
     
-    let CardComponent = $derived(cardComponents[card.type as CardType] ?? cardComponents['default']);
+    let CardComponent = $derived(cardComponents[card.settings.type as CardType] ?? cardComponents['default']);
   </script>
   
   {#if CardComponent}
     <CardComponent {card} />
   {:else}
-    <div class="error">Unknown card type: {card.type}</div>
+    <div class="error">Unknown card type: {card.settings.type}</div>
   {/if} 

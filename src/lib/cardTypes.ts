@@ -3,10 +3,10 @@ import CardTimer from '../components/cards/CardTimer.svelte';
 
 import type { Component } from 'svelte';
   
-export type CardType = 'number' | 'timer' | 'default';
+export type CardType = 'Counter' | 'Timer' | 'default';
 
 export const cardComponents: Record<CardType, Component<any>> = {
-  'number': Counter,
-  'timer': CardTimer,
+  'Counter': Counter,
+  'Timer': CardTimer,
   'default': Counter
 };

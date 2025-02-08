@@ -91,14 +91,12 @@ export async function deleteCard(id: number) {
 
   cards.update((l) => l.filter(card => card.id !== id));
 
-  return;
-
-  const response = await fetch(`/api/cards/${card.id}/delete`, {
+  const response = await fetch(`/api/cards/${id}/delete`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ user_id: card.userId, card_id: card.id })
+    body: JSON.stringify({ card_id: id })
   });
   return response.json();
 

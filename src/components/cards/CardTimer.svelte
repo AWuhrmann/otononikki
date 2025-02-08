@@ -1,73 +1,79 @@
 <script lang="ts">
+  import { CardState, saveCard, updateCardProps } from "$lib/card.svelte"
+  import { Play, Pause, RotateCcw } from "lucide-svelte"
 
-    import { CounterState } from "$lib/counter.svelte";
+  let { card } = $props()
+  let card_: CardState = $state(structuredClone(card))
+  let time: number = $state(0)
+  let isRunning: boolean = $state(false)
+  let intervalId: number | null = $state(null)
 
-    import { Plus, Minus } from 'lucide-svelte'
+  function formatTime(seconds: number) {
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`
+  }
 
-    let {counter = new CounterState(0), name = 'My buttons\' name'} = $props();
+  function toggleTimer() {
+    if (!isRunning) {
+      intervalId = setInterval(() => {
+        time += 1
+        saveCard(card, time)
+      }, 1000) as unknown as number
+    } else {
+      if (intervalId) {
+        clearInterval(intervalId)
+        intervalId = null
+      }
+    }
+    isRunning = !isRunning
+  }
 
+  function resetTimer() {
+    if (intervalId) {
+      clearInterval(intervalId)
+      intervalId = null
+    }
+    isRunning = false
+    time = 0
+    saveCard(card, time)
+  }
+
+  $effect(() => {
+    Object.entries(card_.settings).forEach(([key, value]) => {
+      updateCardProps(card_.id, card_.userId, key, value)
+    })
+    updateCardProps(card_.id, card_.userId, "name", card_.name)
+  })
 </script>
 
-<div class="card">
-
-    <div class="info">
-        
-        <p class="font-bold">
-            {name}
-        </p>
-        
-        <p class="">{counter.value}</p>
-
-    </div>
-
-
-    <div class="controls">
-
-        <button class="button" onclick={() => counter.increment()}>
-            <Plus/>
+<div
+  class="flex items-center justify-between bg-white rounded-lg py-2 w-[500px] h-[150px] shadow-md"
+>
+  <div
+    class="flex flex-col justify-start gap-[20px] pl-8 font-['Inter'] h-full w-full"
+  >
+    <p class="font-bold text-xl">{card_.name}</p>
+    <div class="flex items-center justify-between pr-8">
+      <p class="text-5xl font-mono">{formatTime(time)}</p>
+      <div class="flex gap-4">
+        <button
+          class="rounded-full p-4 bg-gray-100 hover:bg-gray-200 transition-colors"
+          onclick={toggleTimer}
+        >
+          {#if isRunning}
+            <Pause size={24} />
+          {:else}
+            <Play size={24} />
+          {/if}
         </button>
-        
-        <button class="button" onclick={() => counter.decrement()}>
-            <Minus/>
+        <button
+          class="rounded-full p-4 bg-gray-100 hover:bg-gray-200 transition-colors"
+          onclick={resetTimer}
+        >
+          <RotateCcw size={24} />
         </button>
+      </div>
     </div>
-
+  </div>
 </div>
-
-<style>
-    .card {
-        border-radius: 10px;
-        height: 100px;
-        width: 500px;
-        background-color: white;
-
-        display:flex;
-        justify-content: space-between;
-    }
-
-    .info {
-        margin: auto 0;
-        padding-left: 10px;
-
-        font-family: Inter;
-        font-size: 20px;
-    }
-
-    .controls {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-
-        padding-right: 10px;
-    }
-
-    .button {
-        background-color: white;
-        box-shadow: none;
-        border: 0;
-    }
-
-    
-
-    
-</style>

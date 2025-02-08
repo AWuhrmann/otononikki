@@ -46,7 +46,7 @@
       body: JSON.stringify({
         name: name,
         color: color,
-        type: type,
+        type: selected,
         settings: settings
       }),
       headers: {

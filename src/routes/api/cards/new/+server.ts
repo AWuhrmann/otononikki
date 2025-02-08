@@ -22,6 +22,9 @@ export async function POST({ locals, request, params }) {
 
     pool.query('INSERT INTO card_settings (name, value, card_id) VALUES ($1, $2, $3)', ['color', data.color, card_id]);
     
+    pool.query('INSERT INTO card_settings (name, value, card_id) VALUES ($1, $2, $3)', ['type', data.type, card_id]);
+
+
     data.settings.forEach(setting => {
         pool.query('INSERT INTO card_settings (name, value, card_id) VALUES ($1, $2, $3)', [setting.label, setting.value, card_id]);
     });

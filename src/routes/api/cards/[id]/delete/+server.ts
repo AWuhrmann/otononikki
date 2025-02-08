@@ -9,11 +9,13 @@ export async function POST({ locals, request, params }) {
 
     try {
         // Parse the request body
-        const { user_id, card_id } = await request.json();
+        const { card_id } = await request.json();
         console.log('Received values:', {
-            userId: user_id,
             cardId: card_id,
         });
+
+        const user_id = session.user.id;
+        console.log('User ID:', user_id);
 
         console.log("Card ID type:", typeof card_id, "Value:", card_id);
 

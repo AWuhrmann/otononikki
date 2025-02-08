@@ -15,6 +15,9 @@
     await load(data.username)
     loading = false
   })
+  import ActivityGrid from "$components/ActivityGrid.svelte"
+
+  const monthYear = "2025-01"
 </script>
 
 <button

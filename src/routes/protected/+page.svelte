@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { page } from "$app/state"
-  import Journal from "$components/Journal.svelte";
+  import { page } from "$app/state";
+  import Journal from "$components/journal/Journal.svelte";
 </script>
 
 {#if page.data.session && page.data.session.user && page.data.session.user.role === "admin"}

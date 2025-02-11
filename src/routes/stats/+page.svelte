@@ -1,8 +1,15 @@
 <script lang="ts">
-  import { page } from "$app/state"
-  import BasicCounter from "$components/cards/BasicCounter.svelte"
-    import CardController from "$components/cards/CardController.svelte"
+  import { page } from "$app/state";
+  import CardController from "$components/stats/CardController.svelte";
 </script>
+
+<style>
+  .stats-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+</style>
 
 <div class="page">
   {#if page.data.session && page.data.session.user && page.data.session.user.role === "admin"}
@@ -14,12 +21,3 @@
     <h1>Access Denied</h1>
   {/if}
 </div>
-
-<style>
-
-  .stats-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-</style>

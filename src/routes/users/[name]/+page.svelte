@@ -1,23 +1,20 @@
 <script lang="ts">
-  import { page } from "$app/state"
-  import Card from "$components/cards/Card.svelte"
-  import CardSettings from "$components/cards/CardSettings.svelte"
-  import { cards, load } from "$lib/card.svelte.js"
-  import { onMount } from "svelte"
+  import { page } from "$app/state";
+  import Card from "$components/stats/Card.svelte";
+  import CardSettings from "$components/stats/CardSettings.svelte";
+  import { cards, load } from "$lib/card.svelte.js";
+  import { onMount } from "svelte";
 
-  let loading = $state(true)
+  let loading = $state(true);
 
-  let { data } = $props()
+  let { data } = $props();
 
-  let showAll = $state(false)
+  let showAll = $state(false);
 
   onMount(async () => {
-    await load(data.username)
-    loading = false
-  })
-  import ActivityGrid from "$components/ActivityGrid.svelte"
-
-  const monthYear = "2025-01"
+    await load(data.username);
+    loading = false;
+  });
 </script>
 
 <div class="layout">
@@ -35,9 +32,10 @@
         >
           {showAll ? "Show Today" : "Show All"}
         </button>
-        <button class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors duration-300"
+        <button
+          class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors duration-300"
           onclick={() => {
-            console.log($cards)
+            console.log($cards);
           }}>print cards</button
         >
       </div>
@@ -46,16 +44,16 @@
         <p>Loading cards...</p>
       {:else}
         {#each $cards.filter((card) => {
-          if (showAll) return true
+          if (showAll) return true;
 
-          const validatedAt = card.settings.validated_at
-          if (!validatedAt) return true
+          const validatedAt = card.settings.validated_at;
+          if (!validatedAt) return true;
 
-          const validatedDate = new Date(Number(validatedAt)).toLocaleDateString()
+          const validatedDate = new Date(Number(validatedAt)).toLocaleDateString();
 
-          const today = new Date().toLocaleDateString()
+          const today = new Date().toLocaleDateString();
 
-          return validatedDate !== today
+          return validatedDate !== today;
         }) as card (card.id)}
           <div class="card">
             <Card {card} />

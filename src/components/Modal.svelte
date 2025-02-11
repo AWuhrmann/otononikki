@@ -1,5 +1,4 @@
-<!-- Modal.svelte -->
-<script>
+<script lang="ts">
   /** @type {{ 
     title: string, 
     onClose: () => void, 
@@ -9,24 +8,6 @@
   }} */
   let { title, onClose, nSteps, currentStep, children } = $props();
 </script>
-
-<div class="modal-backdrop">
-  <div class="modal">
-    <header>
-      <h2>{title}</h2>
-      <button class="close-button" onclick={onClose}>×</button>
-    </header>
-    
-    <div class="modal-content">
-      <div class="progress-bar">
-        {#each {length: nSteps}, i}
-          <div class="step-indicator" class:active={currentStep >= i+1}>{i+1}</div>
-        {/each}
-      </div>
-      {@render children?.({ currentStep })}
-    </div>
-  </div>
-</div>
 
 <style>
   .modal-backdrop {
@@ -86,3 +67,24 @@
     color: white;
   }
 </style>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <header>
+      <h2>{title}</h2>
+      <button class="close-button" onclick={onClose}>×</button>
+    </header>
+
+    <div class="modal-content">
+      <div class="progress-bar">
+        {#each { length: nSteps }, i}
+          <div class="step-indicator" class:active={currentStep >= i + 1}>
+            {i + 1}
+          </div>
+        {/each}
+      </div>
+      {@render children?.({ currentStep })}
+    </div>
+  </div>
+</div>
+

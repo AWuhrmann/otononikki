@@ -1,77 +1,67 @@
 <script lang="ts">
-  import { CounterState } from "$lib/counter.svelte"
-  import { CardState, saveCard, updateCardProps } from "$lib/card.svelte"
-  import { Plus, Minus, SlidersHorizontal, CalendarCheck } from "lucide-svelte"
-  import { onMount } from "svelte"
-  import * as d3 from "d3"
-  import _ from "lodash"
-  import CardSettings2 from "./CardSettings2.svelte"
-  import Children from "$components/Children.svelte"
-  import SuperParent from "$components/SuperParent.svelte"
-    import ActivityGrid from "$components/ActivityGrid.svelte"
+  import { CardState, saveCard, updateCardProps } from "$lib/card.svelte";
+  import { Plus, Minus, CalendarCheck } from "lucide-svelte";
+  import _ from "lodash";
+  import CardOptions from "$components/CardOptions.svelte";
+  import ActivityGrid from "$components/ActivityGrid.svelte";
 
   // I will try to implement floating UIs type shit :))
 
-  let { card } = $props()
+  let { card } = $props();
 
-  let card_: CardState = $state(structuredClone(card))
+  let card_: CardState = $state(structuredClone(card));
 
-  let value: number = $state(getValue())
-
-  let name = $state(card.name)
+  let value: number = $state(getValue());
 
   function getValue() {
-    if (card.values.length == 0) return 0
-    return parseFloat(card.values[card.values.length - 1].value)
-  }
-
-  function getDate() {
-    if (card.values.length == 0) return new Date().getTime()
-    return card.values[card.values.length - 1].timestamp
+    if (card.values.length == 0) return 0;
+    return parseFloat(card.values[card.values.length - 1].value);
   }
 
   function increment() {
     if ("max_value" in card.settings && value >= card.settings.max_value) {
-      return
+      return;
     }
-    value += 1
-    saveCard(card, value)
+    value += 1;
+    saveCard(card, value);
   }
 
   function decrement() {
     if ("min_value" in card.settings && value <= card.settings.min_value) {
-      return
+      return;
     }
-    value -= 1
-    saveCard(card, value)
+    value -= 1;
+    saveCard(card, value);
   }
 
   function createSafeId(id: string) {
     // Replace any non-alphanumeric character with a dash and convert to lowercase
-    return "chart-" + id
+    return "chart-" + id;
   }
 
   let colorClass = $derived(
     "min_value" in card.settings && value <= card.settings.min_value
       ? "text-gray-500 cursor-default"
       : "text-black hover:opacity-80 transition-colors cursor-pointer",
-  )
+  );
 
   $effect(() => {
     Object.entries(card_.settings).forEach(([key, value]) => {
-      console.log(`${key}: ${value}`)
+      console.log(`${key}: ${value}`);
       updateCardProps(card_.id, card_.userId, key, value);
-    })
-    updateCardProps(card_.id, card_.userId, 'name', card_.name);
-  })
+    });
+    updateCardProps(card_.id, card_.userId, "name", card_.name);
+  });
 
   function validateCard() {
-
-    card_.settings['validated_at'] = new Date().getTime()
+    card_.settings["validated_at"] = new Date().getTime();
 
     // hides the card until next day
   }
 </script>
+
+<style>
+</style>
 
 <div
   class="flex items-center justify-between bg-white rounded-lg py-2 w-[500px] h-[150px] box-shadow shadow-md"
@@ -93,16 +83,16 @@
     </p>
   </div>
   <div class="w-[200px]" id={createSafeId(card.id)}>
-    <ActivityGrid 
-      values={card.values} 
-      monthYear={new Date().toISOString().slice(0, 7)} 
-      lastValue={value} 
-      color={card.settings.color || '#000000'}
-      n={10} 
+    <ActivityGrid
+      values={card.values}
+      monthYear={new Date().toISOString().slice(0, 7)}
+      lastValue={value}
+      color={card.settings.color || "#000000"}
+      n={10}
     />
   </div>
   <div class="flex flex-col items-center pr-2 h-full">
-    <SuperParent bind:card={card_} />
+    <CardOptions bind:card={card_} />
     <div class="flex-grow flex flex-col justify-center gap-0">
       <button class="bg-white border-0 shadow-none" onclick={increment}
         ><Plus /></button
@@ -116,6 +106,3 @@
     >
   </div>
 </div>
-
-<style>
-</style>

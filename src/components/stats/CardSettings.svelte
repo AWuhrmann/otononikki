@@ -1,70 +1,65 @@
 <!-- App.svelte -->
 <script lang="ts">
-  import Modal from "$components/Modal.svelte"
-  import { RotateCcw, Timer, Grid2x2Plus, SquarePlus } from "lucide-svelte"
+  import Modal from "$components/Modal.svelte";
+  import { RotateCcw, Timer, Grid2x2Plus, SquarePlus } from "lucide-svelte";
 
-  import CardPreview from "./CardPreview.svelte"
-  import ColorPicker from "./ColorPicker.svelte"
+  import CardPreview from "./CardPreview.svelte";
+  import ColorPicker from "./ColorPicker.svelte";
 
-  let showModal = $state(false)
-  let currentStep = $state(1)
-  let name = $state("")
-  let color = $state("")
+  let showModal = $state(false);
+  let currentStep = $state<number>(1);
+  let name = $state("");
+  let color = $state("");
 
-  let type = $state("")
-
-  let selected = $state("Counter")
-
-  let enabled = false
-  let minimumValue = 0
+  let selected = $state("Counter");
 
   let categories = [
     { name: "Counter", icon: RotateCcw },
     { name: "Timer", icon: Timer },
     { name: "Category", icon: Grid2x2Plus },
-  ]
+  ];
 
   function closeModal() {
-    showModal = false
-    currentStep = 1
-    name = ""
-    color = ""
+    showModal = false;
+    currentStep = 1;
+    name = "";
+    color = "";
   }
 
   function nextStep() {
-    currentStep++
+    currentStep++;
   }
 
   function previousStep() {
-    currentStep--
+    currentStep--;
   }
 
   async function handleSubmit() {
-    console.log("Submitted:", { name, color })
-    const response = await fetch(`/api/cards/new`, {
+    console.log("Submitted:", { name, color });
+    await fetch(`/api/cards/new`, {
       method: "POST",
       body: JSON.stringify({
         name: name,
         color: color,
         type: selected,
-        settings: settings
+        settings: settings,
       }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
-    })
+    });
 
     //    closeModal()
   }
 
   // Define a type for our settings
   type Setting = {
-    key: string
-    label: string
-    value: number
-    enabled: boolean
-    defaultValue?: number
-  }
+    key: string;
+    label: string;
+    value: number;
+    enabled: boolean;
+    defaultValue?: number;
+  };
 
   // Store for all settings
   let settings = $state<Setting[]>([
@@ -90,22 +85,106 @@
       defaultValue: 50,
     },
     // Easy to add more settings here
-  ])
+  ]);
 
   // Toggle setting enabled state
   function toggleSetting(setting: Setting) {
-    setting.enabled = !setting.enabled
+    setting.enabled = !setting.enabled;
     if (!setting.enabled) {
-      setting.value = setting.defaultValue ?? 0
+      setting.value = setting.defaultValue ?? 0;
     }
   }
 </script>
 
-<button class="p-2" onclick={() => (showModal = true)}><SquarePlus/></button>
+<style>
+  .preview-section {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+  }
+
+  .preview-section h4 {
+    margin: 0 0 1rem 0;
+    font-size: 0.875rem;
+    color: #64748b;
+  }
+
+  .categories-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .radio-button {
+    cursor: pointer;
+  }
+
+  .radio-button input[type="radio"] {
+    display: none;
+  }
+
+  .content-cat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+  }
+
+  .radio-button input[type="radio"]:checked + .content-cat {
+    background-color: #e2e8f0;
+    border-color: #64748b;
+  }
+
+  .content-cat:hover {
+    background-color: #f1f5f9;
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  input,
+  button.primary {
+    background: #0066cc;
+    color: white;
+  }
+
+  button.secondary {
+    background: #e0e0e0;
+    color: #333;
+  }
+
+  button:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+  }
+
+  h3 {
+    margin: 0;
+  }
+</style>
+
+<button class="p-2" onclick={() => (showModal = true)}><SquarePlus /></button>
 
 {#if showModal}
   <Modal title="Create new card" onClose={closeModal} nSteps={3} {currentStep}>
-    {#snippet children({ currentStep })}
+    {#snippet children({ currentStep }: any)}
       {#if currentStep === 1}
         <div class="step">
           <h3>Step 1: Card name and types</h3>
@@ -187,7 +266,7 @@
                           stroke-linejoin="round"
                           stroke-width="2"
                           d="M5 13l4 4L19 7"
-                        />
+                        ></path>
                       </svg>
                     {/if}
                   </div>
@@ -224,115 +303,3 @@
     {/snippet}
   </Modal>
 {/if}
-
-<style>
-  .preview-section {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    background: #f8fafc;
-    border-radius: 8px;
-  }
-
-  .preview-section h4 {
-    margin: 0 0 1rem 0;
-    font-size: 0.875rem;
-    color: #64748b;
-  }
-
-  .categories-group {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .radio-button {
-    cursor: pointer;
-  }
-
-  .radio-button input[type="radio"] {
-    display: none;
-  }
-
-  .content-cat {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 0.25rem;
-    transition: all 0.2s;
-  }
-
-  .radio-button input[type="radio"]:checked + .content-cat {
-    background-color: #e2e8f0;
-    border-color: #64748b;
-  }
-
-  .content-cat:hover {
-    background-color: #f1f5f9;
-  }
-
-  .step {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .button-group {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-
-  input,
-  select {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-    font-size: 1rem;
-  }
-
-  .button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    min-width: 100px;
-  }
-
-  button.primary {
-    background: #0066cc;
-    color: white;
-  }
-
-  button.secondary {
-    background: #e0e0e0;
-    color: #333;
-  }
-
-  button:hover:not(:disabled) {
-    opacity: 0.9;
-  }
-
-  button:disabled {
-    background: #cccccc;
-    cursor: not-allowed;
-  }
-
-  h3 {
-    margin: 0;
-  }
-
-  .summary {
-    background: #f5f5f5;
-    padding: 1rem;
-    border-radius: 4px;
-    margin: 1rem 0;
-  }
-
-  .summary p {
-    margin: 0;
-  }
-</style>

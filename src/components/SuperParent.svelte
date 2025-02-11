@@ -35,7 +35,7 @@
     // Create a temporary link element
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'data.json'; // Name of the downloaded file
+    link.download = `${card.name}.json`; // Name of the downloaded file
     
     // Append the link to the body, click it, and remove it
     document.body.appendChild(link);

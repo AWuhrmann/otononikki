@@ -20,12 +20,6 @@
   const monthYear = "2025-01"
 </script>
 
-<button
-  onclick={() => {
-    console.log($cards)
-  }}>print cards</button
->
-
 <div class="layout">
   {#if page.data.session?.user?.role === "admin"}
     <div class="cards w-full flex-col flex flex-wrap items-center gap-4">
@@ -34,12 +28,19 @@
         <CardSettings />
       </div>
 
-      <button
-        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors duration-300"
-        onclick={() => (showAll = !showAll)}
-      >
-        {showAll ? "Show Today" : "Show All"}
-      </button>
+      <div class="flex gap-10">
+        <button
+          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors duration-300"
+          onclick={() => (showAll = !showAll)}
+        >
+          {showAll ? "Show Today" : "Show All"}
+        </button>
+        <button class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors duration-300"
+          onclick={() => {
+            console.log($cards)
+          }}>print cards</button
+        >
+      </div>
 
       {#if loading}
         <p>Loading cards...</p>

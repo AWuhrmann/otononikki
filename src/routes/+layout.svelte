@@ -3,6 +3,8 @@
   interface Props {
     children?: import('svelte').Snippet;
   }
+  
+  import '../app.css'
 
   let { children }: Props = $props();
 </script>

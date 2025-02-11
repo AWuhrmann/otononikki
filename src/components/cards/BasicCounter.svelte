@@ -96,7 +96,7 @@
     <ActivityGrid 
       values={card.values} 
       monthYear={new Date().toISOString().slice(0, 7)} 
-      lastValue={getValue()} 
+      lastValue={value} 
       color={card.settings.color || '#000000'}
       n={10} 
     />

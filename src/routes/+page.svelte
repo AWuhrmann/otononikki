@@ -6,23 +6,14 @@
 </script>
 
 <main>
-  <h1>SvelteKit Auth Example</h1>
-  <p>
-    This is an example site to demonstrate how to use <a
-      href="https://kit.svelte.dev/">SvelteKit</a
-    >
-    with <a href="https://sveltekit.authjs.dev">SvelteKit Auth</a> for authentication.
-  </p>
-  <p>Your role: {session.user.role}</p>
-  <SignIn>
-    {#snippet submitButton()}
-      <div class="buttonPrimary">Sign in</div>
-    {/snippet}
-  </SignIn>
+  <div class='m-10 w-1/2'>
+    <p class='text-2xl text-center '> Welcome back, {session?.user.username} </p>
+  </div>
 </main>
 
 <style>
-  main {
-    flex: 1;
+  :global(body) {
+    background-color: #f7f8fa;
+    margin: 0;
   }
 </style>

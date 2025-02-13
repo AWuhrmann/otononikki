@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import Card from "$components/stats/Card.svelte";
-  import CardSettings from "$components/stats/CardSettings.svelte";
+  import CardNewModal from "$components/stats/CardNewModal.svelte";
   import { cards, load } from "$lib/card.svelte.js";
   import { onMount } from "svelte";
 
@@ -22,7 +22,7 @@
     <div class="cards w-full flex-col flex flex-wrap items-center gap-4">
       <div class="flex justify-between w-[500px] mt-5">
         <h1 class="text-4xl font-bold">{data.username}</h1>
-        <CardSettings />
+        <CardNewModal />
       </div>
 
       <div class="flex gap-10">

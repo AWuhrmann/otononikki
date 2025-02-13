@@ -1,40 +1,14 @@
 <script lang="ts">
-  import { CardState } from '$lib/card.svelte';
-    import { onMount } from 'svelte'
-  
+  import { CardState } from "$lib/card.svelte";
+  import { onMount } from "svelte";
+  import type { CardSettings } from "$lib/card.svelte";
+
   let { card = new CardState() } = $props();
 
   onMount(() => {
     console.log(card);
   });
 </script>
-
-<div class="card">
-  <h2>{card.name}</h2>
-  
-  <div class="settings">
-    {#each Object.entries(card.settings) as [name, setting]}
-      <div class="setting">
-        <label>{name}</label>
-        {#if setting.type === 'number'}
-          <input 
-            type="number" 
-            value={card.values[name] ?? setting.default}
-            onchange={(e) => card.setValue(name, Number(e.target.value))}
-          />
-        {:else}
-          <input 
-            type="text" 
-            value={card.values[name] ?? setting.default}
-            onchange={(e) => card.setValue(name, e.target.value)}
-          />
-        {/if}
-      </div>
-    {/each}
-  </div>
-
-  <button onclick={() => card.save()}>Save Changes</button>
-</div>
 
 <style>
   .card {
@@ -54,3 +28,33 @@
     gap: 0.5rem;
   }
 </style>
+
+<div class="card">
+  <h2>{card.name}</h2>
+
+  <div class="settings">
+    {#each Object.entries(card.settings) as [name, setting]}
+      <div class="setting">
+        <p>
+          {name}
+        </p>
+        {#if setting.type === "number"}
+          <input
+            type="number"
+            value={card.values[name] ?? setting.default}
+            onchange={(e) => card.setValue(name, Number(e.target.value))}
+          />
+        {:else}
+          <input
+            type="text"
+            value={card.values[name] ?? setting.default}
+            onchange={(e) => card.setValue(name, e.target.value)}
+          />
+        {/if}
+      </div>
+    {/each}
+  </div>
+
+  <button onclick={() => card.save()}>Save Changes</button>
+</div>
+

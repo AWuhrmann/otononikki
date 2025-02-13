@@ -156,8 +156,7 @@
         .attr("height", (d) => height - yScale(d.value))
         .attr("fill", color)
         .attr("rx", 4)
-        .attr("ry", 4)
-        .attr("fill", "black");
+        .attr("ry", 4);
 
       bars
         .append("title")

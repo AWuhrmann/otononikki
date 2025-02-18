@@ -39,8 +39,13 @@
     return "chart-" + id;
   }
 
-  let colorClass = $derived(
-    "min_value" in card.settings && value <= card.settings.min_value
+  let colorClassMaximum = $derived(
+    "Maximum" in card.settings && value >= card.settings.Maximum
+      ? "text-gray-500 cursor-default"
+      : "text-black hover:opacity-80 transition-colors cursor-pointer",
+  );
+  let colorClassMinimum = $derived(
+    "Minimum" in card.settings && value <= card.settings.Minimum
       ? "text-gray-500 cursor-default"
       : "text-black hover:opacity-80 transition-colors cursor-pointer",
   );
@@ -94,15 +99,19 @@
   <div class="flex flex-col items-center pr-2 h-full">
     <CardOptions bind:card={card_} />
     <div class="flex-grow flex flex-col justify-center gap-0">
-      <button class="bg-white border-0 shadow-none" onclick={increment}
-        ><Plus /></button
+      <button
+        class="bg-white border-0 shadow-none"
+        disabled={"Maximum" in card_.settings && value > card_.settings.Maximum}
+        onclick={increment}><Plus class={colorClassMaximum} /></button
       >
-      <button class="bg-white border-0 shadow-none" onclick={decrement}
-        ><Minus class={colorClass} /></button
+      <button
+        class="bg-white border-0 shadow-none"
+        disabled={"Minimum" in card_.settings && value < card_.settings.Minimum}
+        onclick={decrement}><Minus class={colorClassMinimum} /></button
       >
     </div>
     <button class="bg-white border-0 shadow-none" onclick={validateCard}
-      ><CalendarCheck class={colorClass} /></button
+      ><CalendarCheck /></button
     >
   </div>
 </div>

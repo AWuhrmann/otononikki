@@ -5,6 +5,7 @@
 
   import CardPreview from "./CardPreview.svelte";
   import ColorPicker from "./ColorPicker.svelte";
+  import { CardState, createCard } from "$lib/card.svelte";
 
   let showModal = $state(false);
   let currentStep = $state<number>(1);
@@ -35,21 +36,9 @@
   }
 
   async function handleSubmit() {
-    console.log("Submitted:", { name, color });
-    await fetch(`/api/cards/new`, {
-      method: "POST",
-      body: JSON.stringify({
-        name: name,
-        color: color,
-        type: selected,
-        settings: settings,
-      }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    });
+    createCard(name, color, selected, $state.snapshot(settings));
 
-    //    closeModal()
+    closeModal();
   }
 
   // Define a type for our settings

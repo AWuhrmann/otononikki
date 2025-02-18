@@ -19,7 +19,7 @@
   }
 
   function increment() {
-    if ("max_value" in card.settings && value >= card.settings.max_value) {
+    if ("Maximum" in card.settings && value >= card.settings.Maximum) {
       return;
     }
     value += 1;
@@ -27,7 +27,7 @@
   }
 
   function decrement() {
-    if ("min_value" in card.settings && value <= card.settings.min_value) {
+    if ("Minimum" in card.settings && value <= card.settings.Minimum) {
       return;
     }
     value -= 1;

@@ -14,7 +14,20 @@
   let value: number = $state(getValue());
 
   function getValue() {
+    // Return the current value of the card. If the user has not entered a value for the local day yet, it tries to get the default value of the settings or the minimum, if none are found return 0.
     if (card.values.length == 0) return 0;
+    const cardDate = card.values[card.values.length - 1].timestamp;
+    const today = new Date();
+    const lastDay = new Date(cardDate);
+    if (today.getDate() != lastDay.getDate()) {
+      if (!("default" in card_.settings)) {
+        if ("Minimum" in card_.settings) {
+          return card_.settings["Minimum"];
+        }
+        return 0;
+      }
+      return card_.settings["default"];
+    }
     return parseFloat(card.values[card.values.length - 1].value);
   }
 

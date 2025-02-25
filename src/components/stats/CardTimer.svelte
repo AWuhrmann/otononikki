@@ -1,50 +1,43 @@
 <script lang="ts">
-  import { CardState, saveCard, updateCardProps } from "$lib/card.svelte"
-  import { Play, Pause, RotateCcw } from "lucide-svelte"
+  import { CardState, saveCard, updateCardProps } from "$lib/card.svelte";
+  import { Play, Pause, RotateCcw } from "lucide-svelte";
 
-  let { card } = $props()
-  let card_: CardState = $state(structuredClone(card))
-  let time: number = $state(0)
-  let isRunning: boolean = $state(false)
-  let intervalId: number | null = $state(null)
+  let { card } = $props();
+  let card_: CardState = $state(structuredClone(card));
+  let time: number = $state(0);
+  let isRunning: boolean = $state(false);
+  let intervalId: number | null = $state(null);
 
   function formatTime(seconds: number) {
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
   }
 
   function toggleTimer() {
     if (!isRunning) {
       intervalId = setInterval(() => {
-        time += 1
-        saveCard(card, time)
-      }, 1000) as unknown as number
+        time += 1;
+        saveCard(card, time);
+      }, 1000) as unknown as number;
     } else {
       if (intervalId) {
-        clearInterval(intervalId)
-        intervalId = null
+        clearInterval(intervalId);
+        intervalId = null;
       }
     }
-    isRunning = !isRunning
+    isRunning = !isRunning;
   }
 
   function resetTimer() {
     if (intervalId) {
-      clearInterval(intervalId)
-      intervalId = null
+      clearInterval(intervalId);
+      intervalId = null;
     }
-    isRunning = false
-    time = 0
-    saveCard(card, time)
+    isRunning = false;
+    time = 0;
+    saveCard(card, time);
   }
-
-  $effect(() => {
-    Object.entries(card_.settings).forEach(([key, value]) => {
-      updateCardProps(card_.id, card_.userId, key, value)
-    })
-    updateCardProps(card_.id, card_.userId, "name", card_.name)
-  })
 </script>
 
 <div

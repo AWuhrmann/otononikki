@@ -64,11 +64,23 @@
   );
 
   $effect(() => {
-    Object.entries(card_.settings).forEach(([key, value]) => {
-      console.log(`${key}: ${value}`);
-      updateCardProps(card_.id, card_.userId, key, value);
+    // This part checks if some of the settings have been modified, and update them on the database.
+
+    Object.keys(card_.settings).forEach((key) => {
+      const old = card.settings[key];
+      const new_ = card_.settings[key];
+
+      if (old !== new_) {
+        // Making sure we only new values
+        console.log(`Different value for setting ${key}`);
+        updateCardProps(card_.id, card_.userId, key, new_);
+        card.settings[key] = new_; // We also need to update the card...
+      }
     });
-    updateCardProps(card_.id, card_.userId, "name", card_.name);
+
+    if (card.name !== card_.name) {
+      updateCardProps(card_.id, card_.userId, "name", card_.name);
+    }
   });
 
   function validateCard() {
@@ -79,6 +91,7 @@
 </script>
 
 <style>
+  /* For some reason this style block cannot be removed... */
 </style>
 
 <div

@@ -19,7 +19,7 @@
 
 <div class="layout">
   {#if page.data.session?.user?.role === "admin"}
-    <div class="cards w-full flex-col flex flex-wrap items-center gap-4">
+    <div class="cards w-full flex-col flex flex-wrap items-center gap-4 mb-10">
       <div class="flex justify-between w-[500px] mt-5">
         <h1 class="text-4xl font-bold">{data.username}</h1>
         <CardNewModal />

@@ -82,7 +82,7 @@
 </style>
 
 <div
-  class="flex items-center justify-between bg-white rounded-lg py-2 w-[500px] h-[150px] box-shadow shadow-md"
+  class="flex items-center justify-between bg-white rounded-lg py-2 w-[500px] min-h-[150px] box-shadow shadow-md"
 >
   <div
     class="flex flex-col justify-start gap-[20px] pl-4 font-['Inter'] h-full w-[200px]"

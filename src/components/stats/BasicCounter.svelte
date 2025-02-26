@@ -22,11 +22,11 @@
     if (today.getDate() != lastDay.getDate()) {
       if (!("default" in card_.settings)) {
         if ("Minimum" in card_.settings) {
-          return card_.settings["Minimum"];
+          return parseFloat(card_.settings["Minimum"]);
         }
         return 0;
       }
-      return card_.settings["default"];
+      return parseFloat(card_.settings["default"]);
     }
     return parseFloat(card.values[card.values.length - 1].value);
   }

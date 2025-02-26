@@ -11,7 +11,9 @@ export async function POST({ locals, request }) {
     // Parse the request body
     const { user_id, card_id, setting_name, setting_value } =
       await request.json();
-    console.log(`Changing settings ${setting_name} with Received values:`);
+    console.log(
+      `Changing settings ${setting_name} of user ${user_id} with ${setting_value}`,
+    );
 
     const existingValue = await pool.query(
       `SELECT id FROM cards WHERE id = $1`,

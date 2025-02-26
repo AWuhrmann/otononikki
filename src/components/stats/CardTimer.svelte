@@ -1,6 +1,6 @@
 <script lang="ts">
   import { CardState, saveCard, updateCardProps } from "$lib/card.svelte";
-  import { Play, Pause, RotateCcw } from "lucide-svelte";
+  import { Play, Pause, RotateCcw, CalendarCheck } from "lucide-svelte";
 
   let { card } = $props();
   let card_: CardState = $state(structuredClone(card));
@@ -44,11 +44,16 @@
   class="flex items-center justify-between bg-white rounded-lg py-2 w-[500px] h-[150px] shadow-md"
 >
   <div
-    class="flex flex-col justify-start gap-[20px] pl-8 font-['Inter'] h-full w-full"
+    class="flex flex-col justify-start gap-[20px] pl-4 font-['Inter'] h-full w-full"
   >
-    <p class="font-bold text-xl">{card_.name}</p>
+    <div>
+      <p class="font-bold text-xl">{card_.name}</p>
+      <button class="text-gray-400" onclick={() => console.log(card.settings)}
+        >{card_.name}</button
+      >
+    </div>
     <div class="flex items-center justify-between pr-8">
-      <p class="text-5xl font-mono">{formatTime(time)}</p>
+      <p class="text-4xl">{formatTime(time)}</p>
       <div class="flex gap-4">
         <button
           class="rounded-full p-4 bg-gray-100 hover:bg-gray-200 transition-colors"
@@ -68,5 +73,9 @@
         </button>
       </div>
     </div>
+  </div>
+
+  <div class="flex flex-col items-center pr-2 h-full">
+    <button class="bg-white border-0 shadow-none"><CalendarCheck /></button>
   </div>
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { deleteCard } from "$lib/card.svelte"
+  import { cardStore } from "$lib/card.svelte"
   import { computePosition, flip, offset, shift } from "@floating-ui/dom"
   import { SlidersHorizontal, Download } from "lucide-svelte"
   import { colors } from "$lib/colors"
@@ -48,7 +48,7 @@
 
 
   function delCard(): void {
-    deleteCard(card.id)
+    cardStore.deleteCard(card.id)
   }
   function updatePosition(): void {
     if (!triggerEl || !menuEl) return

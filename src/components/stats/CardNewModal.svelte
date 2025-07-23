@@ -5,7 +5,7 @@
 
   import CardPreview from "./CardPreview.svelte";
   import ColorPicker from "./ColorPicker.svelte";
-  import { CardState, createCard } from "$lib/card.svelte";
+  import { CardState, cardStore } from "$lib/card.svelte";
 
   let showModal = $state(false);
   let currentStep = $state<number>(1);
@@ -36,7 +36,7 @@
   }
 
   async function handleSubmit() {
-    createCard(name, color, selected, $state.snapshot(settings));
+    cardStore.createCard(name, color, selected, $state.snapshot(settings));
 
     closeModal();
   }

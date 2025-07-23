@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CardState, saveCard, updateCardProps } from "$lib/card.svelte";
+  import { CardState, cardStore } from "$lib/card.svelte";
   import { Plus, Minus, CalendarCheck } from "lucide-svelte";
   import _ from "lodash";
   import CardOptions from "$components/CardOptions.svelte";
@@ -7,9 +7,7 @@
 
   // I will try to implement floating UIs type shit :))
 
-  let { card } = $props();
-
-  let card_: CardState = $state(structuredClone(card));
+  let { card = $bindable() } = $props();
 
   let value: number = $state(getValue());
 
@@ -20,13 +18,13 @@
     const today = new Date();
     const lastDay = new Date(cardDate);
     if (today.getDate() != lastDay.getDate()) {
-      if (!("default" in card_.settings)) {
-        if ("Minimum" in card_.settings) {
-          return parseFloat(card_.settings["Minimum"]);
+      if (!("default" in card.settings)) {
+        if ("Minimum" in card.settings) {
+          return parseFloat(card.settings["Minimum"]);
         }
         return 0;
       }
-      return parseFloat(card_.settings["default"]);
+      return parseFloat(card.settings["default"]);
     }
     return parseFloat(card.values[card.values.length - 1].value);
   }
@@ -36,7 +34,7 @@
       return;
     }
     value += 1;
-    saveCard(card, value);
+    cardStore.saveCard(card, value);
   }
 
   function decrement() {
@@ -44,7 +42,7 @@
       return;
     }
     value -= 1;
-    saveCard(card, value);
+    cardStore.saveCard(card, value);
   }
 
   function createSafeId(id: string) {
@@ -66,25 +64,25 @@
   $effect(() => {
     // This part checks if some of the settings have been modified, and update them on the database.
 
-    Object.keys(card_.settings).forEach((key) => {
+    Object.keys(card.settings).forEach((key) => {
       const old = card.settings[key];
-      const new_ = card_.settings[key];
+      const new_ = card.settings[key];
 
       if (old !== new_) {
         // Making sure we only new values
         console.log(`Different value for setting ${key}`);
-        updateCardProps(card_.id, card_.userId, key, new_);
+        cardStore.updateCardProps(card.id, card.userId, key, new_);
         card.settings[key] = new_; // We also need to update the card...
       }
     });
 
-    if (card.name !== card_.name) {
-      updateCardProps(card_.id, card_.userId, "name", card_.name);
+    if (card.name !== card.name) {
+      cardStore.updateCardProps(card.id, card.userId, "name", card.name);
     }
   });
 
   function validateCard() {
-    card_.settings["validated_at"] = new Date().getTime();
+    card.settings["validated_at"] = new Date().getTime();
 
     // hides the card until next day
   }
@@ -101,9 +99,9 @@
     class="flex flex-col justify-start gap-[20px] pl-4 font-['Inter'] h-full w-[200px]"
   >
     <div>
-      <p class="font-bold text-xl">{card_.name}</p>
+      <p class="font-bold text-xl">{card.name}</p>
       <button class="text-gray-400" onclick={() => console.log(card.settings)}
-        >{card_.name}</button
+        >{card.name}</button
       >
     </div>
     <p class="text-4xl">
@@ -123,16 +121,16 @@
     />
   </div>
   <div class="flex flex-col items-center pr-2 h-full">
-    <CardOptions bind:card={card_} />
+    <CardOptions bind:card={card} />
     <div class="flex-grow flex flex-col justify-center gap-0">
       <button
         class="bg-white border-0 shadow-none"
-        disabled={"Maximum" in card_.settings && value > card_.settings.Maximum}
+        disabled={"Maximum" in card.settings && value > card.settings.Maximum}
         onclick={increment}><Plus class={colorClassMaximum} /></button
       >
       <button
         class="bg-white border-0 shadow-none"
-        disabled={"Minimum" in card_.settings && value < card_.settings.Minimum}
+        disabled={"Minimum" in card.settings && value < card.settings.Minimum}
         onclick={decrement}><Minus class={colorClassMinimum} /></button
       >
     </div>

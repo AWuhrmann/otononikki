@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CardState, saveCard, updateCardProps } from "$lib/card.svelte";
+  import { CardState, cardStore } from "$lib/card.svelte";
   import { Plus, Minus, CalendarCheck } from "lucide-svelte";
   import _ from "lodash";
   import CardOptions from "$components/CardOptions.svelte";
@@ -36,7 +36,7 @@
       return;
     }
     value += 1;
-    saveCard(card, value);
+    cardStore.saveCard(card, value);
   }
 
   function decrement() {
@@ -44,7 +44,7 @@
       return;
     }
     value -= 1;
-    saveCard(card, value);
+    cardStore.saveCard(card, value);
   }
 
   function createSafeId(id: string) {
@@ -73,13 +73,13 @@
       if (old !== new_) {
         // Making sure we only new values
         console.log(`Different value for setting ${key}`);
-        updateCardProps(card_.id, card_.userId, key, new_);
+        cardStore.updateCardProps(card_.id, card_.userId, key, new_);
         card.settings[key] = new_; // We also need to update the card...
       }
     });
 
     if (card.name !== card_.name) {
-      updateCardProps(card_.id, card_.userId, "name", card_.name);
+      cardStore.updateCardProps(card_.id, card_.userId, "name", card_.name);
     }
   });
 

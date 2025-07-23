@@ -2,7 +2,7 @@
   import { page } from "$app/state";
   import Card from "$components/stats/Card.svelte";
   import CardNewModal from "$components/stats/CardNewModal.svelte";
-  import { cards, load } from "$lib/card.svelte.js";
+  import { cardStore } from "$lib/card.svelte.js";
   import { onMount } from "svelte";
 
   let loading = $state(true);
@@ -12,7 +12,7 @@
   let showAll = $state(false);
 
   onMount(async () => {
-    await load(data.username);
+    await cardStore.load(data.username);
     loading = false;
   });
 </script>
@@ -32,19 +32,14 @@
         >
           {showAll ? "Show Today" : "Show All"}
         </button>
-        <button
-          class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors duration-300"
-          onclick={() => {
-            console.log($cards);
-          }}>print cards</button
-        >
       </div>
 
       {#if loading}
         <p>Loading cards...</p>
       {:else}
-        {#each $cards.filter((card) => {
+        {#each cardStore.cards.value.filter((card) => {
           if (showAll) return true;
+          // Check whether the we are showing all the cards or only the one not yet completed today.
 
           const validatedAt = card.settings.validated_at;
           if (!validatedAt) return true;
@@ -56,12 +51,13 @@
           return validatedDate !== today;
         }) as card (card.id)}
           <div class="card">
-            <Card {card} />
+            <Card bind:card={cardStore.cards.value[cardStore.cards.value.findIndex((c) => (c.id === card.id))]} />
           </div>
         {/each}
       {/if}
     </div>
   {:else}
-    <h1>Access Denied</h1>
+  <!-- Fallback page, in case user not yet signed in -->
+    <h1>You need to sign in first.</h1>
   {/if}
 </div>

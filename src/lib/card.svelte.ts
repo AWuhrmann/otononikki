@@ -38,7 +38,10 @@ export class CardState {
   }
 }
 
-export async function saveCard(card: CardState, value: number) {
+export class Cards {
+ cards = $state<{value: CardState[]}>({ value: []});
+ 
+ async saveCard(card: CardState, value: number) {
   const response = await fetch(`/api/cards/${card.id}/values`, {
     method: "POST",
     headers: {
@@ -53,28 +56,30 @@ export async function saveCard(card: CardState, value: number) {
   return response.json();
 }
 
-export async function updateCardProps(
+async updateCardProps(
   card_id: number,
   user_id: number,
   name: string,
   value: any,
 ) {
   if (name === "name") {
-    cards.update((l) => {
-      const cardIndex = l.findIndex((card) => card.id === card_id);
-      if (cardIndex !== -1) {
-        l[cardIndex].name = value;
+    this.cards.value = this.cards.value.map(c => {
+      if (c.id === card_id)
+        {
+          c.name = value;
+        }
+      return c
       }
-      return l;
-    });
+    );
   } else {
-    cards.update((l) => {
-      const cardIndex = l.findIndex((card) => card.id === card_id);
-      if (cardIndex !== -1) {
-        l[cardIndex].settings[name] = value;
+    this.cards.value = this.cards.value.map(c => {
+      if (c.id === card_id)
+        {
+          c.settings[name] = value;
+        }
+      return c
       }
-      return l;
-    });
+    );
   }
 
   const response = await fetch(`/api/cards/${card_id}/settings/update`, {
@@ -92,9 +97,10 @@ export async function updateCardProps(
   return response.json();
 }
 
-export async function deleteCard(id: number) {
-  cards.update((l) => l.filter((card) => card.id !== id));
+async deleteCard(id: number) {
 
+  this.cards.value = this.cards.value.filter((card) => card.id !== id);
+  
   const response = await fetch(`/api/cards/${id}/delete`, {
     method: "POST",
     headers: {
@@ -105,7 +111,7 @@ export async function deleteCard(id: number) {
   return response.json();
 }
 
-export async function createCard(
+async createCard(
   name: string,
   color: string,
   type: string,
@@ -134,15 +140,22 @@ export async function createCard(
 
   console.log(card);
 
-  cards.update((l) => [...l, card]); // appends the card given in parameter to the current list (local update)
+  this.cards.value.push(card);
 }
 
-export let cards = writable<CardState[]>([]);
+ async load(name: string) {
+  console.log('loading')
+   const response = await fetch(`/api/users/${name}`);
+   const data = await response.json();
+   // Update the nested cards array
+   this.cards.value = data.cards;
 
-export async function load(name: string) {
-  const response = await fetch(`/api/users/${name}`);
-  const data = await response.json();
-  // Update the nested cards array
-  cards.set(data.cards);
+   console.log(this.cards.value)
+ }
+
 }
+
+export const cardStore = new Cards();
+
+
 

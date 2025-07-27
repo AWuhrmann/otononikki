@@ -12,6 +12,6 @@ export default {
       'body': ['"Open Sans"'],
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 }
 

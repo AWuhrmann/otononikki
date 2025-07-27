@@ -40,6 +40,6 @@ export async function POST({ locals, request, params }) {
     );
   });
 
-  return json({ success: true, id: card_id });
+  return json({ success: true, card_id: card_id, user_id: id });
 }
 

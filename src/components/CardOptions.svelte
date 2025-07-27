@@ -6,6 +6,8 @@
 
   import { onMount, onDestroy } from "svelte"
 
+  import { toast } from '@zerodevx/svelte-toast'
+
   // Props interface
   interface ColorOption {
     id: string
@@ -47,8 +49,36 @@
   }
 
 
-  function delCard(): void {
-    cardStore.deleteCard(card.id)
+  async function delCard() {
+    const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t))
+
+    const id = toast.push('Loading, please wait...', {
+      duration: 300, // Each progress change takes 300ms
+      initial: 0,
+      next: 0,
+      dismissable: false
+    })
+
+    try { 
+      await sleep(100);
+      toast.set(id, {next: 0.2})
+      
+      const result = await cardStore.deleteCard(card.id)
+
+      await sleep(1000);
+      toast.set(id, {next: 0.99, msg: "Card Deleted !"});
+      await sleep(3000);
+
+
+      toast.pop(id);
+
+      return result
+
+    } catch(error) { 
+      toast.set(id, {next: 1, msg: "Delete failed ! ", dismissable: true});
+      throw error;
+    }
+
   }
   function updatePosition(): void {
     if (!triggerEl || !menuEl) return
@@ -162,9 +192,8 @@
             <input
               type="checkbox"
               checked={card.settings.showUnit}
-              onchange={(e) => {
-                card.settings.showUnit = e.target.checked
-                if (!e.target.checked) {
+              onchange={() => {
+                if (!card.settings.showUnit) { 
                   card.settings.unit = ""
                 }
               }}

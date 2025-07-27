@@ -117,7 +117,6 @@ async createCard(
   type: string,
   settings: CardSettings[],
 ) {
-  console.log("Submitted:", { name, color, type, settings });
   let response = await fetch(`/api/cards/new`, {
     method: "POST",
     body: JSON.stringify({
@@ -132,11 +131,19 @@ async createCard(
   });
 
   const data_id = await response.json();
-  const card_id = data_id.id;
+  const card_id = data_id.card_id;
+  const user_id = data_id.user_id;
 
-  let card_response = await fetch(`/api/cards/[${card_id}]`, { method: "GET" });
+  settings.push({'color': color})
+  settings.push({'type': type})
 
-  const card = await card_response.json();
+  let card = new CardState({
+    name: name,
+    userId: user_id,
+    id: card_id,
+    settings: settings,
+    values: [],
+  });
 
   console.log(card);
 

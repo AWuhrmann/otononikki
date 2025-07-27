@@ -41,7 +41,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: light {
   :root {
     color: #213547;
     background-color: #ffffff;
@@ -57,3 +57,150 @@ button:focus-visible {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.milkdown-editor :where(h1, h2, h3, h4, p, ul, ol, blockquote) {
+  @apply prose prose-gray;
+}
+
+.prose pre, 
+.prose code {
+  color: #111 !important;
+  background-color: #f8f8f8 !important;
+}
+
+/* Override specific token types */
+.prose .token.keyword {
+  color: #1a1a1a !important;
+}
+.prose .token.string {
+  color: #065f46 !important; /* green strings */
+}
+.prose .token.comment {
+  color: #6b7280 !important; /* gray comments */
+}
+.prose .token.function,
+.prose .token.keyword.operator {
+  color: #111 !important;
+}
+
+pre.language-text {
+  color: #111 !important; /* your desired font color */
+}
+
+pre.language-text .token {
+  color: #111 !important;
+}
+
+.milkdown a[data-link-type*="tasks"],
+.milkdown a[data-link-type*="contacts"],
+.milkdown a[data-link-type*="internal"] {
+  padding-left: 18px !important;
+  position: relative !important;
+  text-decoration: none !important;
+  border-radius: 3px !important;
+  padding: 1px 3px 1px 18px !important;
+}
+
+/* Tasks - existing file */
+.milkdown a[data-link-type="tasks-file"] {
+  color: #8b5cf6 !important;
+  background-color: rgba(139, 92, 246, 0.1) !important;
+}
+.milkdown a[data-link-type="tasks-file"]:before {
+  content: "📄" !important;
+  position: absolute !important;
+  left: 2px !important;
+  font-size: 12px !important;
+}
+
+/* Tasks - missing */
+.milkdown a[data-link-type="tasks-missing"] {
+  color: #8b5cf6 !important;
+  background-color: rgba(139, 92, 246, 0.1) !important;
+  opacity: 0.6 !important;
+  text-decoration: dashed underline !important;
+}
+.milkdown a[data-link-type="tasks-missing"]:before {
+  content: "❓" !important;
+  position: absolute !important;
+  left: 2px !important;
+  font-size: 12px !important;
+}
+
+/* Contacts - existing file */
+.milkdown a[data-link-type="contacts-file"] {
+  color: #3b82f6 !important;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+}
+.milkdown a[data-link-type="contacts-file"]:before {
+  content: "👤" !important;
+  position: absolute !important;
+  left: 2px !important;
+  font-size: 12px !important;
+}
+
+/* Contacts - missing */
+.milkdown a[data-link-type="contacts-missing"] {
+  color: #3b82f6 !important;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  opacity: 0.6 !important;
+  text-decoration: dashed underline !important;
+}
+.milkdown a[data-link-type="contacts-missing"]:before {
+  content: "❓" !important;
+  position: absolute !important;
+  left: 2px !important;
+  font-size: 12px !important;
+}
+
+/* Other internal links */
+.milkdown a[data-link-type="internal-file"] {
+  color: #6b7280 !important;
+}
+.milkdown a[data-link-type="internal-file"]:before {
+  content: "📄" !important;
+  position: absolute !important;
+  left: 2px !important;
+  font-size: 12px !important;
+}
+
+.milkdown a[data-link-type="internal-folder"] {
+  color: #6b7280 !important;
+}
+.milkdown a[data-link-type="internal-folder"]:before {
+  content: "📁" !important;
+  position: absolute !important;
+  left: 2px !important;
+  font-size: 12px !important;
+}
+
+.milkdown a[data-link-type="internal-missing"] {
+  color: #6b7280 !important;
+  opacity: 0.6 !important;
+  text-decoration: dashed underline !important;
+}
+.milkdown a[data-link-type="internal-missing"]:before {
+  content: "❓" !important;
+  position: absolute !important;
+  left: 2px !important;
+  font-size: 12px !important;
+}
+
+/* External links */
+.milkdown a[data-link-type="external"] {
+  color: #ef4444 !important;
+}
+.milkdown a[data-link-type="external"]:after {
+  content: " ↗" !important;
+  font-size: 0.8em !important;
+  opacity: 0.7 !important;
+}
+
+/* Email links */
+.milkdown a[data-link-type="email"] {
+  color: #10b981 !important;
+}
+.milkdown a[data-link-type="email"]:before {
+  content: "✉️ " !important;
+  font-size: 12px !important;
+}

@@ -16,6 +16,7 @@ import { customLinkSchema } from './linkSchema.js';
 import { linkTypeUpdatePlugin } from './linkTypeUpdate.js';
 import { createLinkClickHandlerPlugin, type LinkActionHandlers } from './linkClickHandler.js';
 import { linkTooltipPlugin } from './linkTooltip.js';
+import type { Plugin } from '@milkdown/kit/prose/state';
 
 export interface LinkPluginConfig {
   enableTooltip?: boolean;

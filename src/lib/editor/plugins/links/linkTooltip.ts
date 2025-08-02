@@ -138,20 +138,24 @@ export const linkTooltipPlugin = _prose(() => {
     const x = event.clientX;
     const y = event.clientY;
     
-    // Position tooltip above cursor with some offset
-    tooltip.style.left = `${x - tooltip.offsetWidth / 2}px`;
-    tooltip.style.top = `${y - tooltip.offsetHeight - 10}px`;
+    // Add scroll offset to get absolute position
+    const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
     
-    // Keep tooltip within viewport
+    // Position tooltip above cursor with some offset
+    tooltip.style.left = `${x + scrollX - tooltip.offsetWidth / 2}px`;
+    tooltip.style.top = `${y + scrollY - tooltip.offsetHeight + 100}px`;
+    
+    // Keep tooltip within viewport (adjust for scroll position)
     const rect = tooltip.getBoundingClientRect();
     if (rect.left < 0) {
-      tooltip.style.left = '10px';
+      tooltip.style.left = `${scrollX + 10}px`;
     }
     if (rect.right > window.innerWidth) {
-      tooltip.style.left = `${window.innerWidth - tooltip.offsetWidth - 10}px`;
+      tooltip.style.left = `${scrollX + window.innerWidth - tooltip.offsetWidth - 10}px`;
     }
     if (rect.top < 0) {
-      tooltip.style.top = `${y + 20}px`; // Show below cursor instead
+      tooltip.style.top = `${y + scrollY + 20}px`; // Show below cursor instead
     }
   }
   

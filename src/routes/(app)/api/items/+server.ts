@@ -86,7 +86,8 @@ export async function GET({ locals, url }) {
             id: row.id,
             name: row.name,
             type: row.type,
-            hasChildren: row.has_children
+            hasChildren: row.has_children,
+            path: '/' + row.name,
         }));
 
         return json(items);

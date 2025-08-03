@@ -1,15 +1,33 @@
 
+import { parserCtx, editorViewCtx } from "@milkdown/kit/core";
+import type { Editor } from "@milkdown/kit/core";
+
 /**
  * Inserts markdown at the current cursor position in the editor.
  * @param editor - The editor instance.
  * @param markdown - The markdown string to insert.
  */
-export function insertMarkdownAtCursor(editor: any, markdown: string): void {
-    const cursorPosition = editor.getCursor();
-    editor.replaceRange(markdown, cursorPosition);
-}
-
-/**
+export function insertMarkdownAtCursor(editor: Editor, markdown: string, position?: number) {
+    editor.action((ctx) => {
+      const parser = ctx.get(parserCtx);
+      const view = ctx.get(editorViewCtx);
+      
+      // Parse the markdown into ProseMirror document
+      const doc = parser(markdown);
+      
+      // Get current editor state
+      const { state } = view;
+      
+      // Use provided position or fall back to current selection
+      const insertPos = position ?? state.selection.from;
+      
+      // Create transaction to insert the parsed content
+      const tr = state.tr.insert(insertPos, doc.content);
+      
+      // Dispatch the transaction
+      view.dispatch(tr);
+    });
+  }/**
  * Appends markdown content to the end of the editor.
  * @param editor - The editor instance.
  * @param markdown - The markdown string to append.

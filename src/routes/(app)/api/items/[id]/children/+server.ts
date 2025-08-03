@@ -36,6 +36,7 @@ export async function GET({ locals, params }) {
         const children = result.rows.map(row => ({
             id: row.id,
             name: row.name,
+            path: '', // Path will be constructed on the client side
             type: row.type,
             hasChildren: row.has_children
         }));

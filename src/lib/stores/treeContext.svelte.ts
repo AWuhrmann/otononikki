@@ -1,5 +1,6 @@
 // lib/stores/treeContext.svelte.js
 import { getContext, setContext } from 'svelte';
+import { type TreeItem } from '../types/files.js';
 
 const TREE_CONTEXT = 'tree-operations';
 
@@ -11,7 +12,7 @@ export function createTreeContext() {
     let expandedItems = $state(new Set());
     
     // Debug logging
-    function debugLog(message, data) {
+    function debugLog(message: string, data = '') {
         console.log(`[TreeContext] ${message}`, data || '');
     }
     
@@ -45,6 +46,7 @@ export function createTreeContext() {
                 }
                 const items = await response.json();
                 treeData = items;
+                console.log(treeData);
                 debugLog(`Loaded ${items.length} root items. Preserved ${expandedItems.size} expanded states`);
                 return items;
             } catch (error) {
@@ -56,16 +58,23 @@ export function createTreeContext() {
         },
         
         // Load children for a specific item
-        async loadChildren(parentId) {
+        async loadChildren(parent: TreeItem) {
             try {
+                const parentId = parent.id;
+                const parentPath = parent.path || '';
                 const response = await fetch(`/api/items/${parentId}/children`);
                 if (!response.ok) {
                     throw new Error("Failed to load children");
                 }
                 const children = await response.json();
-                debugLog(`Loaded ${children.length} children for ${parentId}`);
+                children.forEach((child: TreeItem) => {
+                    child.path = `${parentPath}/${child.name}`;
+                });
+                if (children.length > 0) {
+                    debugLog(`First child path: ${children[0].path}`);
+                }
                 return children;
-            } catch (error) {
+            } catch (error: any) {
                 debugLog('Error loading children:', error);
                 return [];
             }

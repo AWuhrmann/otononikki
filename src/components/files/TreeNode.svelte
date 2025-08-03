@@ -43,7 +43,7 @@
       ) {
         debugLog(`🔄 Loading children for synced expanded folder`);
         loadingChildren = true;
-        loadChildren(item.id).then((loadedChildren) => {
+        loadChildren(item).then((loadedChildren) => {
           children = loadedChildren;
           debugLog(`✅ Loaded ${loadedChildren.length} children after sync`);
           loadingChildren = false;
@@ -73,9 +73,9 @@
     console.log("move");
   }
 
-  async function loadChildren(parentId: string): Promise<TreeItem[]> {
+  async function loadChildren(parent: TreeItem): Promise<TreeItem[]> {
     try {
-      return await treeContext.loadChildren(parentId);
+      return await treeContext.loadChildren(parent);
     } catch (error) {
       console.error("Error loading children:", error);
       return [];
@@ -94,7 +94,7 @@
       if (children.length === 0) {
         loadingChildren = true;
         try {
-          children = await loadChildren(item.id);
+          children = await loadChildren(item);
           debugLog(`📁 Loaded ${children.length} children for expansion`);
         } finally {
           loadingChildren = false;
@@ -168,6 +168,7 @@
       JSON.stringify({
         id: item.id,
         name: item.name,
+        path: item.path,
         type: item.type,
       }),
     );
@@ -277,7 +278,7 @@
         debugLog(`🔄 Reloading children for already expanded folder`);
         loadingChildren = true;
         try {
-          children = await loadChildren(item.id);
+          children = await loadChildren(item);
           debugLog(`🔄 Reloaded children, count: ${children.length}`);
         } finally {
           loadingChildren = false;
@@ -311,7 +312,7 @@
         `🔄 Auto-loading children for context-expanded folder (from drag/drop)`,
       );
       loadingChildren = true;
-      loadChildren(item.id).then((loadedChildren) => {
+      loadChildren(item).then((loadedChildren) => {
         children = loadedChildren;
         debugLog(
           `✅ Auto-loaded ${loadedChildren.length} children from context`,

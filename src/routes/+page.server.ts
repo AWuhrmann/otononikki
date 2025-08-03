@@ -1,5 +1,5 @@
 import { redirect } from "@sveltejs/kit"
-import type { PageServerLoad } from "./signin/$types"
+import type { PageServerLoad } from "./(app)/signin/$types"
  
 export const load: PageServerLoad = async (event) => {
   const session = await event.locals.auth()

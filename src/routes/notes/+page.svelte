@@ -19,8 +19,10 @@
         placeholder: "Start typing your notes...",
         readonly: false,
     };
+
+    let originalContent = $state("");
     
-    let markdown = $state(`# Welcome to your Notes
+    let markdown = `# Welcome to your Notes
         
     Select a file from the file explorer to start editing, or create a new file.
     
@@ -28,7 +30,7 @@
     - Click on any file in the left panel to open it
     - Your changes are automatically saved
     - Use the toolbar to add links and format text
-        `);
+        `;
     const pluginConfig: EditorPluginConfig = {
         links: {
             enableTooltip: true,
@@ -54,6 +56,7 @@
             if (currentFile && event.markdown !== lastSavedContent) {
                 isDirty = true;
                 // Auto-save with debounce
+                markdown = event.markdown;
                 debouncedSave(event.markdown);
             }
         },
@@ -90,7 +93,7 @@
             isDirty = false;
             
             // Update editor content
-            markdown = lastSavedContent;
+            originalContent = lastSavedContent;
             
         } catch (error) {
             console.error('Error loading file:', error);
@@ -125,9 +128,10 @@
         if (!currentFile) return;
         
         // const content = markdown;
-        await saveFile(content);
+        await saveFile(markdown);
     }
-    
+
+
     // Toolbar actions
     function addTaskLink() {
         const taskName = prompt("Task name:");
@@ -142,7 +146,7 @@
             editorComponent.addSmartLink(contactName, "contact", false);
         }
     }
-    
+
     function getContent() {
         alert(markdown);
     }
@@ -241,9 +245,9 @@
                         config={editorConfig}
                         {pluginConfig}
                         {actionHandlers}
-                        bind:currentMarkdown={markdown}
+                        bind:originalMarkdown={originalContent}
                     >
-                        <div slot="statusbar" let:editorReady let:currentMarkdown></div>
+                        <div slot="statusbar" let:editorReady let:lastSetValue></div>
                     </EditorComponent>
                 </div>
                 

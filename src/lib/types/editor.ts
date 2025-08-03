@@ -108,6 +108,7 @@ export interface EditorActionHandlers {
   onLinkClick?: (event: LinkClickEvent) => void;
   onChange?: (event: EditorChangeEvent) => void;
   onReady?: () => void;
+  onFileDrop?: (file: { id: string; name: string; type: string }, position?: number) => string;
 }
 
 // CSS class name constants

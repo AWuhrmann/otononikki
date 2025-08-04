@@ -605,7 +605,7 @@
   }
 
   :global(.milkdown .ProseMirror) {
-    padding: 0rem 10px 0 80px;
+    padding: 1rem 10px 0 80px;
     min-height: 200px;
   }
 

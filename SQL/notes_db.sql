@@ -112,3 +112,7 @@ BEGIN
     RETURN '/' || result;
 END;
 $$ LANGUAGE plpgsql;
+
+
+-- This represents special folders, such as photos (?), , contacts, journals, etc.
+ALTER TABLE your_table_name ADD COLUMN folder_category VARCHAR(50) DEFAULT NULL;

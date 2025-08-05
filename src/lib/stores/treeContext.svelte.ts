@@ -2,9 +2,9 @@
 import { getContext, setContext } from 'svelte';
 import { type TreeItem } from '../types/files.js';
 
-const TREE_CONTEXT = 'tree-operations';
+export const TREE_CONTEXT = 'tree-operations';
 
-export function createTreeContext() {
+function createTreeContext() {
     let treeData = $state([]);
     let loading = $state(false);
     
@@ -21,13 +21,13 @@ export function createTreeContext() {
         get loading() { return loading; },
         
         // Expanded state management
-        isExpanded(itemId) {
+        isExpanded(itemId: string) {
             const result = expandedItems.has(itemId);
             // debugLog(`Checking expanded state for ${itemId}: ${result}`);
             return result;
         },
         
-        setExpanded(itemId, expanded) {
+        setExpanded(itemId: string, expanded: boolean) {
             if (expanded) {
                 expandedItems.add(itemId);
             } else {
@@ -49,7 +49,7 @@ export function createTreeContext() {
                 console.log(treeData);
                 debugLog(`Loaded ${items.length} root items. Preserved ${expandedItems.size} expanded states`);
                 return items;
-            } catch (error) {
+            } catch (error: any) {
                 debugLog('Error loading root items:', error);
                 return [];
             } finally {
@@ -81,7 +81,7 @@ export function createTreeContext() {
         },
         
         // Move item to new parent
-        async moveItem(itemId, newParentId) {
+        async moveItem(itemId: string, newParentId: string) {
             debugLog(`Moving item ${itemId} to parent ${newParentId}`);
             
             try {
@@ -113,14 +113,14 @@ export function createTreeContext() {
                 await this.loadRootItems();
                 
                 return true;
-            } catch (error) {
+            } catch (error: any) {
                 debugLog('Error moving item:', error);
                 throw error;
             }
         },
         
         // Delete item
-        async deleteItem(itemId) {
+        async deleteItem(itemId: string) {
             debugLog(`Deleting item ${itemId}`);
             
             try {
@@ -137,7 +137,7 @@ export function createTreeContext() {
                 await this.loadRootItems();
                 
                 return true;
-            } catch (error) {
+            } catch (error: any) {
                 debugLog('Error deleting item:', error);
                 throw error;
             }
@@ -154,9 +154,42 @@ export function createTreeContext() {
             }
             return null;
         },
+
+        // Create new item, only works for folders and files
+        createItem(item, content: string = "", parent_id = null) { 
+            debugLog(`Creating item: ${item.name} (${item.type})`);
+            return new Promise((resolve, reject) => {
+                fetch('/api/items', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: item.name,
+                        type: item.type,
+                        parent_id: parent_id,
+                        content: content,
+                        external_url: null,
+                        link_description: null
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) { // reload the root items... otherwise we have a reactivity issue.
+                        this.loadRootItems().then(() => resolve(data.item));
+                    } else {
+                        reject(data.error || 'Failed to create item');
+                    }
+                })
+                .catch(error => {
+                    debugLog('Error creating item:', error);
+                    reject(error);
+                });
+            });
+        },
         
         // Update item locally (for UI optimizations)
-        updateItem(itemId, updates) {
+        updateItem(itemId: string, updates) {
             const updateInArray = (items) => {
                 return items.map(item => {
                     if (item.id === itemId) {
@@ -174,7 +207,6 @@ export function createTreeContext() {
         }
     };
     
-    setContext(TREE_CONTEXT, context);
     return context;
 }
 
@@ -185,3 +217,5 @@ export function useTreeContext() {
     }
     return context;
 }
+
+export const treeContext = createTreeContext();

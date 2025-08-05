@@ -1,13 +1,14 @@
 <script lang="ts">
-    import { createTreeContext } from '$lib/stores/treeContext.svelte.js';
+    import { TREE_CONTEXT, treeContext } from '$lib/stores/treeContext.svelte.js';
+    import { setContext } from 'svelte';
     import TreeNode from './TreeNode.svelte';
     
     let { onFileSelect } = $props<{
         onFileSelect: (file: { id: string; name: string; type: string }) => void;
     }>();
+
+    setContext(TREE_CONTEXT, treeContext);
     
-    // Create tree context for all child components
-    const treeContext = createTreeContext();
     
     // Root drop zone state
     let isRootDragOver = $state(false);

@@ -358,6 +358,18 @@
     background-color: #f5f5f5;
   }
 
+  .node-header.special-contacts:hover {
+    background-color: #f5f9ff;
+  }
+
+  .node-header.special-photos:hover {
+    background-color: #f5fff8;
+  }
+
+  .node-header.special-notes:hover {
+    background-color: #fff5f5;
+  }
+
   .node-header:focus {
     outline: 2px solid #007acc;
     outline-offset: -2px;
@@ -514,6 +526,9 @@
     class:dragging={isDragging}
     class:drag-over={isDragOver && dragOverValid}
     class:drag-over-invalid={isDragOver && !dragOverValid}
+    class:special-contacts={item.folderCategory === 'contacts'}
+    class:special-photos={item.folderCategory === 'photos'}
+    class:special-notes={item.folderCategory === 'notes'}
     role="button"
     tabindex="0"
     draggable="true"
@@ -537,7 +552,9 @@
     {/if}
 
     <span class="icon">
-      {item.type === "folder" ? "📁" : item.type === "link" ? "🔗" : "📄"}
+      {item.folderCategory && item.folderCategory === "contacts" ? "🫂📁" :
+      item.folderCategory && item.folderCategory === "photos" ? "🖼️📁" :
+      item.folderCategory && item.folderCategory === "notes" ? "🗒️📁" : item.type === "folder" ? "📁" : item.type === "link" ? "🔗" : "📄"}
     </span>
 
     <span class="name" title={item.name}>{item.name}</span>
@@ -553,33 +570,21 @@
     <!-- Actions container with fixed space allocation -->
     <div class="actions-container">
       {#if isHovered && !loadingChildren && !isDragging}
-        <button
-          class="actions-btn move-btn"
-          onclick={handleMove}
-          disabled={isMoving}
-          title="Move {item.name}"
-          aria-label="Move {item.name}"
-        >
-          {#if isMoving}
-            <span class="moving">⏳</span>
-          {:else}
-            <Move size={14} />
-          {/if}
-        </button>
-
-        <button
-          class="actions-btn delete-btn"
-          onclick={handleDelete}
-          disabled={isDeleting}
-          title="Delete {item.name}"
-          aria-label="Delete {item.name}"
-        >
-          {#if isDeleting}
-            <span class="deleting">⏳</span>
-          {:else}
-            <Trash2 size={14} />
-          {/if}
-        </button>
+      {#if item.folderCategory === null}
+      <button
+        class="actions-btn delete-btn"
+        onclick={handleDelete}
+        disabled={isDeleting}
+        title="Delete {item.name}"
+        aria-label="Delete {item.name}"
+      >
+        {#if isDeleting}
+          <span class="deleting">⏳</span>
+        {:else}
+          <Trash2 size={14} />
+        {/if}
+      </button>
+      {/if}
       {/if}
     </div>
   </div>

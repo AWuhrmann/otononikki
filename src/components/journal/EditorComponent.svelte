@@ -502,12 +502,7 @@
     };
   }
 
-  // Reactive statements
-  $effect(() => {
-    if (config.readonly && crepe) {
-      // Handle readonly mode changes
-    }
-  });
+
 </script>
 
 <style>

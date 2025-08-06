@@ -22,7 +22,9 @@
     
     // Load root items on mount
     $effect(() => {
-        treeContext.loadRootItems();
+        treeContext.loadRootItems().then(() => {
+            console.log('data', treeContext.data);
+        });
     });
     
     // Root drop zone handlers

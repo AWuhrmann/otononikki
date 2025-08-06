@@ -61,7 +61,7 @@ export async function POST({ locals, request }) {
     }
 }
 
-// GET root items for a user
+// Get root items and special folders.
 export async function GET({ locals, url }) {
     const session = await locals.getSession();
     if (!session?.user) {
@@ -70,15 +70,18 @@ export async function GET({ locals, url }) {
 
     try {
         const user_id = session.user.id;
-        
         const result = await pool.query(
-            `SELECT id, name, type, created_at, updated_at,
-                    CASE WHEN type = 'folder' THEN 
-                        EXISTS(SELECT 1 FROM items c WHERE c.parent_id = items.id AND c.deleted_at IS NULL)
-                    ELSE false END as has_children
-             FROM items 
-             WHERE user_id = $1 AND parent_id IS NULL AND deleted_at IS NULL
-             ORDER BY type DESC, sort_order ASC, name ASC`,
+            `SELECT DISTINCT id, name, type, created_at, updated_at, folder_category, sort_order,
+          CASE WHEN type = 'folder' THEN
+            EXISTS(SELECT 1 FROM items c WHERE c.parent_id = items.id AND c.deleted_at IS NULL)
+          ELSE false END as has_children
+         FROM items
+         WHERE user_id = $1 AND deleted_at IS NULL 
+         AND (
+           parent_id IS NULL 
+           OR (type = 'folder' AND folder_category IS NOT NULL)
+         )
+         ORDER BY type DESC, sort_order ASC, name ASC`,
             [user_id]
         );
 
@@ -88,12 +91,12 @@ export async function GET({ locals, url }) {
             type: row.type,
             hasChildren: row.has_children,
             path: '/' + row.name,
+            folderCategory: row.folder_category ? row.folder_category : null,
         }));
 
         return json(items);
-
     } catch (err) {
-        console.error('Error fetching root items:', err);
+        console.error('Error fetching root and special items:', err);
         return json({ success: false }, { status: 500 });
     }
 }

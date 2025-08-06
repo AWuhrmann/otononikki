@@ -8,8 +8,17 @@
     EditorPluginConfig,
     EditorActionHandlers,
   } from "$lib/types/editor";
-  import { FilePlus, NotebookPen, SquareX, UserPen } from "lucide-svelte";
-    import { slide } from "svelte/transition";
+  import {
+    Check,
+    FilePlus,
+    NotebookPen,
+    SquareX,
+    UserPen,
+    X,
+  } from "lucide-svelte";
+  import { slide } from "svelte/transition";
+
+  import { treeContext } from "$lib/stores/treeContext.svelte.js";
 
   let editorComponent: EditorComponent;
   let currentFile = $state<{ id: string; name: string; type: string } | null>(
@@ -79,7 +88,10 @@
   }
 
   // Load file content into editor
-  async function loadFile(file: { id: string; name: string; type: string }) {
+  async function loadFile(
+    file: { id: string; name: string; type: string },
+    content?: string,
+  ) {
     if (file.type === "folder") return;
 
     try {
@@ -90,10 +102,14 @@
         await saveFile(markdown);
       }
 
-      const fileData = await getItemContent(file.id);
+      if (!content) {
+        const fileData = await getItemContent(file.id);
+        lastSavedContent = fileData.content || "";
+      } else {
+        lastSavedContent = content;
+      }
 
       currentFile = file;
-      lastSavedContent = fileData.content || "";
       isDirty = false;
 
       // Update editor content
@@ -177,6 +193,76 @@
   }
 
   let isCreatingNewFile = $state(false);
+
+  let prefix: string = $state("");
+  let path: string = $state("");
+
+  function togglePrefix(prefix_: string, placeholder_: string) {
+    const folderWithPrefix = treeContext.data.find(
+      (item) => item.folderCategory === prefix_,
+    );
+    if (folderWithPrefix) {
+      prefix_ = folderWithPrefix.name;
+    }
+    if (prefix === prefix_) {
+      prefix = "";
+      placeholder = placeholdDefaultVal;
+    } else {
+      placeholder = placeholder_;
+      prefix = prefix_;
+    }
+  }
+
+  let newPath = $state("");
+
+  const placeholdDefaultVal = "path/to/file.ext";
+  let placeholder: string = $state(placeholdDefaultVal);
+
+  // This function in of itself just creates the new file, it does not reload the treeContext, must be done afterwards.
+  async function createItem(path: string, content?: string) {
+    // 1. First, create the path structure
+    const pathResponse = await fetch("/api/items/create-path", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        path: path,
+        type: "file",
+        content: content || "",
+      }),
+    });
+
+    const pathData = await pathResponse.json();
+
+    // 2. If file doesn't exist, create it
+    if (!pathData.fileExists) {
+      const fileResponse = await fetch("/api/items/create-file", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          parentId: pathData.parentId,
+          name: pathData.readyToCreate.name,
+          type: "file",
+          content: "My personal info...",
+        }),
+      });
+
+      const fileData = await fileResponse.json();
+      console.log("File created:", fileData);
+
+      treeContext.loadRootItems();
+      console.log("pathdata", pathData);
+      pathData.createdFolders?.forEach((folder) => {
+        console.log("expanding from the button", folder);
+        treeContext.setExpanded(folder.id, true);
+      });
+      
+      loadFile(fileData.file, "");
+
+    } else {
+      console.log("File already exists:", pathData.existingFile);
+    }
+    return pathData;
+  }
 </script>
 
 <svelte:window
@@ -211,44 +297,21 @@
                 >Saved</span
               >
             {/if}
-          {:else}
-          <button
-  class="flex gap-3 hover:bg-gray-100 text-gray-600 rounded-md p-2 font-bold transition delay-150 duration-300 ease-in-out overflow-hidden"
-  onclick={() => {
-    isCreatingNewFile = !isCreatingNewFile;
-  }}
->
-<FilePlus />
-  {#if isCreatingNewFile}
-    {:else}
-    <span 
-      class="whitespace-nowrap"
-      in:slide={{duration: 300, axis: 'x'}} 
-      out:slide={{duration: 300, axis: 'x'}}
-    >
-      Create new file
-    </span>
-  {/if}
-</button>
-            {#if isCreatingNewFile}
-              <button
-                class="flex gap-3 hover:bg-blue-50 text-blue-700 rounded-md p-2 font-bold"
-              >
-                <UserPen /> Contact</button
-              >
-              <button
-                class="flex gap-3 hover:bg-purple-50 text-purple-700 rounded-md p-2 font-bold"
-              >
-                <NotebookPen /> Daily note</button
-              >
-            {/if}
+          {:else if isCreatingNewFile}
+            <div class="flex whitespace-nowrap">
+              <span class="font-medium text-gray-900 mr-3">Filename</span>
+              <span class="italic text-gray-700">{prefix}/</span>
+              <input
+                class="font-medium text-gray-500 italic font-bold"
+                {placeholder}
+                bind:value={newPath}
+              />
+            </div>
           {/if}
-
           {#if isLoading}
             <span class="text-xs text-blue-600">Loading...</span>
           {/if}
         </div>
-
         <div class="flex items-center space-x-2">
           {#if currentFile}
             <button
@@ -258,10 +321,64 @@
             >
               Save (Ctrl+S)
             </button>
+          {:else}
+            {#if isCreatingNewFile}
+              <button
+                class="flex gap-3 hover:bg-blue-50 text-blue-700 rounded-md p-2 font-bold"
+                onclick={() => togglePrefix("contacts", "Name.md")}
+              >
+                <UserPen /> Contact</button
+              >
+              <button
+                class="flex gap-3 hover:bg-purple-50 text-purple-700 rounded-md p-2 font-bold"
+                onclick={() => {
+                  const today = new Date();
+                  const formattedDate = today.toISOString().split("T")[0];
+                  togglePrefix("notes", formattedDate + ".md");
+                }}
+              >
+                <NotebookPen /> Daily note</button
+              >
+            {/if}
+            {#if isCreatingNewFile}
+              <span class="flex gap-3">
+                <button
+                  class="hover:bg-green-100 text-green-600 rounded-md p-2 font-bold transition delay-150 ease-in-out"
+                  onclick={async () => {
+                    isCreatingNewFile = !isCreatingNewFile;
+                    const pathData = await createItem(
+                      `${prefix}/${newPath || placeholder}`,
+                      "",
+                    );
+                  }}
+                >
+                  <Check />
+                </button>
+                <button
+                  class="hover:bg-red-100 text-red-600 rounded-md p-2 font-bold transition delay-150 ease-in-out"
+                  onclick={() => {
+                    isCreatingNewFile = !isCreatingNewFile;
+                  }}
+                >
+                  <X />
+                </button>
+              </span>
+            {:else}
+              <button
+                class="flex hover:bg-gray-100 text-gray-600 rounded-md p-2 font-bold transition delay-150 duration-300 ease-in-out overflow-hidden"
+                onclick={() => {
+                  isCreatingNewFile = !isCreatingNewFile;
+                }}
+              >
+                <span class="flex gap-3 whitespace-nowrap">
+                  Create new file
+                  <FilePlus />
+                </span>
+              </button>
+            {/if}
           {/if}
         </div>
       </div>
-
       <!-- Scrollable editor area -->
       <div
         class="flex-1 border-2 border-solid rounded-lg border-gray-300 overflow-y-auto"

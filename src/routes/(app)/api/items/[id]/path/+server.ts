@@ -1,4 +1,4 @@
-// GET full path of a specific item
+// GET full path of a specific item from its id.
 import { error, json } from '@sveltejs/kit';
 import { pool } from '$lib/server/db';
 

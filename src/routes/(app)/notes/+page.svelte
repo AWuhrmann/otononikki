@@ -33,6 +33,9 @@
     readonly: false,
   };
 
+  let isEditingName = $state(false);
+  let editingName = $state("");
+
   let originalContent = $state("");
 
   let markdown = `# Welcome to your Notes
@@ -85,6 +88,52 @@
     saveTimeout = setTimeout(() => {
       saveFile(content);
     }, 1000); // Save 1 second after user stops typing
+  }
+
+  function startEditing() {
+    if (!currentFile) return;
+    isEditingName = true;
+    editingName = currentFile.name;
+  }
+
+  function cancelEditing() {
+    isEditingName = false;
+    editingName = "";
+  }
+
+  async function saveNewName() {
+    if (!currentFile || !editingName.trim()) {
+      cancelEditing();
+      return;
+    }
+
+    try {
+      const result = await treeContext.renameItem(
+        currentFile.id,
+        editingName.trim(),
+      );
+
+      // Update current file reference
+      currentFile = { ...currentFile, name: editingName.trim() };
+
+      console.log("File renamed successfully:", result.message);
+      isEditingName = false;
+      editingName = "";
+    } catch (error) {
+      console.error("Error renaming file:", error);
+      alert("Failed to rename file: " + error.message);
+      // Keep editing mode open on error
+    }
+  }
+
+  function handleNameKeydown(event: KeyboardEvent) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveNewName();
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      cancelEditing();
+    }
   }
 
   // Load file content into editor
@@ -255,9 +304,8 @@
         console.log("expanding from the button", folder);
         treeContext.setExpanded(folder.id, true);
       });
-      
-      loadFile(fileData.file, "");
 
+      loadFile(fileData.file, "");
     } else {
       console.log("File already exists:", pathData.existingFile);
     }
@@ -285,17 +333,48 @@
       <div class="flex-shrink-0 px-4 py-2 flex items-center justify-between">
         <div class="flex items-center space-x-2">
           {#if currentFile}
-            <span class="font-medium text-gray-900">{currentFile.name}</span>
+            <div class="flex items-center space-x-2">
+              {#if isEditingName}
+                <input
+                  type="text"
+                  bind:value={editingName}
+                  onkeydown={handleNameKeydown}
+                  class="font-medium text-gray-900 bg-white border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  style="min-width: 200px;"
+                  autofocus
+                />
+                <button
+                  onclick={saveNewName}
+                  class="text-green-600 hover:text-green-700 p-1"
+                  title="Save name"
+                >
+                  <Check size={16} />
+                </button>
+                <button
+                  onclick={cancelEditing}
+                  class="text-red-600 hover:text-red-700 p-1"
+                  title="Cancel"
+                >
+                  <X size={16} />
+                </button>
+              {:else}
+                <button
+                  onclick={startEditing}
+                  class="font-medium text-gray-900 hover:text-blue-600 hover:underline cursor-pointer"
+                  title="Click to rename"
+                >
+                  {currentFile.name}
+                </button>
+              {/if}
+            </div>
             {#if isDirty}
-              <span
-                class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded"
-                >Unsaved</span
-              >
+              <span class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded">
+                Unsaved
+              </span>
             {:else}
-              <span
-                class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded"
-                >Saved</span
-              >
+              <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
+                Saved
+              </span>
             {/if}
           {:else if isCreatingNewFile}
             <div class="flex whitespace-nowrap">

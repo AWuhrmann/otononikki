@@ -118,6 +118,8 @@ function createTreeContext() {
                 throw error;
             }
         },
+
+        
         
         // Delete item
         async deleteItem(itemId: string) {
@@ -139,6 +141,41 @@ function createTreeContext() {
                 return true;
             } catch (error: any) {
                 debugLog('Error deleting item:', error);
+                throw error;
+            }
+        },
+
+        async renameItem(itemId: string, newName: string) {
+            debugLog(`Renaming item ${itemId} to "${newName}"`);
+            
+            try {
+                const response = await fetch(`/api/items/${itemId}/rename`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: newName
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok || !result.success) {
+                    throw new Error(result.error || 'Failed to rename item');
+                }
+                
+                debugLog(`Successfully renamed item ${itemId} to "${newName}"`);
+                
+                // Update the item locally first for immediate UI feedback
+                this.updateItem(itemId, { name: newName });
+                
+                // Then reload to ensure consistency
+                await this.loadRootItems();
+                
+                return result;
+            } catch (error: any) {
+                debugLog('Error renaming item:', error);
                 throw error;
             }
         },

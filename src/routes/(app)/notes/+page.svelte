@@ -332,7 +332,7 @@
       <!-- Header with file info and actions -->
       <div class="flex-shrink-0 px-4 py-2 flex items-center justify-between">
         <div class="flex items-center space-x-2">
-          {#if currentFile}
+          {#if currentFile && !isCreatingNewFile}
             <div class="flex items-center space-x-2">
               {#if isEditingName}
                 <input
@@ -377,22 +377,26 @@
               </span>
             {/if}
           {:else if isCreatingNewFile}
-            <div class="flex whitespace-nowrap">
-              <span class="font-medium text-gray-900 mr-3">Filename</span>
+            <div class="flex whitespace-nowrap items-center">
+              <span class="font-medium text-gray-900 mr-3">New File:</span>
               <span class="italic text-gray-700">{prefix}/</span>
               <input
-                class="font-medium text-gray-500 italic font-bold"
+                class="font-medium text-gray-900 border-b border-gray-400 focus:border-blue-500 focus:outline-none bg-transparent"
                 {placeholder}
                 bind:value={newPath}
               />
             </div>
+          {:else}
+            <span class="font-medium text-gray-500 italic">No file selected</span>
           {/if}
           {#if isLoading}
             <span class="text-xs text-blue-600">Loading...</span>
           {/if}
         </div>
+        
         <div class="flex items-center space-x-2">
-          {#if currentFile}
+          <!-- Save button - only when editing an existing file -->
+          {#if currentFile && !isCreatingNewFile}
             <button
               class="text-xs px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
               onclick={manualSave}
@@ -400,68 +404,109 @@
             >
               Save (Ctrl+S)
             </button>
-          {:else}
-            {#if isCreatingNewFile}
+          {/if}
+          
+          <!-- Create new file flow -->
+          {#if isCreatingNewFile}
+            <!-- File type options when creating -->
+            <button
+              class="flex gap-2 hover:bg-blue-50 text-blue-700 rounded-md px-3 py-2 text-sm font-medium"
+              onclick={() => togglePrefix("contacts", "Name.md")}
+            >
+              <UserPen size={16} /> Contact
+            </button>
+            <button
+              class="flex gap-2 hover:bg-purple-50 text-purple-700 rounded-md px-3 py-2 text-sm font-medium"
+              onclick={() => {
+                const today = new Date();
+                const formattedDate = today.toISOString().split("T")[0];
+                togglePrefix("notes", formattedDate + ".md");
+              }}
+            >
+              <NotebookPen size={16} /> Daily note
+            </button>
+            
+            <!-- Create/Cancel buttons -->
+            <div class="flex gap-2 ml-2">
               <button
-                class="flex gap-3 hover:bg-blue-50 text-blue-700 rounded-md p-2 font-bold"
-                onclick={() => togglePrefix("contacts", "Name.md")}
-              >
-                <UserPen /> Contact</button
-              >
-              <button
-                class="flex gap-3 hover:bg-purple-50 text-purple-700 rounded-md p-2 font-bold"
-                onclick={() => {
-                  const today = new Date();
-                  const formattedDate = today.toISOString().split("T")[0];
-                  togglePrefix("notes", formattedDate + ".md");
+                class="hover:bg-green-100 text-green-600 rounded-md p-2 font-bold transition-colors"
+                onclick={async () => {
+                  const pathData = await createItem(
+                    `${prefix}/${newPath || placeholder}`,
+                    "",
+                  );
+                  // Reset creation state after successful creation
+                  isCreatingNewFile = false;
+                  prefix = "";
+                  newPath = "";
+                  placeholder = placeholdDefaultVal;
                 }}
+                title="Create file"
               >
-                <NotebookPen /> Daily note</button
-              >
-            {/if}
-            {#if isCreatingNewFile}
-              <span class="flex gap-3">
-                <button
-                  class="hover:bg-green-100 text-green-600 rounded-md p-2 font-bold transition delay-150 ease-in-out"
-                  onclick={async () => {
-                    isCreatingNewFile = !isCreatingNewFile;
-                    const pathData = await createItem(
-                      `${prefix}/${newPath || placeholder}`,
-                      "",
-                    );
-                  }}
-                >
-                  <Check />
-                </button>
-                <button
-                  class="hover:bg-red-100 text-red-600 rounded-md p-2 font-bold transition delay-150 ease-in-out"
-                  onclick={() => {
-                    isCreatingNewFile = !isCreatingNewFile;
-                  }}
-                >
-                  <X />
-                </button>
-              </span>
-            {:else}
-              <button
-                class="flex hover:bg-gray-100 text-gray-600 rounded-md p-2 font-bold transition delay-150 duration-300 ease-in-out overflow-hidden"
-                onclick={() => {
-                  isCreatingNewFile = !isCreatingNewFile;
-                }}
-              >
-                <span class="flex gap-3 whitespace-nowrap">
-                  Create new file
-                  <FilePlus />
-                </span>
+                <Check size={18} />
               </button>
-            {/if}
+              <button
+                class="hover:bg-red-100 text-red-600 rounded-md p-2 font-bold transition-colors"
+                onclick={() => {
+                  isCreatingNewFile = false;
+                  prefix = "";
+                  newPath = "";
+                  placeholder = placeholdDefaultVal;
+                  // Reset editor to previous file or welcome state
+                  if (currentFile) {
+                    loadFile(currentFile);
+                  } else {
+                    markdown = `# Welcome to your Notes
+        
+    Select a file from the file explorer to start editing, or create a new file.
+    
+    ## Getting Started
+    - Click on any file in the left panel to open it
+    - Your changes are automatically saved
+    - Use the toolbar to add links and format text
+        `;
+                    originalContent = markdown;
+                  }
+                }}
+                title="Cancel"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          {:else}
+            <!-- Always available Create new file button -->
+            <button
+              class="flex gap-2 hover:bg-gray-100 text-gray-600 rounded-md px-3 py-2 text-sm font-medium transition-colors"
+              onclick={() => {
+                // Save current file if dirty before starting new file creation
+                if (currentFile && isDirty) {
+                  manualSave();
+                }
+                
+                // Clear current file and enter creation mode
+                currentFile = null;
+                isCreatingNewFile = true;
+                isDirty = false;
+                
+                // Reset editor to blank state
+                markdown = "";
+                originalContent = "";
+                
+                // Reset creation form
+                prefix = "";
+                newPath = "";
+                placeholder = placeholdDefaultVal;
+              }}
+            >
+              <FilePlus size={16} />
+              Create new file
+            </button>
           {/if}
         </div>
       </div>
+      
       <!-- Scrollable editor area -->
-      <div
-        class="flex-1 border-2 border-solid rounded-lg border-gray-300 overflow-y-auto"
-      >
+      <div class="flex-1 border-2 border-solid rounded-lg border-gray-300 overflow-y-auto">
         <EditorComponent
           bind:this={editorComponent}
           config={editorConfig}
@@ -478,7 +523,7 @@
     <div class="flex-1 flex justify-start">
       <div class="max-w-[200px] w-full mt-5 ml-5">
         <!-- Future: Document outline, tags, etc. -->
-        {#if currentFile}
+        {#if currentFile && !isCreatingNewFile}
           <div class="border border-gray-300 rounded-md p-3">
             <h3 class="font-medium text-gray-900 mb-2">File Info</h3>
             <div class="text-sm text-gray-600 space-y-1">
@@ -487,6 +532,32 @@
               <div>
                 <strong>Status:</strong>
                 {isDirty ? "Modified" : "Saved"}
+              </div>
+            </div>
+          </div>
+        {:else if isCreatingNewFile}
+          <div class="border border-gray-300 rounded-md p-3">
+            <h3 class="font-medium text-gray-900 mb-2">Creating New File</h3>
+            <div class="text-sm text-gray-600 space-y-1">
+              <div><strong>Path:</strong> {prefix}/{newPath || placeholder}</div>
+              <div><strong>Type:</strong> file</div>
+              <div class="text-xs text-gray-500 mt-2">
+                Choose a template above or enter a custom path
+              </div>
+            </div>
+          </div>
+        {:else}
+          <div class="border border-gray-300 rounded-md p-3">
+            <h3 class="font-medium text-gray-900 mb-2">Getting Started</h3>
+            <div class="text-sm text-gray-600 space-y-2">
+              <p>Select a file from the explorer or create a new one to start editing.</p>
+              <div class="text-xs text-gray-500">
+                <strong>Tips:</strong>
+                <ul class="list-disc list-inside mt-1 space-y-1">
+                  <li>Files auto-save as you type</li>
+                  <li>Click filenames to rename</li>
+                  <li>Use Ctrl+S to save manually</li>
+                </ul>
               </div>
             </div>
           </div>

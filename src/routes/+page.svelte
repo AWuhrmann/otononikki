@@ -30,6 +30,25 @@
   <section class="content">
     <div class="container">
       <h2>Latest Updates</h2>
+
+      <div class="update-card">
+        <div class="update-date">7 August 2025</div>
+        <h3>Notes, Markdown</h3>
+        <p> Ability to rename files, create new one with automatic path finding and creation, </p>
+        <h3>Learning part</h3>
+        <p> Started thinking about best way to learn using active recall and spaced repetition. Leverage AI in a smart way for this.</p>
+        <ul>
+          <li>LLM generates text with error and you have to detect it</li>
+          <li>Basic flashcards</li>
+          <li>Flashcards~ish but we have to write the actual answer.</li>
+          <li>Maybe sort of a tech diagram where we can unlock some features like in a video game.</li>
+          <li>Or a knowledge graph ish. </li>
+          <li> Need to research about: 
+            <a href="https://www.researchgate.net/publication/360870626_The_knowledge_graph_as_a_learning_tool" target="_blank">Knowledge Graph as a Learning Tool</a>
+          </li>
+        </ul>
+      
+      </div>
       
       <div class="update-card">
         <div class="update-date">August 2025</div>

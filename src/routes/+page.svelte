@@ -33,7 +33,7 @@
 
       <div class="update-card">
         <div class="update-date">7 August 2025</div>
-        <h3>Notes, Markdown</h3>
+        <h3>Notes</h3>
         <p> Ability to rename files, create new one with automatic path finding and creation, </p>
         <h3>Learning part</h3>
         <p> Started thinking about best way to learn using active recall and spaced repetition. Leverage AI in a smart way for this.</p>

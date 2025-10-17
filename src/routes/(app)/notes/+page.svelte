@@ -12,26 +12,54 @@
     Check,
     FilePlus,
     NotebookPen,
-    SquareX,
+    Sparkles,
     UserPen,
     X,
   } from "lucide-svelte";
-  import { slide } from "svelte/transition";
 
-  import { treeContext } from "$lib/stores/treeContext.svelte.js";
+  import { type EditorAPI } from "$lib/editor";
 
-  let editorComponent: EditorComponent;
+  import { createItem, treeContext } from "$lib/stores/treeContext.svelte.js";
+  import { onMount } from "svelte";
+  import TaskOptions from "$components/files/tasks/TaskOptions.svelte";
+  import {
+    addTaskToCalendar,
+    ConnectToCalendar,
+  } from "$lib/editor/commands/autoLinkFromLLM";
+  import type { TreeItem } from "$lib/types/files";
+
+  let editorComponent = $state<EditorComponent>();
   let currentFile = $state<{ id: string; name: string; type: string } | null>(
     null,
   );
+  let currentPath = $state("");
+
+  function onCheckFullDay(checked: boolean) {
+    console.log(checked);
+    editorAPI?.insertMarkdown("test");
+  }
+
+  $effect(() => {
+    if (currentFile == null) {
+      currentPath = "";
+      return;
+    }
+
+    (async () => {
+      let response = await fetch(`api/items/${currentFile.id}/path`);
+      let data = await response.json();
+      currentPath = data.path;
+    })();
+  });
+
   let isLoading = $state(false);
   let isDirty = $state(false);
   let lastSavedContent = $state("");
-
   const editorConfig: EditorConfig = {
     placeholder: "Start typing your notes...",
     readonly: false,
   };
+  let editorAPI = $state<EditorAPI | null>(null);
 
   let isEditingName = $state(false);
   let editingName = $state("");
@@ -53,6 +81,7 @@
       clickHandlers: {
         onTaskFile: (href) => {
           console.log("Opening task:", href);
+
           // Navigate to task or open in sidebar
         },
         onTaskMissing: (path) => {
@@ -65,6 +94,7 @@
         },
       },
     },
+    highlights: true,
   };
 
   const actionHandlers: EditorActionHandlers = {
@@ -76,8 +106,9 @@
         debouncedSave(event.markdown);
       }
     },
-    onReady: () => {
-      console.log("Editor is ready!");
+    onReady: (api: EditorAPI) => {
+      editorAPI = api;
+      console.log("Editor ready, API available:", api);
     },
   };
 
@@ -120,8 +151,9 @@
       isEditingName = false;
       editingName = "";
     } catch (error) {
-      console.error("Error renaming file:", error);
-      alert("Failed to rename file: " + error.message);
+      let message = "Unknown Error";
+      if (error instanceof Error) message = error.message;
+      alert("Failed to rename file: " + message);
       // Keep editing mode open on error
     }
   }
@@ -197,26 +229,6 @@
     // const content = markdown;
     await saveFile(markdown);
   }
-
-  // Toolbar actions
-  function addTaskLink() {
-    const taskName = prompt("Task name:");
-    if (taskName) {
-      editorComponent.addSmartLink(taskName, "task", true);
-    }
-  }
-
-  function addMissingContact() {
-    const contactName = prompt("Contact name:");
-    if (contactName) {
-      editorComponent.addSmartLink(contactName, "contact", false);
-    }
-  }
-
-  function getContent() {
-    alert(markdown);
-  }
-
   // Handle file selection from FileExplorer
   function handleFileSelect(file: { id: string; name: string; type: string }) {
     loadFile(file);
@@ -248,7 +260,7 @@
 
   function togglePrefix(prefix_: string, placeholder_: string) {
     const folderWithPrefix = treeContext.data.find(
-      (item) => item.folderCategory === prefix_,
+      (item: TreeItem) => item.folderCategory === prefix_,
     );
     if (folderWithPrefix) {
       prefix_ = folderWithPrefix.name;
@@ -262,55 +274,18 @@
     }
   }
 
+  let calendar_connected = $state(false);
+
+  onMount(() => {
+    calendar_connected =
+      page.url.searchParams.get("calendar_connected") === "true";
+    console.log("url param", calendar_connected);
+  });
+
   let newPath = $state("");
 
   const placeholdDefaultVal = "path/to/file.ext";
   let placeholder: string = $state(placeholdDefaultVal);
-
-  // This function in of itself just creates the new file, it does not reload the treeContext, must be done afterwards.
-  async function createItem(path: string, content?: string) {
-    // 1. First, create the path structure
-    const pathResponse = await fetch("/api/items/create-path", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        path: path,
-        type: "file",
-        content: content || "",
-      }),
-    });
-
-    const pathData = await pathResponse.json();
-
-    // 2. If file doesn't exist, create it
-    if (!pathData.fileExists) {
-      const fileResponse = await fetch("/api/items/create-file", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          parentId: pathData.parentId,
-          name: pathData.readyToCreate.name,
-          type: "file",
-          content: "My personal info...",
-        }),
-      });
-
-      const fileData = await fileResponse.json();
-      console.log("File created:", fileData);
-
-      treeContext.loadRootItems();
-      console.log("pathdata", pathData);
-      pathData.createdFolders?.forEach((folder) => {
-        console.log("expanding from the button", folder);
-        treeContext.setExpanded(folder.id, true);
-      });
-
-      loadFile(fileData.file, "");
-    } else {
-      console.log("File already exists:", pathData.existingFile);
-    }
-    return pathData;
-  }
 </script>
 
 <svelte:window
@@ -335,6 +310,7 @@
           {#if currentFile && !isCreatingNewFile}
             <div class="flex items-center space-x-2">
               {#if isEditingName}
+                <!-- svelte-ignore a11y_autofocus -->
                 <input
                   type="text"
                   bind:value={editingName}
@@ -368,11 +344,15 @@
               {/if}
             </div>
             {#if isDirty}
-              <span class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded">
+              <span
+                class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded"
+              >
                 Unsaved
               </span>
             {:else}
-              <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
+              <span
+                class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded"
+              >
                 Saved
               </span>
             {/if}
@@ -387,13 +367,15 @@
               />
             </div>
           {:else}
-            <span class="font-medium text-gray-500 italic">No file selected</span>
+            <span class="font-medium text-gray-500 italic"
+              >No file selected</span
+            >
           {/if}
           {#if isLoading}
             <span class="text-xs text-blue-600">Loading...</span>
           {/if}
         </div>
-        
+
         <div class="flex items-center space-x-2">
           <!-- Save button - only when editing an existing file -->
           {#if currentFile && !isCreatingNewFile}
@@ -405,7 +387,7 @@
               Save (Ctrl+S)
             </button>
           {/if}
-          
+
           <!-- Create new file flow -->
           {#if isCreatingNewFile}
             <!-- File type options when creating -->
@@ -425,7 +407,7 @@
             >
               <NotebookPen size={16} /> Daily note
             </button>
-            
+
             <!-- Create/Cancel buttons -->
             <div class="flex gap-2 ml-2">
               <button
@@ -433,6 +415,7 @@
                 onclick={async () => {
                   const pathData = await createItem(
                     `${prefix}/${newPath || placeholder}`,
+                    loadFile,
                     "",
                   );
                   // Reset creation state after successful creation
@@ -476,22 +459,29 @@
           {:else}
             <!-- Always available Create new file button -->
             <button
+              onclick={() => {
+                editorAPI?.autoLinkFromLLM();
+              }}
+              class="flex text-gray-600 hover:bg-gray-100 rounded-md px-2 py-2"
+              ><Sparkles size={16}></Sparkles></button
+            >
+            <button
               class="flex gap-2 hover:bg-gray-100 text-gray-600 rounded-md px-3 py-2 text-sm font-medium transition-colors"
               onclick={() => {
                 // Save current file if dirty before starting new file creation
                 if (currentFile && isDirty) {
                   manualSave();
                 }
-                
+
                 // Clear current file and enter creation mode
                 currentFile = null;
                 isCreatingNewFile = true;
                 isDirty = false;
-                
+
                 // Reset editor to blank state
                 markdown = "";
                 originalContent = "";
-                
+
                 // Reset creation form
                 prefix = "";
                 newPath = "";
@@ -504,9 +494,11 @@
           {/if}
         </div>
       </div>
-      
+
       <!-- Scrollable editor area -->
-      <div class="flex-1 border-2 border-solid rounded-lg border-gray-300 overflow-y-auto">
+      <div
+        class="flex-1 border-2 border-solid rounded-lg border-gray-300 overflow-y-auto"
+      >
         <EditorComponent
           bind:this={editorComponent}
           config={editorConfig}
@@ -535,11 +527,36 @@
               </div>
             </div>
           </div>
+          {#if currentPath.split("/")[0] == "tasks"}
+            <div class="border border-gray-300 rounded-md p-3 mt-4">
+              <h3 class="font-medium text-gray-900 mb-2">Task info</h3>
+              <div class="text-sm text-gray-600 space-y-1">
+                {#if !calendar_connected}<button
+                    onclick={async () => {
+                      ConnectToCalendar();
+                    }}
+                    class="font-medium text-sm text-gray-600 hover:bg-gray-100 rounded-md"
+                    >Connect to Google Calendar</button
+                  >
+                {:else}
+                  <button
+                    onclick={async () => addTaskToCalendar()}
+                    class="font-medium text-sm text-gray-600 hover:bg-gray-100 rounded-md"
+                    >Add task</button
+                  >
+                  <TaskOptions {onCheckFullDay} />
+                {/if}
+              </div>
+            </div>
+          {/if}
         {:else if isCreatingNewFile}
           <div class="border border-gray-300 rounded-md p-3">
             <h3 class="font-medium text-gray-900 mb-2">Creating New File</h3>
             <div class="text-sm text-gray-600 space-y-1">
-              <div><strong>Path:</strong> {prefix}/{newPath || placeholder}</div>
+              <div>
+                <strong>Path:</strong>
+                {prefix}/{newPath || placeholder}
+              </div>
               <div><strong>Type:</strong> file</div>
               <div class="text-xs text-gray-500 mt-2">
                 Choose a template above or enter a custom path
@@ -550,7 +567,10 @@
           <div class="border border-gray-300 rounded-md p-3">
             <h3 class="font-medium text-gray-900 mb-2">Getting Started</h3>
             <div class="text-sm text-gray-600 space-y-2">
-              <p>Select a file from the explorer or create a new one to start editing.</p>
+              <p>
+                Select a file from the explorer or create a new one to start
+                editing.
+              </p>
               <div class="text-xs text-gray-500">
                 <strong>Tips:</strong>
                 <ul class="list-disc list-inside mt-1 space-y-1">

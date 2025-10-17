@@ -1,5 +1,6 @@
 import { sveltekit } from "@sveltejs/kit/vite"
 import { defineConfig } from "vite"
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   server: {
@@ -8,5 +9,8 @@ export default defineConfig({
       allow: ['/tmp'] // allow serving files from /tmp
     }
   },
-  plugins: [sveltekit()],
+  plugins: [tailwindcss({
+    content: ['./src/**/*.{html,js,svelte,ts}']
+  }
+  ), sveltekit()],
 })

@@ -6,7 +6,7 @@ export default [
     ignores: ["node_modules/", "dist/"],
   },
   {
-    files: ["**/*.svelte"],
+    files: ["**/*.svelte", "**/*.ts"],
     languageOptions: {
       parser: svelteParser,
       parserOptions: {

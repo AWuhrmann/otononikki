@@ -35,3 +35,4 @@ dist-ssr
 static/*
 src/static/*
 .svelte-kit/*
+llm-parser

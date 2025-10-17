@@ -1,16 +1,23 @@
 import type { Crepe } from "@milkdown/crepe";
 import type { Editor } from "@milkdown/core";
 import type { LinkActionHandlers } from "../editor/plugins/links/linkClickHandler.js";
-import type { LinkType } from '../editor/plugins/links/linkClassification.js';
+import type { LinkType } from "../editor/plugins/links/linkClassification.js";
+import type { EditorAPI } from "$lib/editor/index.js";
 
 // Re-export types from plugins for convenience
-export type { LinkType } from '../editor/plugins/links/linkClassification.js';
-export type { LinkActionHandlers } from '../editor/plugins/links/linkClickHandler.js';
+export type { LinkType } from "../editor/plugins/links/linkClassification.js";
+export type { LinkActionHandlers } from "../editor/plugins/links/linkClickHandler.js";
 
 // Editor instance types
 export interface EditorInstance {
   crepe: Crepe;
   editor: Editor;
+}
+
+export interface Task {
+  verbatim: string;
+  summary: string;
+  date: string;
 }
 
 // Configuration types
@@ -34,10 +41,11 @@ export interface MarkPluginConfig {
 export interface EditorPluginConfig {
   links?: LinkPluginConfig;
   marks?: MarkPluginConfig;
+  highlights?: boolean;
 }
 
 // Command types
-export type SmartLinkType = 'task' | 'contact' | 'internal';
+export type SmartLinkType = "task" | "contact" | "internal";
 
 export interface LinkCommandOptions {
   text: string;
@@ -107,16 +115,19 @@ export interface EditorActionHandlers {
   onLoad?: () => string | Promise<string>;
   onLinkClick?: (event: LinkClickEvent) => void;
   onChange?: (event: EditorChangeEvent) => void;
-  onReady?: () => void;
-  onFileDrop?: (file: { id: string; name: string; type: string }, position?: number) => string;
+  onReady?: (api: EditorAPI) => void;
+  onFileDrop?: (
+    file: { id: string; name: string; type: string },
+    position?: number,
+  ) => string;
 }
 
 // CSS class name constants
 export const CSS_CLASSES = {
-  EDITOR: 'milkdown-editor',
-  LINK: 'milkdown-link',
-  MARK: 'milkdown-mark',
-  TOOLTIP: 'link-tooltip',
+  EDITOR: "milkdown-editor",
+  LINK: "milkdown-link",
+  MARK: "milkdown-mark",
+  TOOLTIP: "link-tooltip",
 } as const;
 
 // Link type style mapping
@@ -132,8 +143,8 @@ export type LinkTypeStyleMap = Record<LinkType, LinkTypeStyle>;
 
 // Default values
 export const DEFAULT_EDITOR_CONFIG: Required<EditorConfig> = {
-  defaultValue: '# Welcome\n\nStart writing...',
-  placeholder: 'Type something...',
+  defaultValue: "# Welcome\n\nStart writing...",
+  placeholder: "Type something...",
   readonly: false,
   root: document.body,
 };
@@ -145,7 +156,7 @@ export const DEFAULT_PLUGIN_CONFIG: Required<EditorPluginConfig> = {
   },
   marks: {
     enabled: true,
-    defaultColor: '#ffff00',
+    defaultColor: "#ffff00",
   },
 };
 
@@ -154,31 +165,39 @@ export class EditorError extends Error {
   constructor(
     message: string,
     public code: string,
-    public plugin?: string
+    public plugin?: string,
   ) {
     super(message);
-    this.name = 'EditorError';
+    this.name = "EditorError";
   }
 }
 
 export class PluginError extends EditorError {
   constructor(message: string, pluginName: string) {
-    super(message, 'PLUGIN_ERROR', pluginName);
-    this.name = 'PluginError';
+    super(message, "PLUGIN_ERROR", pluginName);
+    this.name = "PluginError";
   }
 }
 
 // Utility type guards
 export function isLinkType(value: string): value is LinkType {
   const linkTypes: LinkType[] = [
-    'task', 'task', 'task-missing',
-    'contact', 'contact-missing',
-    'internal-file', 'internal-folder', 'internal-missing',
-    'external', 'mail', 'default'
+    "task",
+    "task",
+    "task-missing",
+    "contact",
+    "contact-missing",
+    "internal-file",
+    "internal-folder",
+    "internal-missing",
+    "external",
+    "mail",
+    "default",
   ];
   return linkTypes.includes(value as LinkType);
 }
 
 export function isSmartLinkType(value: string): value is SmartLinkType {
-  return ['task', 'contact', 'internal'].includes(value);
+  return ["task", "contact", "internal"].includes(value);
 }
+

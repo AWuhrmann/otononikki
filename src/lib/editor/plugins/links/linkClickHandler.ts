@@ -16,92 +16,79 @@ export interface LinkActionHandlers {
   onEmail?: (href: string) => void;
 }
 
-export const createLinkClickHandlerPlugin = (handlers: LinkActionHandlers = {}) => {
+export const createLinkClickHandlerPlugin = (
+  handlers: LinkActionHandlers = {},
+) => {
   return $prose(() => {
     return new Plugin({
-      key: new PluginKey('linkClickHandler'),
+      key: new PluginKey("linkClickHandler"),
       view(editorView) {
         const handleClick = (event: MouseEvent) => {
           const target = event.target as HTMLElement;
-          const link = target.closest('a');
-          
+          const link = target.closest("a");
+
           if (!link) return;
 
-          const href = link.getAttribute('href') || link.getAttribute('data-original-href');
-          const linkType = link.getAttribute('data-link-type') as LinkType;
-          
+          const href =
+            link.getAttribute("href") ||
+            link.getAttribute("data-original-href");
+          const linkType = link.getAttribute("data-link-type") as LinkType;
+
           if (!href) return;
-          
-          console.log('Link clicked:', href, 'type:', linkType);
+
+          console.log("Link clicked:", href, "type:", linkType);
 
           // Handle different link types
           switch (linkType as string) {
-            case 'tasks-file':
+            case "task":
               event.preventDefault();
               event.stopPropagation();
               handlers.onTaskFile?.(href);
               break;
 
-            case 'tasks-folder':
+            case "task-missing":
               event.preventDefault();
               event.stopPropagation();
-              handlers.onTaskFolder?.(href);
-              break;
-
-            case 'tasks-missing':
-              event.preventDefault();
-              event.stopPropagation();
-              const taskPath = href.replace('?', '');
+              const taskPath = href.replace("?", "");
               handlers.onTaskMissing?.(taskPath);
               break;
 
-            case 'contacts-file':
+            case "contact-missing":
               event.preventDefault();
               event.stopPropagation();
-              handlers.onContactFile?.(href);
-              break;
-
-            case 'contacts-folder':
-              event.preventDefault();
-              event.stopPropagation();
-              handlers.onContactFolder?.(href);
-              break;
-
-            case 'contacts-missing':
-              event.preventDefault();
-              event.stopPropagation();
-              const contactPath = href.replace('?', '');
+              const contactPath = href.replace("?", "");
               handlers.onContactMissing?.(contactPath);
               break;
 
-            case 'internal-file':
+            case "internal-file":
               event.preventDefault();
               event.stopPropagation();
               handlers.onInternalFile?.(href);
               break;
 
-            case 'internal-folder':
+            case "internal-folder":
               event.preventDefault();
               event.stopPropagation();
               handlers.onInternalFolder?.(href);
               break;
 
-            case 'internal-missing':
+            case "internal-missing":
               event.preventDefault();
               event.stopPropagation();
-              const internalPath = href.replace('?', '');
+              const internalPath = href.replace("?", "");
               handlers.onInternalMissing?.(internalPath);
               break;
 
-            case 'external':
+            case "external":
               event.preventDefault();
               event.stopPropagation();
-              if (href.startsWith('http')) {
-                handlers.onExternal?.(href) || window.open(href, '_blank', 'noopener,noreferrer');
+              if (href.startsWith("http")) {
+                handlers.onExternal?.(href) ||
+                  window.open(href, "_blank", "noopener,noreferrer");
               }
               break;
 
-            case 'email':
+            case "email":
               // Let email links behave normally unless custom handler
               if (handlers.onEmail) {
                 event.preventDefault();
@@ -114,14 +101,15 @@ export const createLinkClickHandlerPlugin = (handlers: LinkActionHandlers = {}) 
 
         // Add event listener to the editor DOM
         const editorDOM = editorView.dom;
-        editorDOM.addEventListener('click', handleClick, true);
+        editorDOM.addEventListener("click", handleClick, true);
 
         return {
           destroy() {
-            editorDOM.removeEventListener('click', handleClick, true);
-          }
+            editorDOM.removeEventListener("click", handleClick, true);
+          },
         };
-      }
+      },
     });
   });
 };
+

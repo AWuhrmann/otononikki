@@ -5,14 +5,21 @@
   import "@milkdown/crepe/theme/frame.css";
   import { parserCtx, editorViewCtx } from "@milkdown/kit/core";
 
-  import { $prose as _prose, replaceAll } from "@milkdown/kit/utils";
+  import {
+    $prose as _prose,
+    getMarkdown,
+    replaceAll,
+  } from "@milkdown/kit/utils";
 
   import { createEditorPlugins } from "$lib/editor/plugins/index.js";
 
   import {
     insertMarkdownAtCursor,
+    insertMarkdownAfterPattern,
     appendMarkdown,
     createSmartLink,
+    convertSelectionToContactLink,
+    autoLinkContent,
   } from "$lib/editor/commands/index.js";
 
   import type {
@@ -26,9 +33,28 @@
   } from "$lib/types/editor.js";
   import type { MilkdownPlugin } from "@milkdown/kit/ctx";
   import { Plugin, PluginKey } from "@milkdown/kit/prose/state";
-  import type { Parser } from "@milkdown/kit/transformer";
-  import type { EditorView } from "@milkdown/kit/prose/view";
+  import {
+    applyHighlights,
+    clearHighlights,
+  } from "$lib/editor/plugins/highlights";
 
+  import { type EditorAPI } from "$lib/editor";
+    import { getMarkdownAfterPattern } from "$lib/editor/commands/linkCommands";
+
+  // Add to your component's public methods
+  function highlightSnippets(snippets: string[]) {
+    console.log("called with snippets", snippets);
+
+    if (crepe) {
+      applyHighlights(crepe.editor, snippets);
+    }
+  }
+
+  function clearAllHighlights() {
+    if (crepe) {
+      clearHighlights(crepe.editor);
+    }
+  }
   // Props
   let {
     config = {
@@ -112,6 +138,43 @@
     ) => string;
   } = $props();
 
+  let api: EditorAPI = {
+    autoLinkFromLLM: autoLinkFromLLM,
+    highlightSnippets: highlightSnippets,
+    convertToContactLink: convertToContactLink,
+    autoLink: autoLink,
+    clearHighlights: clearAllHighlights,
+    insertMarkdown: insertMarkdown,
+    getMarkdown: getCurrentMarkdown,
+    insertMarkdownAfterPattern: insertMarkdownAfterPattern_,
+    getMarkdownAfterPattern: getMarkdownAfterPattern_
+  };
+
+  function getMarkdownAfterPattern_(pattern: string | RegExp) {
+    if (crepe) { 
+      return getMarkdownAfterPattern(crepe.editor, pattern)
+    }
+  }
+
+  function insertMarkdownAfterPattern_(  pattern: string | RegExp,
+  markdown: string,
+  replace: boolean = false,
+) {
+  if (crepe) {
+    insertMarkdownAfterPattern(crepe.editor, pattern, markdown, replace)
+  }
+}
+
+  function autoLink(contacts: string[], tasks: string[]) {
+    if (crepe) {
+      autoLinkContent(crepe.editor, contacts, tasks);
+    }
+  }
+
+  function getCurrentMarkdown(): string {
+    return lastSetValue;
+  }
+
   // State
   let crepe: Crepe | undefined = $state(undefined);
   let editorReady = $state(false);
@@ -143,6 +206,12 @@
       },
     });
   });
+
+  function convertToContactLink() {
+    if (crepe) {
+      convertSelectionToContactLink(crepe.editor);
+    }
+  }
 
   // Create a high-priority file drop plugin
   const fileDropPlugin = _prose(() => {
@@ -322,7 +391,11 @@
                 if (crepe?.editor) {
                   try {
                     // Use insertMarkdownAtCursor which should handle parsing correctly
-                    insertMarkdownAtCursor(crepe.editor, markdownToInsert, insertPosition);
+                    insertMarkdownAtCursor(
+                      crepe.editor,
+                      markdownToInsert,
+                      insertPosition,
+                    );
                   } catch (error) {
                     console.error("Error using insertMarkdownAtCursor:", error);
                     // Fallback: use replaceAll if cursor insertion fails
@@ -404,7 +477,7 @@
         .create()
         .then(() => {
           editorReady = true;
-          actionHandlers.onReady?.();
+          actionHandlers.onReady?.(api);
           // console.log("Editor ready with high-priority file drop plugin");
         })
         .catch((error) => {
@@ -431,7 +504,7 @@
   // Event handlers
   function handleLinkClick(event: LinkClickEvent) {
     console.log("Link clicked:", event);
-    actionHandlers.onLinkClick?.(event);
+    // actionHandlers.onLinkClick?.(event);
   }
 
   function handleTaskMissing(path: string) {
@@ -462,6 +535,15 @@
   function insertMarkdown(markdown: string) {
     if (crepe) {
       insertMarkdownAtCursor(crepe.editor, markdown);
+    }
+  }
+
+  async function autoLinkFromLLM() {
+    if (crepe) {
+      const { autoLinkFromLLM } = await import(
+        "$lib/editor/commands/autoLinkFromLLM.js"
+      );
+      await autoLinkFromLLM(crepe.editor);
     }
   }
 
@@ -501,8 +583,6 @@
       },
     };
   }
-
-
 </script>
 
 <style>

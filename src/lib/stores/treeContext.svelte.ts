@@ -3,6 +3,34 @@ import { getContext, setContext } from 'svelte';
 import { type TreeItem } from '../types/files.js';
 import type { PathResponse } from '$lib/items/helpers';
 
+export interface TreeContext {
+  // Properties
+  readonly data: TreeItem[];
+  readonly loading: boolean;
+  
+  // Expanded state management
+  isExpanded(itemId: string): boolean;
+  setExpanded(itemId: string, expanded: boolean): void;
+  
+  // Data operations
+  loadRootItems(): Promise<TreeItem[]>;
+  loadChildren(parent: TreeItem): Promise<TreeItem[]>;
+  
+  // CRUD operations
+  moveItem(itemId: string, newParentId: string): Promise<boolean>;
+  deleteItem(itemId: string): Promise<boolean>;
+  renameItem(itemId: string, newName: string): Promise<any>;
+  createItem(
+    item: TreeItem, 
+    content?: string, 
+    parent_id?: string | null
+  ): Promise<TreeItem>;
+  
+  // Helper methods
+  // findItem(itemId: string, items?: TreeItem[]): TreeItem | null;
+  updateItem(itemId: string, updates: Partial<TreeItem>): void;
+}
+
 export const TREE_CONTEXT = 'tree-operations';
 
 function createTreeContext() {
@@ -13,8 +41,8 @@ function createTreeContext() {
   let expandedItems = $state(new Set());
 
   // Debug logging
-  function debugLog(message: string, data = '') {
-    console.log(`[TreeContext] ${message}`, data || '');
+  function debugLog(message: string, data?: string | number | object | Error) {
+    console.log(`[TreeContext] ${message}`, data ?? '');
   }
 
   const context = {
@@ -181,23 +209,11 @@ function createTreeContext() {
       }
     },
 
-    // Find item in tree
-    findItem(itemId: string, items = treeData): TreeItem {
-      for (const item of items) {
-        if (item.id === itemId) return item;
-        if (item.children) {
-          const found = this.findItem(itemId, item.children);
-          if (found) return found;
-        }
-      }
-      return null;
-    },
-
     // Create new item, only works for folders and files
-    createItem(item, content: string = "", parent_id = null) {
+    createItem(item: TreeItem, content: string = "", parent_id = null): Promise<TreeItem> {
       debugLog(`Creating item: ${item.name} (${item.type})`);
-      return new Promise((resolve, reject) => {
-        fetch('/api/items', {
+      return new Promise<TreeItem>((resolve, reject) => {
+            fetch('/api/items', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -227,19 +243,19 @@ function createTreeContext() {
     },
 
     // Update item locally (for UI optimizations)
-    updateItem(itemId: string, updates) {
-      const updateInArray = (items) => {
-        return items.map(item => {
+    updateItem(itemId: string, updates: Partial<TreeItem>) {
+      const updateInArray = (items: TreeItem[]): TreeItem[] => {
+        return items.map((item: TreeItem) => {
           if (item.id === itemId) {
             return { ...item, ...updates };
           }
-          if (item.children) {
-            return { ...item, children: updateInArray(item.children) };
-          }
+          // if (item.children) {
+          //   return { ...item, children: updateInArray(item.children) };
+          // }
           return item;
         });
       };
-
+    
       treeData = updateInArray(treeData);
       debugLog(`Updated item ${itemId}`, updates);
     }
@@ -248,15 +264,15 @@ function createTreeContext() {
   return context;
 }
 
-export function useTreeContext() {
-  const context = getContext(TREE_CONTEXT);
+export function useTreeContext(): TreeContext {
+  const context = getContext<TreeContext>(TREE_CONTEXT);
   if (!context) {
     throw new Error('useTreeContext must be used within a tree context provider');
   }
   return context;
 }
 
-export const treeContext = createTreeContext();
+export const treeContext: TreeContext = createTreeContext();
 
 // This function in of itself just creates the new file, it does not reload the treeContext, must be done afterwards.
 export async function createItem(path: string, loadFile: (

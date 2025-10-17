@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { TreeItem } from "$lib/types/files";
   import { Move, Trash2 } from "lucide-svelte";
-  import { useTreeContext } from "$lib/stores/treeContext.svelte.js";
+  import { useTreeContext, type TreeContext } from "$lib/stores/treeContext.svelte.js";
   import TreeNode from "./TreeNode.svelte";
 
   let {
@@ -15,7 +15,7 @@
   }>();
 
   // Get tree context for operations
-  const treeContext = useTreeContext();
+  const treeContext: TreeContext = useTreeContext();
 
   // Use local expanded state that syncs with context
   let expanded = $state(false);
@@ -290,9 +290,11 @@
         debugLog(`📂 Folder now marked as having children`);
       }
     } catch (error) {
+      let message = "Unknown Error";
+      if (error instanceof Error) message = error.message;
       debugLog("❌ Error moving item:", error);
       console.error("Error moving item:", error);
-      alert(`Failed to move item: ${error.message}`);
+      alert(`Failed to move item: ${message}`);
     }
   }
 

@@ -485,10 +485,10 @@
     animation: fadeIn 0.2s ease forwards;
   }
 
-  .move-btn:hover:not(:disabled) {
+  /* .move-btn:hover:not(:disabled) {
     background-color: rgb(238, 241, 255);
     color: #3a7ed7;
-  }
+  } */
 
   .delete-btn:hover:not(:disabled) {
     background-color: #fee;
@@ -505,8 +505,7 @@
     opacity: 0.6;
   }
 
-  .deleting,
-  .moving {
+  .deleting {
     font-size: 12px;
   }
 

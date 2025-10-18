@@ -5,11 +5,12 @@ import { writeFileSync, createReadStream, unlinkSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import OpenAI from 'openai';
-import { OPENAI_API_KEY } from '$env/static/private';
+import { INFOMANIAK_API_KEY, INFOMANIAK_PRODUCT_ID } from "$env/static/private";
 
-// Create OpenAI client
+// Create OpenAI 
 const openai = new OpenAI({
-    apiKey: OPENAI_API_KEY
+    apiKey: INFOMANIAK_API_KEY,
+    baseURL: `https://api.infomaniak.com/1/ai/${INFOMANIAK_PRODUCT_ID}/openai`,
 });
 
 // Convert exec to promise-based

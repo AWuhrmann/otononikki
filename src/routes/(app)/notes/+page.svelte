@@ -1,4 +1,6 @@
 <script lang="ts">
+  import NoteHeader from "$components/journal/NoteHeader.svelte";
+
   import { page } from "$app/state";
   import FileExplorer from "$components/files/FileExplorer.svelte";
   import EditorComponent from "$components/journal/EditorComponent.svelte";
@@ -8,14 +10,6 @@
     EditorPluginConfig,
     EditorActionHandlers,
   } from "$lib/types/editor";
-  import {
-    Check,
-    FilePlus,
-    NotebookPen,
-    Sparkles,
-    UserPen,
-    X,
-  } from "lucide-svelte";
 
   import { type EditorAPI } from "$lib/editor";
 
@@ -27,8 +21,8 @@
     ConnectToCalendar,
   } from "$lib/editor/commands/autoLinkFromLLM";
   import type { TreeItem } from "$lib/types/files";
-    import AudioRecorderButton from "$components/misc/AudioRecorderButton.svelte";
-    import { appendMarkdown } from "$lib/editor/commands";
+  import AudioRecorderButton from "$components/misc/AudioRecorderButton.svelte";
+  import { appendMarkdown } from "$lib/editor/commands";
 
   let editorComponent = $state<EditorComponent>();
   let currentFile = $state<{ id: string; name: string; type: string } | null>(
@@ -284,7 +278,7 @@
     console.log("url param", calendar_connected);
   });
 
-  function onTranscriptionComplete(newTranscription: string) { 
+  function onTranscriptionComplete(newTranscription: string) {
     editorAPI?.insertMarkdown(newTranscription);
   }
 
@@ -311,196 +305,13 @@
     <!-- Middle: Editor -->
     <div style="height: calc(100vh - 100px);" class="w-1/2 flex flex-col">
       <!-- Header with file info and actions -->
-      <div class="flex-shrink-0 px-4 py-2 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          {#if currentFile && !isCreatingNewFile}
-            <div class="flex items-center space-x-2">
-              {#if isEditingName}
-                <!-- svelte-ignore a11y_autofocus -->
-                <input
-                  type="text"
-                  bind:value={editingName}
-                  onkeydown={handleNameKeydown}
-                  class="font-medium text-gray-900 bg-white border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  style="min-width: 200px;"
-                  autofocus
-                />
-                <button
-                  onclick={saveNewName}
-                  class="text-green-600 hover:text-green-700 p-1"
-                  title="Save name"
-                >
-                  <Check size={16} />
-                </button>
-                <button
-                  onclick={cancelEditing}
-                  class="text-red-600 hover:text-red-700 p-1"
-                  title="Cancel"
-                >
-                  <X size={16} />
-                </button>
-              {:else}
-                <button
-                  onclick={startEditing}
-                  class="font-medium text-gray-900 hover:text-blue-600 hover:underline cursor-pointer"
-                  title="Click to rename"
-                >
-                  {currentFile.name}
-                </button>
-              {/if}
-            </div>
-            {#if isDirty}
-              <span
-                class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded"
-              >
-                Unsaved
-              </span>
-            {:else}
-              <span
-                class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded"
-              >
-                Saved
-              </span>
-            {/if}
-          {:else if isCreatingNewFile}
-            <div class="flex whitespace-nowrap items-center">
-              <span class="font-medium text-gray-900 mr-3">New File:</span>
-              <span class="italic text-gray-700">{prefix}/</span>
-              <input
-                class="font-medium text-gray-900 border-b border-gray-400 focus:border-blue-500 focus:outline-none bg-transparent"
-                {placeholder}
-                bind:value={newPath}
-              />
-            </div>
-          {:else}
-            <span class="font-medium text-gray-500 italic"
-              >No file selected</span
-            >
-          {/if}
-          {#if isLoading}
-            <span class="text-xs text-blue-600">Loading...</span>
-          {/if}
-        </div>
-
-        <div class="flex items-center space-x-2">
-          <!-- Save button - only when editing an existing file -->
-          {#if currentFile && !isCreatingNewFile}
-            <button
-              class="text-xs px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-              onclick={manualSave}
-              disabled={!isDirty}
-            >
-              Save (Ctrl+S)
-            </button>
-          {/if}
-
-          <!-- Create new file flow -->
-          {#if isCreatingNewFile}
-            <!-- File type options when creating -->
-            <button
-              class="flex gap-2 hover:bg-blue-50 text-blue-700 rounded-md px-3 py-2 text-sm font-medium"
-              onclick={() => togglePrefix("contacts", "Name.md")}
-            >
-              <UserPen size={16} /> Contact
-            </button>
-            <button
-              class="flex gap-2 hover:bg-purple-50 text-purple-700 rounded-md px-3 py-2 text-sm font-medium"
-              onclick={() => {
-                const today = new Date();
-                const formattedDate = today.toISOString().split("T")[0];
-                togglePrefix("notes", formattedDate + ".md");
-              }}
-            >
-              <NotebookPen size={16} /> Daily note
-            </button>
-
-            <!-- Create/Cancel buttons -->
-            <div class="flex gap-2 ml-2">
-              <button
-                class="hover:bg-green-100 text-green-600 rounded-md p-2 font-bold transition-colors"
-                onclick={async () => {
-                  const pathData = await createItem(
-                    `${prefix}/${newPath || placeholder}`,
-                    loadFile,
-                    "",
-                  );
-                  // Reset creation state after successful creation
-                  isCreatingNewFile = false;
-                  prefix = "";
-                  newPath = "";
-                  placeholder = placeholdDefaultVal;
-                }}
-                title="Create file"
-              >
-                <Check size={18} />
-              </button>
-              <button
-                class="hover:bg-red-100 text-red-600 rounded-md p-2 font-bold transition-colors"
-                onclick={() => {
-                  isCreatingNewFile = false;
-                  prefix = "";
-                  newPath = "";
-                  placeholder = placeholdDefaultVal;
-                  // Reset editor to previous file or welcome state
-                  if (currentFile) {
-                    loadFile(currentFile);
-                  } else {
-                    markdown = `# Welcome to your Notes
-        
-    Select a file from the file explorer to start editing, or create a new file.
-    
-    ## Getting Started
-    - Click on any file in the left panel to open it
-    - Your changes are automatically saved
-    - Use the toolbar to add links and format text
-        `;
-                    originalContent = markdown;
-                  }
-                }}
-                title="Cancel"
-              >
-                <X size={18} />
-              </button>
-            </div>
-          {:else}
-          <!-- Always available Create new file button -->
-          <AudioRecorderButton onTranscriptionComplete={onTranscriptionComplete}/>
-            <button
-              onclick={() => {
-                editorAPI?.autoLinkFromLLM();
-              }}
-              class="flex text-gray-600 hover:bg-gray-100 rounded-md px-2 py-2"
-              ><Sparkles size={16}></Sparkles></button
-            >
-            <button
-              class="flex gap-2 hover:bg-gray-100 text-gray-600 rounded-md px-3 py-2 text-sm font-medium transition-colors"
-              onclick={() => {
-                // Save current file if dirty before starting new file creation
-                if (currentFile && isDirty) {
-                  manualSave();
-                }
-
-                // Clear current file and enter creation mode
-                currentFile = null;
-                isCreatingNewFile = true;
-                isDirty = false;
-
-                // Reset editor to blank state
-                markdown = "";
-                originalContent = "";
-
-                // Reset creation form
-                prefix = "";
-                newPath = "";
-                placeholder = placeholdDefaultVal;
-              }}
-            >
-              <FilePlus size={16} />
-              Create new file
-            </button>
-          {/if}
-        </div>
-      </div>
+      <NoteHeader
+        {currentFile}
+        {onTranscriptionComplete}
+        {placeholdDefaultVal}
+        saveFile={() => saveFile(editorAPI?.getMarkdown() ?? "")}
+        {loadFile}
+      ></NoteHeader>
 
       <!-- Scrollable editor area -->
       <div

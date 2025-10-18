@@ -132,18 +132,22 @@
 
 <Button.Root
   class="{isRecording 
-    ? 'bg-white text-dark border-2 border-dark' 
-    : 'bg-dark text-background'} 
-    rounded-input shadow-mini hover:opacity-90 inline-flex
-    h-9 items-center justify-center px-[11px] text-[0px]
+    ? 'bg-white text-red-500' 
+    : 'text-gray-600 hover:bg-gray-100'} 
+    rounded-input inline-flex
+    h-9 items-center justify-center px-[11px]
     font-semibold active:scale-[0.98] transition-all disabled:opacity-40
     {buttonClass}"
   onclick={handleClick}
   disabled={isTranscribing}
 >
   {#if isTranscribing}
-    <Ellipsis class="w-4 h-4" />
+    <Ellipsis size={16} />
   {:else}
-    <Mic class="{isRecording ? 'mic-recording' : ''} w-4 h-4" />
+    <Mic size={16} class="{isRecording ? 'mic-recording' : ''} w-4 h-4" />
   {/if}
 </Button.Root>
+
+<!-- class="flex text-gray-600 hover:bg-gray-100 rounded-md px-2 py-2"
+><Sparkles size={16}></Sparkles></button
+> -->

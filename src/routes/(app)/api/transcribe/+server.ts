@@ -1,17 +1,14 @@
 // src/routes/api/transcribe/+server.ts
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { writeFileSync, createReadStream, unlinkSync } from 'fs';
+import { writeFileSync, createReadStream, unlinkSync, readFileSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import OpenAI from 'openai';
-import { INFOMANIAK_API_KEY, INFOMANIAK_PRODUCT_ID } from "$env/static/private";
+import { INFOMANIAK_API_KEY, INFOMANIAK_PRODUCT_ID } from '$env/static/private';
 
-// Create OpenAI 
-const openai = new OpenAI({
-    apiKey: INFOMANIAK_API_KEY,
-    baseURL: `https://api.infomaniak.com/1/ai/${INFOMANIAK_PRODUCT_ID}/openai`,
-});
+type STTResponse = {
+  batch_id: string;
+}
 
 // Convert exec to promise-based
 const execPromise = promisify(exec);
@@ -39,10 +36,80 @@ const cleanupFiles = (...filePaths: string[]) => {
     });
 };
 
-export const POST: RequestHandler = async ({ request }: { request: Request }) => {
+async function waitForFinished(batch_id: string, maxAttempts = 30): Promise<string> {
+  let attempts = 0;
+  
+  while (attempts < maxAttempts) {
+    attempts++;
+    await new Promise(r => setTimeout(r, 2000));
+    
+    try {
+      const response = await fetch(
+        `https://api.infomaniak.com/1/ai/${INFOMANIAK_PRODUCT_ID}/results/${batch_id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${INFOMANIAK_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      
+      // Fixed condition - using AND instead of OR
+      if (result.status !== "processing" && result.status !== "pending") {
+        console.log(`Transcription finished with status=${result.status}`);
+        
+        if (result.status === "success") {
+          // The data field contains a stringified JSON, so parse it
+          const transcriptionData = result.data || result.text || result.transcription || result.result;
+          
+          // If it's a string that looks like JSON, parse it
+          if (typeof transcriptionData === 'string' && transcriptionData.startsWith('{')) {
+            try {
+              const parsed = JSON.parse(transcriptionData);
+              return parsed.text || parsed.transcription || transcriptionData;
+            } catch (e) {
+              // If parsing fails, return as is
+              return transcriptionData;
+            }
+          }
+          
+          // If it's already an object, extract the text
+          if (typeof transcriptionData === 'object' && transcriptionData !== null) {
+            return transcriptionData.text || transcriptionData.transcription || JSON.stringify(transcriptionData);
+          }
+          
+          return transcriptionData;
+        } else {
+          throw new Error(`Transcription failed with status: ${result.status}, message: ${result.message || 'No error message'}`);
+        }
+      }
+      
+      console.log(`Transcription still processing... (attempt ${attempts}/${maxAttempts})`);
+    } catch (error) {
+      console.error(`Attempt ${attempts} failed:`, error);
+      if (attempts >= maxAttempts) throw error;
+    }
+  }
+  
+  throw new Error("Transcription timeout - exceeded maximum attempts");
+}
+
+export const POST: RequestHandler = async ({request, locals}) => {
     let inputPath = '';
     let outputPath = '';
     
+    const session = await locals.getSession();
+    if (!session?.user) { 
+      return json({success: false, error: "failed to get user in session"}, {status: 403});
+    }
+
     try {
         const formData = await request.formData();
         const audioFile = formData.get('audioFile') as File;
@@ -68,18 +135,47 @@ export const POST: RequestHandler = async ({ request }: { request: Request }) =>
         // Names prompt for better transcription
         const namesPrompt = `Adrien Alex Alyssa Amy Ardit Berta Carine Caspar Chiara Christine Daniel Dheesh Eiji Elissa Emile Emilie Emma Felix Holly Hugo Jil Josh Julie Julie Karin Kevin Koki Léna Léo Lochlan Lou Louis Louna Lucas Lucas Luis Maé Maman Mathis Matilda Matthew Max Mehdi Mizuki Moeka Moritz Nadège Noah Nora Norah Olga Papa Paul Pierce Roy Sacha Scarlet Sebastian Sebastiano Sébastien Selina Tamiris Tanishka Thierry Vincent Zac`;
 
-        // Transcribe with OpenAI
-        const translation = await openai.audio.transcriptions.create({
-            file: createReadStream(outputPath),
-            model: "whisper-1",
-            prompt: namesPrompt
-        });
+        // Read the MP3 file for upload
+        const audioBuffer = readFileSync(outputPath);
+        const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+        
+        // Create FormData for file upload
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', audioBlob, 'audio.mp3');
+        uploadFormData.append('model', 'whisper');
+        uploadFormData.append('prompt', namesPrompt);
 
-        // Clean up files
+        const response = await fetch(
+          `https://api.infomaniak.com/1/ai/${INFOMANIAK_PRODUCT_ID}/openai/audio/transcriptions`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${INFOMANIAK_API_KEY}`,
+              // Don't set Content-Type - let fetch set it with boundary for multipart/form-data
+            },
+            body: uploadFormData,
+          },
+        );
+    
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`LLM API request failed: ${response.statusText} - ${errorText}`);
+        }
+    
+        const data: STTResponse = await response.json();
+        console.log('Received batch ID:', data.batch_id);
+        
+        // Wait for transcription to complete
+        const transcription = await waitForFinished(data.batch_id);
+
+        // Clean up temporary files
         cleanupFiles(inputPath, outputPath);
 
+        console.log(`Transcription: ${transcription}`)
+
         return json({
-            transcription: translation.text
+            success: true,
+            transcription: transcription
         });
 
     } catch (err) {
@@ -89,6 +185,11 @@ export const POST: RequestHandler = async ({ request }: { request: Request }) =>
         }
 
         console.error('Transcription error:', err);
-        throw error(500, 'Failed to process transcription request');
+        
+        // Return more detailed error information
+        return json({
+            success: false,
+            error: err instanceof Error ? err.message : 'Failed to process transcription request'
+        }, { status: 500 });
     }
 };

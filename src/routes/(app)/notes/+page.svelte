@@ -27,6 +27,8 @@
     ConnectToCalendar,
   } from "$lib/editor/commands/autoLinkFromLLM";
   import type { TreeItem } from "$lib/types/files";
+    import AudioRecorderButton from "$components/misc/AudioRecorderButton.svelte";
+    import { appendMarkdown } from "$lib/editor/commands";
 
   let editorComponent = $state<EditorComponent>();
   let currentFile = $state<{ id: string; name: string; type: string } | null>(
@@ -282,6 +284,10 @@
     console.log("url param", calendar_connected);
   });
 
+  function onTranscriptionComplete(newTranscription: string) { 
+    editorAPI?.insertMarkdown(newTranscription);
+  }
+
   let newPath = $state("");
 
   const placeholdDefaultVal = "path/to/file.ext";
@@ -457,7 +463,8 @@
               </button>
             </div>
           {:else}
-            <!-- Always available Create new file button -->
+          <!-- Always available Create new file button -->
+          <AudioRecorderButton onTranscriptionComplete={onTranscriptionComplete}/>
             <button
               onclick={() => {
                 editorAPI?.autoLinkFromLLM();

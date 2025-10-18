@@ -669,16 +669,6 @@
     align-items: center;
   }
 
-  .editor-statusbar {
-    border-top: none;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-    color: #6b7280;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
   :global(.milkdown .ProseMirror) {
     padding: 1rem 10px 0 80px;
     min-height: 200px;

@@ -63,5 +63,9 @@
     "phosphor-svelte": "^3.0.1",
     "tailwindcss-animate": "^1.0.7"
   },
-  "type": "module"
+  "type": "module",
+"overrides": {
+  "cookie": "^1.0.1",
+  "esbuild": "^0.25.0"
+}
 }

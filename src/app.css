@@ -10,6 +10,14 @@
 @tailwind components;
 @tailwind utilities; */
 
+.milkdown .ProseMirror  {
+  /* Your overrides here */
+  --crepe-font-title: 'Roboto', 'Noto Sans', sans-serif;
+  --crepe-font-default: 'Roboto', 'Noto Sans', sans-serif;
+  --crepe-font-code: var(--font-mono);
+  src: url("/CalSans-SemiBold.woff2") format("woff2");
+}
+
 .prose pre,
 .prose code {
   color: #111 !important;
@@ -472,7 +480,7 @@ pre.language-text .token {
 }
 
 @layer components {
-  *:not(body):not(.focus-override) {
+  *:not(body):not(.focus-override):not(.ProseMirror) {
     outline: none !important;
 
     &:focus-visible {

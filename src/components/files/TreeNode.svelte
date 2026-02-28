@@ -571,7 +571,7 @@
     <!-- Actions container with fixed space allocation -->
     <div class="actions-container">
       {#if isHovered && !loadingChildren && !isDragging}
-      {#if item.folderCategory === null}
+      {#if item.folderCategory === null || !item.hasChildren}
       <button
         class="actions-btn delete-btn"
         onclick={handleDelete}

@@ -49,6 +49,8 @@ export function insertMarkdownAfterPattern(
     // Find the pattern in the document
     let foundPos: number | null = null;
     let patternLength: number = 0;
+    let nodeText: string = '';
+    let nodeStartPos: number = 0;
     
     state.doc.descendants((node, pos) => {
       // If we already found it, stop searching
@@ -56,13 +58,13 @@ export function insertMarkdownAfterPattern(
       
       // Check text nodes
       if (node.isText && node.text) {
-        const match = typeof pattern === 'string' 
+        const match = typeof pattern === 'string'
           ? node.text.indexOf(pattern)
           : node.text.match(pattern);
-        
+          
         if (match !== -1 && match !== null) {
-          const matchIndex = typeof pattern === 'string' 
-            ? match 
+          const matchIndex = typeof pattern === 'string'
+            ? match
             : match.index!;
           patternLength = typeof pattern === 'string'
             ? pattern.length
@@ -70,6 +72,8 @@ export function insertMarkdownAfterPattern(
           
           // Position after the matched text
           foundPos = pos + matchIndex + patternLength;
+          nodeText = node.text;
+          nodeStartPos = pos;
           return false; // Stop searching
         }
       }
@@ -88,12 +92,44 @@ export function insertMarkdownAfterPattern(
     let tr = state.tr;
     
     if (replace) {
-      // Find the end of the current line/block from foundPos
-      const $pos = state.doc.resolve(foundPos);
-      const endOfBlock = $pos.end();
+      // Find the end of the current line from foundPos
+      let endOfLine = foundPos;
+      
+      // Get the text from the pattern position to the end of the node
+      const textAfterPattern = nodeText.substring(foundPos - nodeStartPos);
+      
+      // Find the next newline character
+      const newlineIndex = textAfterPattern.indexOf('\n');
+      
+      if (newlineIndex !== -1) {
+        // Newline found in current node
+        endOfLine = foundPos + newlineIndex;
+      } else {
+        // If no newline found in current node, use the end of the current node
+        endOfLine = nodeStartPos + nodeText.length;
+        
+        // Check if the next node is a hard break or the block ends
+        const $pos = state.doc.resolve(endOfLine);
+        if ($pos.pos < $pos.end()) {
+          // We're not at the end of the block, so check next nodes
+          state.doc.nodesBetween(endOfLine, $pos.end(), (node, pos) => {
+            if (node.isText && node.text) {
+              const newlineIdx = node.text.indexOf('\n');
+              if (newlineIdx !== -1) {
+                endOfLine = pos + newlineIdx;
+                return false; // Stop searching
+              }
+              endOfLine = pos + node.text.length;
+            } else if (node.type.name === 'hard_break') {
+              // Found a hard break, stop here
+              return false;
+            }
+          });
+        }
+      }
       
       // Delete from after pattern to end of line, then insert new content
-      tr = tr.delete(foundPos, endOfBlock).insert(foundPos, content);
+      tr = tr.delete(foundPos, endOfLine).insert(foundPos, content);
     } else {
       // Just insert the content
       tr = tr.insert(foundPos, content);

@@ -1,126 +1,128 @@
-// TestAudioRecorder.svelte
 <script lang="ts">
-  import AudioRecorderButton from "$components/misc/AudioRecorderButton.svelte";
-  
-  let content = "";
-  let appendMode = true; // Toggle between append and replace mode
-  
-  const handleTranscription = (transcription: string) => {
-    if (appendMode && content) {
-      // Append with a space or newline
-      content = content + "\n\n" + transcription;
-    } else {
-      // Replace content
-      content = transcription;
+  import { Menubar } from "bits-ui";
+  import CaretRight from "phosphor-svelte/lib/CaretRight";
+  import Cat from "phosphor-svelte/lib/Cat";
+  import Check from "phosphor-svelte/lib/Check";
+ 
+  let selectedView = $state("table");
+  let selectedProfile = $state("pavel");
+ 
+  let grids = $state([
+    {
+      checked: true,
+      label: "Pixel"
+    },
+    {
+      checked: false,
+      label: "Layout"
     }
-  };
-  
-  // Mock API endpoint for testing
-  // In production, replace this with your actual endpoint
-  const mockTranscriptionEndpoint = "/api/transcribe";
+  ]);
+ 
+  let showConfigs = $state([
+    {
+      checked: true,
+      label: "Show Bookmarks"
+    },
+    {
+      checked: false,
+      label: "Show Full URLs"
+    }
+  ]);
+ 
+  const profiles = [
+    {
+      value: "hunter",
+      label: "Hunter"
+    },
+    {
+      value: "pavel",
+      label: "Pavel"
+    },
+    {
+      value: "adrian",
+      label: "Adrian"
+    }
+  ];
+ 
+  const views = [
+    {
+      value: "table",
+      label: "Table"
+    },
+    {
+      value: "board",
+      label: "Board"
+    },
+    {
+      value: "gallery",
+      label: "Gallery"
+    }
+  ];
 </script>
-
-<style>
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: Arial, sans-serif;
-  }
-  
-  .editor-section {
-    background: #f5f5f5;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  h1 {
-    color: #333;
-    margin-bottom: 1.5rem;
-  }
-  
-  .controls {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .mode-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 14px;
-    color: #666;
-  }
-  
-  .mode-toggle input {
-    cursor: pointer;
-  }
-  
-  textarea {
-    width: 100%;
-    min-height: 300px;
-    padding: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-    font-family: inherit;
-    resize: vertical;
-    box-sizing: border-box;
-  }
-  
-  textarea:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  }
-  
-  .info {
-    margin-top: 1rem;
-    padding: 1rem;
-    background-color: #e0f2fe;
-    border-radius: 6px;
-    font-size: 14px;
-    color: #0369a1;
-  }
-</style>
-
-<div class="container">
-  <div class="editor-section">
-    <h1>Audio Transcription Editor</h1>
-    
-    <div class="controls">
-      <AudioRecorderButton 
-        onTranscriptionComplete={handleTranscription}
-        transcriptionEndpoint={mockTranscriptionEndpoint}
-      />
-      
-      <div class="mode-toggle">
-        <label>
-          <input 
-            type="checkbox" 
-            bind:checked={appendMode}
-          />
-          Append mode (unchecked = replace)
-        </label>
-      </div>
-    </div>
-    
-    <textarea
-      bind:value={content}
-      placeholder="Your transcribed text will appear here..."
-    />
-    
-    <div class="info">
-      <strong>How to use:</strong>
-      <ul>
-        <li>Click "Record" to start recording audio</li>
-        <li>Click the timer to stop recording</li>
-        <li>Wait for transcription to complete</li>
-        <li>Toggle "Append mode" to either add to or replace existing text</li>
-      </ul>
-    </div>
+ 
+<Menubar.Root
+  class="rounded-10px border-dark-10 bg-background-alt shadow-mini flex h-12 items-center gap-1 border px-[3px]"
+>
+  <Menubar.Menu>
+    <Menubar.Trigger
+      class="data-highlighted:bg-muted data-[state=open]:bg-muted mr-[20px] inline-flex h-10 cursor-default items-center justify-center rounded-[9px] px-3 text-sm font-medium focus-visible:outline-none"
+    >
+      Profiles
+    </Menubar.Trigger>
+    <Menubar.Portal>
+      <Menubar.Content
+        class="focus-override border-muted bg-background shadow-popover focus-visible:outline-hidden z-50 w-full max-w-[220px] rounded-xl border px-1 py-1.5"
+        align="start"
+        sideOffset={3}
+      >
+        <Menubar.RadioGroup bind:value={selectedProfile}>
+          {#each profiles as profile, i (profile.label + i)}
+            <Menubar.RadioItem
+              class="rounded-button data-highlighted:bg-muted flex h-10 select-none items-center py-3 pl-3 pr-1.5 text-sm font-medium focus-visible:outline-none"
+              value={profile.value}
+            >
+              {#snippet children({ checked })}
+                {profile.label}
+                <div class="ml-auto flex items-center">
+                  {#if checked}
+                    <Check class="size-5" />
+                  {/if}
+                </div>
+              {/snippet}
+            </Menubar.RadioItem>
+          {/each}
+        </Menubar.RadioGroup>
+        <Menubar.Separator />
+        <Menubar.Item
+          class="rounded-button data-highlighted:bg-muted flex h-10 select-none items-center py-3 pl-3 pr-1.5 text-sm font-medium focus-visible:outline-none"
+          >Edit...</Menubar.Item
+        >
+        <Menubar.Separator />
+        <Menubar.Item
+          class="rounded-button data-highlighted:bg-muted flex h-10 select-none items-center py-3 pl-3 pr-1.5 text-sm font-medium focus-visible:outline-none"
+          >Add Profile...</Menubar.Item
+        >
+      </Menubar.Content>
+    </Menubar.Portal>
+  </Menubar.Menu>
+</Menubar.Root>
+ 
+{#snippet SwitchOn()}
+  <div
+    class="bg-dark-10 peer inline-flex h-[15.6px] min-h-[15.6px] w-[26px] shrink-0 items-center rounded-full px-[1.5px]"
+  >
+    <span
+      class="bg-background dark:border-border-input dark:shadow-mini pointer-events-none block size-[13px] shrink-0 translate-x-[10px] rounded-full"
+    ></span>
   </div>
-</div>
+{/snippet}
+ 
+{#snippet SwitchOff()}
+  <div
+    class="bg-dark-10 shadow-mini-inset peer inline-flex h-[15.6px] w-[26px] shrink-0 items-center rounded-full px-[3px] transition-colors"
+  >
+    <span
+      class="bg-background shadow-mini dark:border-border-input dark:shadow-mini pointer-events-none block size-[13px] shrink-0 translate-x-0 rounded-full transition-transform dark:border"
+    ></span>
+  </div>
+{/snippet}

@@ -132,7 +132,7 @@
 
 <Button.Root
   class="{isRecording 
-    ? 'bg-white text-red-500' 
+    ? 'bg-white text-red-500 hover:bg-red-100' 
     : 'text-gray-600 hover:bg-gray-100'} 
     rounded-input inline-flex
     h-9 items-center justify-center px-[11px]
@@ -147,7 +147,3 @@
     <Mic size={16} class="{isRecording ? 'mic-recording' : ''} w-4 h-4" />
   {/if}
 </Button.Root>
-
-<!-- class="flex text-gray-600 hover:bg-gray-100 rounded-md px-2 py-2"
-><Sparkles size={16}></Sparkles></button
-> -->

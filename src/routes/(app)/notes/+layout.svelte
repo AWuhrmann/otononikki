@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { LayoutData } from "./$types"
-  
+    // import "../../../app.css";
+
     let { data, children }: { data: LayoutData; children: Snippet } = $props()
   </script>
   

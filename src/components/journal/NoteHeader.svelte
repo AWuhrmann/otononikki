@@ -1,6 +1,11 @@
 <script lang="ts">
-  import { page } from "$app/state";
+  import AudioRecorderButton from "$components/misc/AudioRecorderButton.svelte";
+  
   import type { EditorConfig } from "$lib/types/editor";
+  import { type EditorAPI } from "$lib/editor";
+  import { createItem, treeContext } from "$lib/stores/treeContext.svelte.js";
+  import type { TreeItem } from "$lib/types/files";
+  
   import {
     Check,
     FilePlus,
@@ -11,35 +16,27 @@
     X,
   } from "lucide-svelte";
 
-  import { type EditorAPI } from "$lib/editor";
-
-  import { createItem, treeContext } from "$lib/stores/treeContext.svelte.js";
-  import { onMount } from "svelte";
-  import type { TreeItem } from "$lib/types/files";
-  import AudioRecorderButton from "$components/misc/AudioRecorderButton.svelte";
-
+  // -------------- PROPS ------------------
   let {
     currentFile,
     onTranscriptionComplete,
     placeholdDefaultVal = "path/to/file.ext",
     saveFile,
     loadFile,
+    isDirty,
+    editorAPI,
   }: {
     currentFile: { id: string; name: string; type: string } | null;
     onTranscriptionComplete: (arg0: string) => void;
     placeholdDefaultVal: string;
     saveFile: () => void;
     loadFile: (file: { id: string; name: string; type: string }) => void;
+    isDirty: boolean;
+    editorAPI: EditorAPI | null
   } = $props();
+  // ----------------------------------------
 
   let isLoading = $state(false);
-  let isDirty = $state(false);
-  let lastSavedContent = $state("");
-  const editorConfig: EditorConfig = {
-    placeholder: "Start typing your notes...",
-    readonly: false,
-  };
-  let editorAPI = $state<EditorAPI | null>(null);
 
   let isEditingName = $state(false);
   let editingName = $state("");
@@ -102,7 +99,6 @@
   let isCreatingNewFile = $state(false);
 
   let prefix: string = $state("");
-  let path: string = $state("");
 
   function togglePrefix(prefix_: string, placeholder_: string) {
     const folderWithPrefix = treeContext.data.find(
@@ -119,14 +115,6 @@
       prefix = prefix_;
     }
   }
-
-  let calendar_connected = $state(false);
-
-  onMount(() => {
-    calendar_connected =
-      page.url.searchParams.get("calendar_connected") === "true";
-    console.log("url param", calendar_connected);
-  });
 
   let newPath = $state("");
 

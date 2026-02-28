@@ -1,39 +1,30 @@
 <script lang="ts">
-  import NoteHeader from "$components/journal/NoteHeader.svelte";
-
+  import { onMount } from "svelte";
   import { page } from "$app/state";
+
   import FileExplorer from "$components/files/FileExplorer.svelte";
+  import NoteHeader from "$components/journal/NoteHeader.svelte";
   import EditorComponent from "$components/journal/EditorComponent.svelte";
-  import { getItemContent, updateItem } from "$lib/items/helpers";
+  import TaskOptions from "$components/files/tasks/TaskOptions.svelte";
+
   import type {
     EditorConfig,
     EditorPluginConfig,
     EditorActionHandlers,
   } from "$lib/types/editor";
-
   import { type EditorAPI } from "$lib/editor";
-
-  import { createItem, treeContext } from "$lib/stores/treeContext.svelte.js";
-  import { onMount } from "svelte";
-  import TaskOptions from "$components/files/tasks/TaskOptions.svelte";
+  import { getItemContent, updateItem } from "$lib/items/helpers";
   import {
     addTaskToCalendar,
     ConnectToCalendar,
   } from "$lib/editor/commands/autoLinkFromLLM";
-  import type { TreeItem } from "$lib/types/files";
-  import AudioRecorderButton from "$components/misc/AudioRecorderButton.svelte";
-  import { appendMarkdown } from "$lib/editor/commands";
+    import { createItem, treeContext } from "$lib/stores/treeContext.svelte";
 
-  let editorComponent = $state<EditorComponent>();
-  let currentFile = $state<{ id: string; name: string; type: string } | null>(
-    null,
-  );
-  let currentPath = $state("");
-
-  function onCheckFullDay(checked: boolean) {
-    console.log(checked);
-    editorAPI?.insertMarkdown("test");
-  }
+  onMount(() => {
+    calendar_connected =
+      page.url.searchParams.get("calendar_connected") === "true";
+    console.log("url param", calendar_connected);
+  });
 
   $effect(() => {
     if (currentFile == null) {
@@ -57,27 +48,42 @@
   };
   let editorAPI = $state<EditorAPI | null>(null);
 
-  let isEditingName = $state(false);
-  let editingName = $state("");
+  let calendar_connected = $state(false);
+  const placeholdDefaultVal = "path/to/file.ext";
 
   let originalContent = $state("");
 
-  let markdown = `# Welcome to your Notes
-        
-    Select a file from the file explorer to start editing, or create a new file.
-    
-    ## Getting Started
-    - Click on any file in the left panel to open it
-    - Your changes are automatically saved
-    - Use the toolbar to add links and format text
-        `;
+  let markdown = $state("");
+
+  let editorComponent = $state<EditorComponent>();
+  let currentFile = $state<{ id: string; name: string; type: string } | null>(
+    null,
+  );
+  let currentPath = $state("");
+
   const pluginConfig: EditorPluginConfig = {
     links: {
       enableTooltip: true,
       clickHandlers: {
-        onTaskFile: (href) => {
-          console.log("Opening task:", href);
+        onTaskFile: async (href) => {
+          const path = await createItem(href, loadFile,`# ${href}
+\`\`\`
+start_date=
+end_date=
+\`\`\`
+`)
+          
+          if (!path.fileExists) { 
+            console.log("Error ??? The file should have been created by now")
+            return
+          }
 
+          // Reload the items :)) 
+          
+          if (path?.existingFile) {
+            loadFile(path?.existingFile)
+          }
+          treeContext.loadRootItems();
           // Navigate to task or open in sidebar
         },
         onTaskMissing: (path) => {
@@ -117,53 +123,6 @@
     }, 1000); // Save 1 second after user stops typing
   }
 
-  function startEditing() {
-    if (!currentFile) return;
-    isEditingName = true;
-    editingName = currentFile.name;
-  }
-
-  function cancelEditing() {
-    isEditingName = false;
-    editingName = "";
-  }
-
-  async function saveNewName() {
-    if (!currentFile || !editingName.trim()) {
-      cancelEditing();
-      return;
-    }
-
-    try {
-      const result = await treeContext.renameItem(
-        currentFile.id,
-        editingName.trim(),
-      );
-
-      // Update current file reference
-      currentFile = { ...currentFile, name: editingName.trim() };
-
-      console.log("File renamed successfully:", result.message);
-      isEditingName = false;
-      editingName = "";
-    } catch (error) {
-      let message = "Unknown Error";
-      if (error instanceof Error) message = error.message;
-      alert("Failed to rename file: " + message);
-      // Keep editing mode open on error
-    }
-  }
-
-  function handleNameKeydown(event: KeyboardEvent) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      saveNewName();
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      cancelEditing();
-    }
-  }
-
   // Load file content into editor
   async function loadFile(
     file: { id: string; name: string; type: string },
@@ -191,10 +150,11 @@
 
       // Update editor content
       originalContent = lastSavedContent;
-    } catch (error) {
+        } catch (error) {
       console.error("Error loading file:", error);
       alert("Failed to load file. Please try again.");
     } finally {
+      console.log("originalContent: ", originalContent)
       isLoading = false;
     }
   }
@@ -249,43 +209,9 @@
     }
   }
 
-  let isCreatingNewFile = $state(false);
-
-  let prefix: string = $state("");
-  let path: string = $state("");
-
-  function togglePrefix(prefix_: string, placeholder_: string) {
-    const folderWithPrefix = treeContext.data.find(
-      (item: TreeItem) => item.folderCategory === prefix_,
-    );
-    if (folderWithPrefix) {
-      prefix_ = folderWithPrefix.name;
-    }
-    if (prefix === prefix_) {
-      prefix = "";
-      placeholder = placeholdDefaultVal;
-    } else {
-      placeholder = placeholder_;
-      prefix = prefix_;
-    }
-  }
-
-  let calendar_connected = $state(false);
-
-  onMount(() => {
-    calendar_connected =
-      page.url.searchParams.get("calendar_connected") === "true";
-    console.log("url param", calendar_connected);
-  });
-
   function onTranscriptionComplete(newTranscription: string) {
     editorAPI?.insertMarkdown(newTranscription);
   }
-
-  let newPath = $state("");
-
-  const placeholdDefaultVal = "path/to/file.ext";
-  let placeholder: string = $state(placeholdDefaultVal);
 </script>
 
 <svelte:window
@@ -311,6 +237,8 @@
         {placeholdDefaultVal}
         saveFile={() => saveFile(editorAPI?.getMarkdown() ?? "")}
         {loadFile}
+        {isDirty}
+        {editorAPI}
       ></NoteHeader>
 
       <!-- Scrollable editor area -->
@@ -333,7 +261,7 @@
     <div class="flex-1 flex justify-start">
       <div class="max-w-[200px] w-full mt-5 ml-5">
         <!-- Future: Document outline, tags, etc. -->
-        {#if currentFile && !isCreatingNewFile}
+        {#if currentFile}
           <div class="border border-gray-300 rounded-md p-3">
             <h3 class="font-medium text-gray-900 mb-2">File Info</h3>
             <div class="text-sm text-gray-600 space-y-1">
@@ -362,25 +290,11 @@
                     class="font-medium text-sm text-gray-600 hover:bg-gray-100 rounded-md"
                     >Add task</button
                   >
-                  <TaskOptions {onCheckFullDay} />
+                  <TaskOptions insertMarkdown={editorAPI?.insertMarkdownAfterPattern} />
                 {/if}
               </div>
             </div>
           {/if}
-        {:else if isCreatingNewFile}
-          <div class="border border-gray-300 rounded-md p-3">
-            <h3 class="font-medium text-gray-900 mb-2">Creating New File</h3>
-            <div class="text-sm text-gray-600 space-y-1">
-              <div>
-                <strong>Path:</strong>
-                {prefix}/{newPath || placeholder}
-              </div>
-              <div><strong>Type:</strong> file</div>
-              <div class="text-xs text-gray-500 mt-2">
-                Choose a template above or enter a custom path
-              </div>
-            </div>
-          </div>
         {:else}
           <div class="border border-gray-300 rounded-md p-3">
             <h3 class="font-medium text-gray-900 mb-2">Getting Started</h3>

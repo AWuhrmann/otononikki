@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { Time } from "@internationalized/date";
+    import { Time, CalendarDate, today, getLocalTimeZone } from "@internationalized/date";
   import { Label, Switch, TimeRangeField, type TimeRange } from "bits-ui";
   import { DatePicker } from "bits-ui";
   import CalendarBlank from "phosphor-svelte/lib/CalendarBlank";
   import CaretLeft from "phosphor-svelte/lib/CaretLeft";
   import CaretRight from "phosphor-svelte/lib/CaretRight";
-  let { onCheckFullDay }: { onCheckFullDay: (check: boolean) => void } = $props();
+  let { insertMarkdown }: { insertMarkdown: ((pattern: string | RegExp, markdown: string, replace: boolean) => void) | undefined } = $props();
   let checked = $state<boolean>(true);
   const hourCycle: "24" = "24";
 
@@ -14,7 +14,9 @@
     end: new Time(14, 30),
   });
 
-  $effect(() => {onCheckFullDay(checked)});
+  let localToday = $state<CalendarDate>(today(getLocalTimeZone()))
+
+  $effect(() => {});
 </script>
 
 <div class="">
@@ -32,7 +34,7 @@
     <Label.Root for="dnd" class="text-sm font-medium">Full day</Label.Root>
   </div>
   <div>
-    <DatePicker.Root weekdayFormat="short" fixedWeeks={true}>
+    <DatePicker.Root bind:value={localToday} weekdayFormat="short" fixedWeeks={true}>
       <div class="flex w-full max-w-[232px] flex-col gap-1.5 mt-4">
         <DatePicker.Input
           class="h-input rounded-input border-border-input bg-background text-foreground focus-within:border-border-input-hover focus-within:shadow-date-field-focus hover:border-border-input-hover flex w-full max-w-[232px] select-none items-center border px-2 py-3 text-sm tracking-[0.01em]"

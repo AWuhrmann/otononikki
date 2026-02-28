@@ -301,7 +301,7 @@ export async function createItem(path: string, loadFile: (
         parentId: pathData.parentId,
         name: pathData.readyToCreate?.name,
         type: "file",
-        content: "My personal info...",
+        content: content,
       }),
     });
 

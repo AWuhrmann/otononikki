@@ -39,7 +39,7 @@
   } from "$lib/editor/plugins/highlights";
 
   import { type EditorAPI } from "$lib/editor";
-    import { getMarkdownAfterPattern } from "$lib/editor/commands/linkCommands";
+  import { getMarkdownAfterPattern } from "$lib/editor/commands/linkCommands";
 
   // Add to your component's public methods
   function highlightSnippets(snippets: string[]) {
@@ -147,23 +147,24 @@
     insertMarkdown: insertMarkdown,
     getMarkdown: getCurrentMarkdown,
     insertMarkdownAfterPattern: insertMarkdownAfterPattern_,
-    getMarkdownAfterPattern: getMarkdownAfterPattern_
+    getMarkdownAfterPattern: getMarkdownAfterPattern_,
   };
 
   function getMarkdownAfterPattern_(pattern: string | RegExp) {
-    if (crepe) { 
-      return getMarkdownAfterPattern(crepe.editor, pattern)
+    if (crepe) {
+      return getMarkdownAfterPattern(crepe.editor, pattern);
     }
   }
 
-  function insertMarkdownAfterPattern_(  pattern: string | RegExp,
-  markdown: string,
-  replace: boolean = false,
-) {
-  if (crepe) {
-    insertMarkdownAfterPattern(crepe.editor, pattern, markdown, replace)
+  function insertMarkdownAfterPattern_(
+    pattern: string | RegExp,
+    markdown: string,
+    replace: boolean = false,
+  ) {
+    if (crepe) {
+      insertMarkdownAfterPattern(crepe.editor, pattern, markdown, replace);
+    }
   }
-}
 
   function autoLink(contacts: string[], tasks: string[]) {
     if (crepe) {
@@ -494,8 +495,20 @@
   }
 
   $effect(() => {
-    if (crepe && originalMarkdown) {
-      crepe.editor.action(replaceAll(originalMarkdown));
+    console.log("editor effect :3")
+    if (!crepe) return;
+    
+    if (originalMarkdown !== null && originalMarkdown !== undefined) {
+      // 3. Wait for the editor to be initialized/mounted (using the async/await pattern)
+      // The crepe.editor is a promise that resolves when the editor is fully ready.
+      (async () => {
+        console.log("detect markdown change")
+        // Wait for the internal editor promise to resolve
+        const editor = await crepe.editor;
+
+        // Now that we have the fully resolved editor, call the action
+        editor.action(replaceAll(originalMarkdown));
+      })();
     }
   });
 
